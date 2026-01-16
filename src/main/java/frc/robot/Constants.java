@@ -16,4 +16,15 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+  public class ShooterConstants{
+    public static final int turretId = 0;
+    public static boolean turretInverted = false;
+    public static final int tiltId = 1;
+    public static final boolean tiltInverted = false;
+    public static final int shooterId = 2;
+    public static final boolean shooterInverted = false;
+    
+
+
+  }
 }
