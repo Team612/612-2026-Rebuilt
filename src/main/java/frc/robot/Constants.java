@@ -21,7 +21,7 @@ public final class Constants {
     public static boolean turretInverted = false;
     public static final int tiltId = 2;
     public static final boolean tiltInverted = false;
-    public static final int shooterId = 3;
+    public static final int shooterId = 16;
     public static final boolean shooterInverted = false;
     public static final int tiltLimitSwitchId = 0;
 

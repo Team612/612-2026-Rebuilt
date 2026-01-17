@@ -24,13 +24,13 @@ public class WindowMotorZero extends Command {
     @Override
     public void execute() {
         // Drive toward the limit switch
-        windowMotor.setShooterSpeed(HOMING_SPEED);
+        windowMotor.setTiltPower(HOMING_SPEED);
     }
 
     @Override
     public void end(boolean interrupted) {
         // Stop and make sure encoder is zeroed
-        windowMotor.stopShooterMotor();
+        windowMotor.stopTilt();
         windowMotor.resetTiltEncoder();
     }
 

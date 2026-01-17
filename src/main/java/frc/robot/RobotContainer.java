@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.SetShooterSpeed;
 import frc.robot.commands.WindowManualMoveCommand;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -14,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.WindowMotorZero;
 import frc.robot.commands.WindowManualMoveCommand;
+import frc.robot.commands.StopShooter;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -49,10 +51,10 @@ public class RobotContainer {
     driverController.a().onTrue(new WindowMotorZero(shooter));
 
     // Set NEO to 70% speed
-    // m_driverController.b().onTrue(new NeoSetSpeedCommand(neoSubsystem, -0.7));
+    driverController.b().onTrue(new SetShooterSpeed(shooter, -0.7));
 
     // // Stop NEO
-    // driverController.x().onTrue(new NeoStopCommand(neoSubsystem));
+    driverController.x().onTrue(new StopShooter(shooter));
 
     // // Find AprilTag and move window motor based on distance
     // driverController.y().onTrue(new WindowToTagDistanceCommand(windowMotor, limelight));

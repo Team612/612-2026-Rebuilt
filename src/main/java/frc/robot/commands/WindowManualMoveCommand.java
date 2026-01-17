@@ -27,13 +27,13 @@ public class WindowManualMoveCommand extends Command {
   @Override
   public void execute() {
       // Drive toward the limit switch
-      windowMotor.setShooterSpeed(speed);
+      windowMotor.setTiltPower(speed);
   }
 
   @Override
   public void end(boolean interrupted) {
       // Stop and make sure encoder is zeroed
-      windowMotor.stopShooterMotor();
+      windowMotor.stopTilt();
   }
 
   @Override

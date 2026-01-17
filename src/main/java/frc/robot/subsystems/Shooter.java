@@ -55,6 +55,17 @@ public class Shooter extends SubsystemBase {
     shooterMotor.stopMotor();
 }
 
+
+public void setTiltPower(double power) {
+    positionModeEnabled = false;
+    double safePower = applyLimitSwitchSafety(power);
+    tiltMotor.set(safePower);
+}
+
+public void stopTilt() {
+    positionModeEnabled = false;
+    tiltMotor.stopMotor();
+}
 /** Manually reset the encoder to 0. */
 public void resetTiltEncoder() {
     tiltEncoder.setPosition(defaultPos);
