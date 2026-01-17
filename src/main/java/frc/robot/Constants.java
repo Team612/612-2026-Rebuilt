@@ -23,7 +23,7 @@ public final class Constants {
     public static final boolean tiltInverted = false;
     public static final int shooterId = 2;
     public static final boolean shooterInverted = false;
-    
+    public static final int tiltLimitSwitchId = 0;
 
 
   }
