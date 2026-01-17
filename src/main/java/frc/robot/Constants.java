@@ -19,9 +19,9 @@ public final class Constants {
   public class ShooterConstants{
     public static final int turretId = 0;
     public static boolean turretInverted = false;
-    public static final int tiltId = 1;
+    public static final int tiltId = 2;
     public static final boolean tiltInverted = false;
-    public static final int shooterId = 2;
+    public static final int shooterId = 3;
     public static final boolean shooterInverted = false;
     public static final int tiltLimitSwitchId = 0;
 

@@ -46,7 +46,7 @@ public class Shooter extends SubsystemBase {
     tiltPID.setTolerance(0.5);
   }
 
-  public void setShooterSpeed(int speed){
+  public void setShooterSpeed(double speed){
     shooterMotor.set(speed);
   }
   
