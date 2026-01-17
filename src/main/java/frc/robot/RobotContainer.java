@@ -7,6 +7,11 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.Shooter;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import frc.robot.commands.SetShooterSpeed;
 import frc.robot.commands.WindowManualMoveCommand;
 import frc.robot.subsystems.Shooter;
@@ -31,10 +36,13 @@ public class RobotContainer {
   private final CommandXboxController driverController = new CommandXboxController(0);
       // new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
+  private final Shooter m_shooter = new Shooter();
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    
     // Configure the trigger bindings
     configureBindings();
+    DataLogManager.start();
   }
 
   /**
