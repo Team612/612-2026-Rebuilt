@@ -30,7 +30,7 @@ public class ArcadeDrive extends Command {
   @Override
   public void execute() {
     double x = -controller.getRawAxis(1);
-    double y = -controller.getRawAxis(0);
+    double y = controller.getRawAxis(0);
     double zRot = -controller.getRawAxis(4);
 
     if (Math.abs(x) < DriveConstants.DEADBAND) x = 0;
