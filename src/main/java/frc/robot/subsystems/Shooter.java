@@ -12,6 +12,9 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -32,8 +35,12 @@ public class Shooter extends SubsystemBase {
   private PIDController tiltPID;
   private double targetPosition = 0.0;
   private boolean positionModeEnabled = false;
-
+  private final DoubleLogEntry velocityLogEntry;
   public Shooter() {
+    DataLog log = DataLogManager.getLog();
+
+    // Create the log entry ONCE
+    velocityLogEntry = new DoubleLogEntry(log, "/Shooter/Velocity");
     tiltMotor = new SparkMax(Constants.ShooterConstants.tiltId, MotorType.kBrushed);
     turretMotor = new SparkMax(Constants.ShooterConstants.turretId, MotorType.kBrushless);
     shooterMotor = new SparkMax(Constants.ShooterConstants.shooterId, MotorType.kBrushless);
@@ -54,6 +61,10 @@ public class Shooter extends SubsystemBase {
     positionModeEnabled = false;
     shooterMotor.stopMotor();
 }
+
+  public double getShooterVelocity(){
+    return shooterMotor.getEncoder().getVelocity();
+  }
 
 /** Manually reset the encoder to 0. */
 public void resetTiltEncoder() {
@@ -106,9 +117,8 @@ public boolean atTarget() {
           stopShooterMotor();
           resetTiltEncoder();
       }
-
-      System.out.println(isLimitSwitchPressed());
-      // Position control (only runs if enabled and not stopped above)
+    velocityLogEntry.append(getShooterVelocity());
+// Position control (only runs if enabled and not stopped above)
       if (positionModeEnabled) {
 
   }
