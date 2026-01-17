@@ -64,5 +64,9 @@ public final class Constants {
     public static final int backRDriveMotorID = 2;
     public static final int backRCANcoderID = 2;
   }
+
+  public static class VisionConstants {
+    public static final int CANdleID = 1;
+  }
   
 }
