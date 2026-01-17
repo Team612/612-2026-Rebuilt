@@ -6,16 +6,16 @@ import frc.robot.subsystems.Swerve;
 
 public class SetEncoders extends InstantCommand {
   private Swerve m_swerve;
-  private Pose2d pos;
+  private Pose2d posi;
 
   public SetEncoders(Swerve m_swerve, Pose2d pos) {
     this.m_swerve = m_swerve;
-    this.pos = pos;
+    this.posi = pos;
     addRequirements(m_swerve);
   }
 
   @Override
   public void initialize() {
-    m_swerve.setPose(pos);
+    m_swerve.setPose(posi);
   }
 }
