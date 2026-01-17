@@ -1,33 +1,54 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.ArcadeDrive;
-import frc.robot.commands.SetEncoders;
-import frc.robot.subsystems.Swerve;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.MusicPlayer;
 
+/**
+ * This class is where the bulk of the robot should be declared. Since Command-based is used,
+ * subsystems, commands, and button mappings are defined here.
+ */
 public class RobotContainer {
 
-  private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
+    // Subsystems
+    private final MusicPlayer musicPlayer;
 
-  private Swerve m_swerve = new Swerve();
+    // Example controller (optional, for triggering music play)
+    private final CommandXboxController driverController = new CommandXboxController(0);
 
-  public RobotContainer() {
-    m_swerve.setDefaultCommand(new ArcadeDrive(m_swerve, m_driverController));
-    configureBindings();
-  }
+    /** The container for the robot. Contains subsystems, OI devices, and commands. */
+    public RobotContainer() {
 
-  private void configureBindings() {
-    m_driverController.leftBumper().onTrue(new SetEncoders(m_swerve, new Pose2d()));
-  }
+        // Initialize subsystems
+        musicPlayer = new MusicPlayer(1); // ID 1 for your TalonFX
 
-  public Command getAutonomousCommand() {
-    return null;
-  }
+        // Configure the trigger bindings
+        configureBindings();
+    }
+
+    /**
+     * Use this method to define your button->command mappings.  
+     * Currently, example: press A to play music.
+     */
+    private void configureBindings() {
+        // Press 'A' button to play music
+        driverController.a().whileTrue(
+            new edu.wpi.first.wpilibj2.command.InstantCommand(() -> musicPlayer.playMusic())
+        );
+    }
+
+    /**
+     * Use this to pass the autonomous command to the main Robot class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand() {
+        // Currently no autonomous command; return null or your autonomous command here
+        return null;
+    }
+
+    /** Getter for MusicPlayer subsystem */
+    public MusicPlayer getMusicPlayer() {
+        return musicPlayer;
+    }
 }
