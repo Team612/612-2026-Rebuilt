@@ -1,17 +1,14 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants.VisionConstants.LightID;
 import frc.robot.subsystems.Vision;
 
 public class VisionMenu extends Command {
   private Vision m_vision;
   private CommandXboxController controller;
-  private int menuID = 3;
+  private int menuID = LightID.OFF.id;
 
   private boolean lastY = false;
   private boolean lastA = false;
@@ -25,6 +22,8 @@ public class VisionMenu extends Command {
   @Override
   public void initialize() {}
 
+  // alright the reason this is so complicated is because the controller
+  // doesn't have a boolean for when the button is only pressed once
   @Override
   public void execute() {
     boolean y = controller.y().getAsBoolean();
@@ -40,10 +39,9 @@ public class VisionMenu extends Command {
     lastY = y;
     lastA = a;
 
-
     if (menuID < 0)
-      menuID = 6;
-    if (menuID > 6)
+      menuID = LightID.values().length;
+    if (menuID > LightID.values().length)
       menuID = 0;
 
     if ((controller.y().getAsBoolean()) || (controller.a().getAsBoolean()))

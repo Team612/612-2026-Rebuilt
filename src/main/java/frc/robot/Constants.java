@@ -63,10 +63,30 @@ public final class Constants {
     public static final int backRSteerMotorID = 3;
     public static final int backRDriveMotorID = 2;
     public static final int backRCANcoderID = 2;
+
+    public static final double bumpAlignKp = 0.005;
+    public static final double bumpAlignKi = 0.0;
+    public static final double bumpAlignKd = 0.0;
   }
 
   public static class VisionConstants {
     public static final int CANdleID = 1;
+
+    public enum LightID {
+      RAINBOW(0),
+      POLICE(1),
+      OFF(2),
+      WHITE(3),
+      RED(4),
+      GREEN(5),
+      BLUE(6);
+
+      public final int id;
+
+      LightID(int id) {
+        this.id = id;
+      }
+    }
   }
   
 }

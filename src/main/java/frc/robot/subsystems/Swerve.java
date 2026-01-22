@@ -21,6 +21,9 @@ public class Swerve extends SubsystemBase {
 
   private Pigeon2 gyro;
 
+  private ChassisSpeeds tele = new ChassisSpeeds();
+  private ChassisSpeeds auto = new ChassisSpeeds();
+
   public Swerve() {
     frontL = new SwerveModule(DriveConstants.frontLDriveMotorID, DriveConstants.frontLSteerMotorID, DriveConstants.frontLCANcoderID, DriveConstants.frontLEncoderOffset);
     frontR = new SwerveModule(DriveConstants.frontRDriveMotorID, DriveConstants.frontRSteerMotorID, DriveConstants.frontRCANcoderID, DriveConstants.frontREncoderOffset);
@@ -30,7 +33,7 @@ public class Swerve extends SubsystemBase {
     gyro = new Pigeon2(DriveConstants.gyroID);
   }
 
-    public void drive(ChassisSpeeds chassisSpeed){
+  private void drive(ChassisSpeeds chassisSpeed){
     SwerveModuleState[] moduleStates = DriveConstants.swerveKinematics.toSwerveModuleStates(chassisSpeed);
     SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, 1);
 
@@ -48,8 +51,22 @@ public class Swerve extends SubsystemBase {
     return heading;
   }
 
+  public void setTeleComponent(ChassisSpeeds tele){
+    this.tele = tele;
+  }
+  public void setAutoComponent(ChassisSpeeds auto){
+    this.auto = auto;
+  }
+
   @Override
   public void periodic() {
+
+    drive(new ChassisSpeeds(
+      tele.vxMetersPerSecond + auto.vxMetersPerSecond,
+      tele.vyMetersPerSecond + auto.vyMetersPerSecond,
+      tele.omegaRadiansPerSecond + auto.omegaRadiansPerSecond
+    ));
+
     heading = Rotation2d.fromDegrees(Math.IEEEremainder(gyro.getYaw().getValueAsDouble(), 360));
   }
 }

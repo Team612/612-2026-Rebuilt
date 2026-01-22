@@ -9,11 +9,19 @@ import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.RainbowAnimation;
 import com.ctre.phoenix.led.StrobeAnimation;
 
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.Constants.VisionConstants.LightID;
 
+@SuppressWarnings("removal")
 public class Vision extends SubsystemBase {
 
+  // candle stuff
+  
   private CANdle candle = new CANdle(VisionConstants.CANdleID);
 
   private final RainbowAnimation rainbow = new RainbowAnimation(1.0, 0.6, 64);
@@ -25,28 +33,38 @@ public class Vision extends SubsystemBase {
 
   private double timer = 0;
 
+  // private SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(
+  //   DriveConstants.swerveKinematics,
+  //   new Rotation2d(),
+  //   getModulePositions(),
+  //   initialPose,
+  //   // Odometry Standard Deviations, x y & z
+  //   VecBuilder.fill(0.003, 0.003, 0.001),
+  //   // Vision measurement std deviations
+  //   VecBuilder.fill(0.025, 0.025, 0.035)
+  // );
+
   public Vision() {}
 
   public void setLightID(int id){
     candle.setLEDs(0,0,0);
     candle.clearAnimation(0);
 
-    if (id == 1)
+    if (id == LightID.POLICE.id)
       police = true;
     else
       police = false;
-
-    if (id == 0)
+    if (id == LightID.RAINBOW.id)
       candle.animate(rainbow);
-    if (id == 2)
+    if (id == LightID.OFF.id)
       candle.setLEDs(0,0,0);
-    if (id == 3)
+    if (id == LightID.WHITE.id)
       candle.setLEDs(255,255,255);
-    if (id == 4)
+    if (id == LightID.RED.id)
       candle.setLEDs(255,0,0);
-    if (id == 5)
+    if (id == LightID.GREEN.id)
       candle.setLEDs(0,255,0);
-    if (id == 6)
+    if (id == LightID.BLUE.id)
       candle.setLEDs(0,0,255);
   }
 
