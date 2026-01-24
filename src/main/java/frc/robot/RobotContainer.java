@@ -6,25 +6,23 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArcadeDrive;
-import frc.robot.commands.SetEncoders;
-import frc.robot.subsystems.Swerve;
-import edu.wpi.first.math.geometry.Pose2d;
+import frc.robot.subsystems.TankDrive;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class RobotContainer {
+  private TankDrive m_tankDrive = new TankDrive();
 
   private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
-  private Swerve m_swerve = new Swerve();
-
   public RobotContainer() {
-    m_swerve.setDefaultCommand(new ArcadeDrive(m_swerve, m_driverController));
     configureBindings();
   }
 
-  private void configureBindings() {
-    m_driverController.leftBumper().onTrue(new SetEncoders(m_swerve, new Pose2d()));
+  private void configureBindings() {    
+    new ArcadeDrive(m_tankDrive, 
+    () -> m_driverController.getLeftY(), 
+    () -> m_driverController.getLeftX());
   }
 
   public Command getAutonomousCommand() {
