@@ -32,7 +32,7 @@ public class ArcadeDrive extends Command {
       forw = 0;
     if (Math.abs(tur) < DriveConstants.DEADBAND)
       tur = 0;
-    drivetrain.arcadeDrive(forw, tur);
+    drivetrain.drive(forw, tur);
   }
 
 

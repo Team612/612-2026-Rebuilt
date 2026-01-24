@@ -6,6 +6,17 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.Timer;
+
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class TankDrive extends SubsystemBase {
@@ -13,6 +24,27 @@ public class TankDrive extends SubsystemBase {
   private final TalonFX rightMotor  =new TalonFX(2);
   private final TalonFX leftMotor2 = new TalonFX(3);
   private final TalonFX rightMotor2 = new TalonFX(4);
+  private static final double kCountsPerRevolution = 1440.0;
+  private static final double kWheelDiameterInch = 2.75591;
+  private static final double kWheelDiameterMeters = kWheelDiameterInch * 0.0254;
+  private static final double kTrackWidthMeters = 0.6;
+  private final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+
+  private final DifferentialDriveKinematics kinematics =
+    new DifferentialDriveKinematics(kTrackWidthMeters);
+
+  private final DifferentialDriveOdometry odometry;
+
+  private final SimpleMotorFeedforward feedforward =
+    new SimpleMotorFeedforward(0.2, 2.0, 0.3);
+
+  private double prevLeftMeters = 0.0;
+  private double prevRightMeters = 0.0;
+  private double prevTime = Timer.getFPGATimestamp();
+
+  
+  private final Encoder m_leftEncoder = new Encoder(4, 5);
+  private final Encoder m_rightEncoder = new Encoder(6, 7);
 
   public TankDrive() {
     
@@ -20,7 +52,9 @@ public class TankDrive extends SubsystemBase {
     TalonFXConfiguration rightConfig = new TalonFXConfiguration();
     leftMotor2.setControl(new Follower(1, MotorAlignmentValue.Aligned));
     rightMotor2.setControl(new Follower(2, MotorAlignmentValue.Aligned));
-
+    m_leftEncoder.setDistancePerPulse((Math.PI * kWheelDiameterInch) / kCountsPerRevolution);
+    m_rightEncoder.setDistancePerPulse((Math.PI * kWheelDiameterInch) / kCountsPerRevolution);
+    resetEncoders();
     leftConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     rightConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
@@ -31,11 +65,97 @@ public class TankDrive extends SubsystemBase {
 
     leftMotor.getConfigurator().apply(leftConfig);
     rightMotor.getConfigurator().apply(rightConfig);
+
+    gyro.reset();
+
+    odometry = new DifferentialDriveOdometry(
+      gyro.getRotation2d(),
+      getLeftDistanceMeters(),
+      getRightDistanceMeters()
+    );
   }
 
-  public void arcadeDrive(double forward, double turn) {
+  public void drive(double forward, double turn) {
     leftMotor.set(forward + turn);
     rightMotor.set(forward - turn);
+  }
+  public void resetEncoders() {
+    m_leftEncoder.reset();
+    m_rightEncoder.reset();
+  }
+  public int getLeftEncoderCount() {
+    return m_leftEncoder.get();
+  }
+
+  public int getRightEncoderCount() {
+    return m_rightEncoder.get();
+  }
+
+  public double getLeftDistanceMeters() {
+    return m_leftEncoder.getDistance() * 0.0254;
+  }
+
+  public double getRightDistanceMeters() {
+    return m_rightEncoder.getDistance() * 0.0254;
+  }
+
+  public double getLeftDistanceInch() {
+    return m_leftEncoder.getDistance();
+  }
+
+  public double getRightDistanceInch() {
+    return m_rightEncoder.getDistance();
+  }
+
+  public Pose2d getPose() {
+    return odometry.getPoseMeters();
+  }
+
+  public void resetPose(Pose2d pose) {
+    resetEncoders();
+    odometry.resetPosition(
+        gyro.getRotation2d(),
+        getLeftDistanceMeters(),
+        getRightDistanceMeters(),
+        pose
+    );
+  }
+
+  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    double currentTime = Timer.getFPGATimestamp();
+
+    double leftMeters = getLeftDistanceMeters();
+    double rightMeters = getRightDistanceMeters();
+
+    double leftRate = (leftMeters - prevLeftMeters) / (currentTime - prevTime);
+    double rightRate = (rightMeters - prevRightMeters) / (currentTime - prevTime);
+
+    prevLeftMeters = leftMeters;
+    prevRightMeters = rightMeters;
+    prevTime = currentTime;
+
+    return new DifferentialDriveWheelSpeeds(leftRate, rightRate);
+  }
+
+  public ChassisSpeeds getRobotRelativeSpeeds() {
+    return kinematics.toChassisSpeeds(getWheelSpeeds());
+  }
+
+  public void driveRobotRelative(ChassisSpeeds speeds) {
+    DifferentialDriveWheelSpeeds wheelSpeeds =
+      kinematics.toWheelSpeeds(speeds);
+    
+    drive(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
+  }
+
+
+  @Override
+  public void periodic() {
+    odometry.update(
+      gyro.getRotation2d(),
+      getLeftDistanceMeters(),
+      getRightDistanceMeters()
+    );
   }
 
   public void stop() {
