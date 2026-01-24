@@ -7,11 +7,15 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.L1;
+import frc.robot.subsystems.Climb;
 
 public class RobotContainer {
 
   private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
-
+  private final Climb climb = new Climb();
+  private final L1 climbCom = new L1(climb);
 
   public RobotContainer() {
     configureBindings();
@@ -20,7 +24,9 @@ public class RobotContainer {
   private void configureBindings() {
   }
 
-  public Command getAutonomousCommand() {
-    return null;
+  public Command getAutonoumousCommand() {
+    return new SequentialCommandGroup(
+      climbCom.withTimeout(12)
+    );
   }
 }

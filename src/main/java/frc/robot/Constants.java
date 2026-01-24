@@ -7,6 +7,9 @@ public final class Constants {
   }
 
   public static class ClimbConstants {
+    public static final int climbMotorID = 3;
+    public static final double speed = 12;
+    public static final double height = 1000; 
   }
   
 }

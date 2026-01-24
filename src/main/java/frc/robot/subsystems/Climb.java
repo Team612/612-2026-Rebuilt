@@ -4,14 +4,26 @@
 
 package frc.robot.subsystems;
 
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.ClimbConstants;
+
+import com.ctre.phoenix6.hardware.TalonFX;
 
 public class Climb extends SubsystemBase {
-  /** Creates a new Climb. */
-  public Climb() {}
+
+  private TalonFX motor = new TalonFX(ClimbConstants.climbMotorID);
+  public Climb() {
+    motor.getPosition().getValueAsDouble();
+  }
+
+  public void SetMotor(double value) {
+    motor.set(value);
+  }
+  public double getMotorPosition() {
+    return motor.getPosition().getValueAsDouble();
+  }
 
   @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
+  public void periodic() {}
 }
