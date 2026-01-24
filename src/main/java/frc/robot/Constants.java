@@ -64,7 +64,7 @@ public final class Constants {
     public static final int backRDriveMotorID = 2;
     public static final int backRCANcoderID = 2;
 
-    public static final double bumpAlignKp = 0.005;
+    public static final double bumpAlignKp = 0.015;
     public static final double bumpAlignKi = 0.0;
     public static final double bumpAlignKd = 0.0;
   }
