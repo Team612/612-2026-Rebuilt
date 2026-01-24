@@ -13,6 +13,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 public class RobotContainer {
   private TankDrive m_tankDrive = new TankDrive();
 
+  // private boolean red;
+  // if (DriverStation.getAlliance().isPresent()) {
+  //   if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
+  //     red = true;
+  // }
+
   private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   public RobotContainer() {
