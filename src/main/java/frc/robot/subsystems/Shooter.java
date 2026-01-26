@@ -62,7 +62,6 @@ public class Shooter extends SubsystemBase {
     shooterMotor.stopMotor();
 }
 
-<<<<<<< HEAD
 
 public void setTiltPower(double power) {
     positionModeEnabled = false;
@@ -74,12 +73,10 @@ public void stopTilt() {
     positionModeEnabled = false;
     tiltMotor.stopMotor();
 }
-=======
+
   public double getShooterVelocity(){
     return shooterMotor.getEncoder().getVelocity();
   }
-
->>>>>>> f7d73d9432ed5b2c3205a2614ebad0df2de50b9a
 /** Manually reset the encoder to 0. */
 public void resetTiltEncoder() {
     tiltEncoder.setPosition(defaultPos);
@@ -136,5 +133,15 @@ public boolean atTarget() {
       if (positionModeEnabled) {
 
   }
+
+
+  // GABE AND JUNSEO HERE IS WHAT YOU NEED TO DO HERE:
+
+
+
+  // 1. SWIVEL SHOOTER BACK AND FORTH
+  // 2. CHECK VISION TO SEE IF CATCH TAG
+  // 3. IF CATCH A TAG, GET THE ABSOLUTE POSITION OF THE TAG calculateShootingAnglesWithOfficialOffset
+  // 4. TURN TO THOSE ABSOLUTE POSITIONS
 }
 }
