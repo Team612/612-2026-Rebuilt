@@ -87,6 +87,12 @@ public final class Constants {
         this.id = id;
       }
     }
+
+    public static final String frontCameraName = "FrontCamera";
+
+    public static final double aprilTagHeadingAlignKp = 0.015;
+    public static final double aprilTagHeadingAlignKi = 0.0;
+    public static final double aprilTagHeadingAlignKd = 0.0;
   }
   
 }

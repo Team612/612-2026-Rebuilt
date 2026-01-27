@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.AprilTagHeadingAlign;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.BumpAlign;
 import frc.robot.commands.SetEncoders;
@@ -25,8 +26,9 @@ public class RobotContainer {
 
   private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
-  private Swerve m_swerve = new Swerve();
   private Vision m_vision = new Vision();
+  private Swerve m_swerve = new Swerve(m_vision);
+
 
   public RobotContainer() {
     m_swerve.setDefaultCommand(new ArcadeDrive(m_swerve, m_driverController));
@@ -37,6 +39,7 @@ public class RobotContainer {
   private void configureBindings() {
     m_driverController.leftBumper().onTrue(new SetEncoders(m_swerve, new Pose2d()));
     m_driverController.b().whileTrue(new BumpAlign(m_swerve, m_vision));
+    m_driverController.x().whileTrue(new AprilTagHeadingAlign(m_swerve, m_vision));
   }
 
   public Command getAutonomousCommand() {

@@ -5,14 +5,27 @@
 package frc.robot.subsystems;
 
 
+import java.util.Optional;
+
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.RainbowAnimation;
 import com.ctre.phoenix.led.StrobeAnimation;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.VisionConstants.LightID;
@@ -21,7 +34,6 @@ import frc.robot.Constants.VisionConstants.LightID;
 public class Vision extends SubsystemBase {
 
   // candle stuff
-  
   private CANdle candle = new CANdle(VisionConstants.CANdleID);
 
   private final RainbowAnimation rainbow = new RainbowAnimation(1.0, 0.6, 64);
@@ -33,18 +45,41 @@ public class Vision extends SubsystemBase {
 
   private double timer = 0;
 
-  // private SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(
-  //   DriveConstants.swerveKinematics,
-  //   new Rotation2d(),
-  //   getModulePositions(),
-  //   initialPose,
-  //   // Odometry Standard Deviations, x y & z
-  //   VecBuilder.fill(0.003, 0.003, 0.001),
-  //   // Vision measurement std deviations
-  //   VecBuilder.fill(0.025, 0.025, 0.035)
-  // );
+  // camera stuff
+  private static AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+
+  public static final Transform3d frontCameraTransform =
+  new Transform3d(
+    new edu.wpi.first.math.geometry.Translation3d(
+      edu.wpi.first.math.util.Units.inchesToMeters(7.5),
+      edu.wpi.first.math.util.Units.inchesToMeters(0),
+      edu.wpi.first.math.util.Units.inchesToMeters(8)),
+    new edu.wpi.first.math.geometry.Rotation3d()
+  );
+
+  private PhotonCamera frontCamera = new PhotonCamera(VisionConstants.frontCameraName);
+  private PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(
+    aprilTagFieldLayout,
+    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+    frontCameraTransform
+  );
 
   public Vision() {}
+
+  public PhotonPipelineResult returnLatestCameraResult(){
+    return frontCamera.getLatestResult();
+  }
+
+  public Optional<EstimatedRobotPose> returnPhotonPos(PhotonPipelineResult result){
+    return photonPoseEstimator.update(result);
+  }
+
+  public double getApritTagYaw(){
+    PhotonPipelineResult result = frontCamera.getLatestResult();
+    if (!result.hasTargets()) 
+      return 0.0;
+    return result.getBestTarget().getYaw();
+  }
 
   public void setLightID(int id){
     candle.setLEDs(0,0,0);
