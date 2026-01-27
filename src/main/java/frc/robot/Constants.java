@@ -16,10 +16,12 @@ import edu.wpi.first.math.geometry.Transform3d;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
-  public class ShooterConstants{
+
+  public static class ShooterConstants{
     public static final int turretId = 0;
     public static boolean turretInverted = false;
     public static final int tiltId = 2;
@@ -29,11 +31,14 @@ public final class Constants {
     public static final int tiltLimitSwitchId = 0;
     public static final int kShooterHeightMeters = 0;
 
+    public static final double tildKp = 0.04;
+    public static final double tildKi = 0.0;
+    public static final double tildKd = 0.0;
   }
 
-    public static class VisionConstants {
-      public static final int CANdleID = 1;
-      public static final String shooterCamera = "PC Camera";
-      public static final Transform3d shooterCameraTransform = new Transform3d(0,0,0, new Rotation3d(0,0,0));
-    }
+  public static class VisionConstants {
+    public static final int CANdleID = 1;
+    public static final String shooterCamera = "PC Camera";
+    public static final Transform3d shooterCameraTransform = new Transform3d(0,0,0, new Rotation3d(0,0,0));
+  }
 }

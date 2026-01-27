@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.ShooterConstants;
 
 public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
@@ -27,9 +28,6 @@ public class Shooter extends SubsystemBase {
   private final RelativeEncoder tiltEncoder;
   private final DigitalInput tiltLimitSwitch;
 
-  private static final double kP = 0.04;
-  private static final double kI = 0.0;
-  private static final double kD = 0.0;
   private static final double defaultPos = 0.0;
 
   private PIDController tiltPID;
@@ -41,15 +39,15 @@ public class Shooter extends SubsystemBase {
 
     // Create the log entry ONCE
     velocityLogEntry = new DoubleLogEntry(log, "/Shooter/Velocity");
-    tiltMotor = new SparkMax(Constants.ShooterConstants.tiltId, MotorType.kBrushed);
-    turretMotor = new SparkMax(Constants.ShooterConstants.turretId, MotorType.kBrushless);
-    shooterMotor = new SparkMax(Constants.ShooterConstants.shooterId, MotorType.kBrushless);
+    tiltMotor = new SparkMax(ShooterConstants.tiltId, MotorType.kBrushed);
+    turretMotor = new SparkMax(ShooterConstants.turretId, MotorType.kBrushless);
+    shooterMotor = new SparkMax(ShooterConstants.shooterId, MotorType.kBrushless);
 
     tiltEncoder = tiltMotor.getEncoder();
     tiltEncoder.setPosition(0.0);
-    tiltLimitSwitch = new DigitalInput(Constants.ShooterConstants.tiltLimitSwitchId);
+    tiltLimitSwitch = new DigitalInput(ShooterConstants.tiltLimitSwitchId);
 
-    tiltPID = new PIDController(kP, kI, kD);
+    tiltPID = new PIDController(ShooterConstants.tildKp, ShooterConstants.tildKi, ShooterConstants.tildKd);
     tiltPID.setTolerance(0.5);
   }
 
