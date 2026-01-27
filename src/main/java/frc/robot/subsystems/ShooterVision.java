@@ -272,9 +272,9 @@ public double[] calculateShootingAnglesWithOfficialOffset() {
     SmartDashboard.putNumber("Tag Y", tagY);
     SmartDashboard.putNumber("Tag Z", tagZ);
 
-    SmartDashboard.putBoolean("What is the position of the the shooter? ", true);
-    SmartDashboard.putBoolean("What is the offset needed? ", true);
-    SmartDashboard.putBoolean("Distance to Tag? ", true);
+    // SmartDashboard.putBoolean("What is the position of the the shooter? ", true);
+    // SmartDashboard.putBoolean("What is the offset needed? ", true);
+    // SmartDashboard.putBoolean("Distance to Tag? ", true);
     SmartDashboard.putNumber("Yaw:", calculateShootingAnglesWithOfficialOffset()[0]);
     SmartDashboard.putNumber("Pitch:", calculateShootingAnglesWithOfficialOffset()[1]);
 

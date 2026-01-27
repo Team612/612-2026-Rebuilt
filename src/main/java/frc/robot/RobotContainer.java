@@ -8,6 +8,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.ShooterVision;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
@@ -30,8 +31,7 @@ import frc.robot.commands.StopShooter;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final Shooter shooter = new Shooter();
-
+  private final ShooterVision vis = new ShooterVision();
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController driverController = new CommandXboxController(0);
       // new CommandXboxController(OperatorConstants.kDriverControllerPort);
@@ -56,21 +56,6 @@ public class RobotContainer {
    */
   private void configureBindings() {
     
-    driverController.a().onTrue(new WindowMotorZero(shooter));
-
-    // Set NEO to 70% speed
-    driverController.b().onTrue(new SetShooterSpeed(shooter, -0.7));
-
-    // // Stop NEO
-    driverController.x().onTrue(new StopShooter(shooter));
-
-    // // Find AprilTag and move window motor based on distance
-    // driverController.y().onTrue(new WindowToTagDistanceCommand(windowMotor, limelight));
-
-    driverController.leftBumper().whileTrue(new WindowManualMoveCommand(shooter,-0.3));
-    driverController.rightBumper().whileTrue(new WindowManualMoveCommand(shooter,0.3));
-    //driverController.leftTrigger().whileTrue(new Shooter(windowMotor,-100));
-
   }
 
   /**
