@@ -38,6 +38,9 @@ public final class Constants {
     public static final double turretKp = 0.02;
     public static final double turretKi = 0.0;
     public static final double turretKd = 0.001;
+    // Gear ratios (motor:output)
+    public static final double turretGearRatio = 10.0; // motor rotates 10x output
+    public static final double tiltGearRatio = 1.0; // encoder is on output shaft, direct 1:1
   }
 
   public static class VisionConstants {

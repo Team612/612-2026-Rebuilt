@@ -40,7 +40,7 @@ public class Shooter extends SubsystemBase {
   private boolean turretSweeping = false;
   private int sweepDirection = 1; // 1 == clockwise, -1 == counter-clockwise
   private static final double turretSweepOpenLoopPower = 0.05; // as requested
-  private static final double turretGearRatio = 10.0; // motor:output = 10:1 (motor rotates 10x output)
+  // use gear ratio from constants (motor:output)
   private final com.revrobotics.RelativeEncoder turretEncoder;
   private final DoubleLogEntry velocityLogEntry;
   public Shooter() {
@@ -137,12 +137,12 @@ public boolean atTarget() {
   /** Convert degrees (output shaft) to motor rotations using gearing. */
   private double degreesToMotorRotations(double degrees) {
     double outputRotations = degrees / 360.0;
-    return outputRotations * turretGearRatio;
+    return outputRotations * ShooterConstants.turretGearRatio;
   }
 
   /** Convert motor rotations to output shaft degrees. */
   private double motorRotationsToDegrees(double motorRotations) {
-    double outputRotations = motorRotations / turretGearRatio;
+    double outputRotations = motorRotations / ShooterConstants.turretGearRatio;
     return outputRotations * 360.0;
   }
 
@@ -188,14 +188,12 @@ public boolean atTarget() {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
         if (isLimitSwitchPressed()) {
           stopShooterMotor();
           resetTiltEncoder();
       }
     velocityLogEntry.append(getShooterVelocity());
-// Position control (only runs if enabled and not stopped above)
-      if (positionModeEnabled) {
+    if (positionModeEnabled) {
 
   }
 
@@ -210,15 +208,14 @@ public boolean atTarget() {
       turretMotor.set(output);
     }
 
-    // If sweeping, run a slow open-loop sweep but stop/reverse at +/-180 degrees
     if (turretSweeping) {
-      // get current output shaft angle
+
       double currentAngle = motorRotationsToDegrees(turretEncoder.getPosition());
       // normalize currentAngle into [-180,180]
       if (currentAngle > 180.0) currentAngle = ((currentAngle + 180) % 360) - 180;
       if (currentAngle <= -180.0) currentAngle = ((currentAngle - 180) % 360) + 180;
 
-      // reverse direction at the limits to avoid continuous rotation and cable tangles
+      // reset
       if (currentAngle >= 180.0 - 1.0) {
         sweepDirection = -1;
       } else if (currentAngle <= -180.0 + 1.0) {
@@ -236,11 +233,10 @@ public boolean atTarget() {
       double yawDeg = angles[0];
       double pitchDeg = angles[1];
 
-      // move turret (yaw) closed-loop to yawDeg
       turretGoToAbsoluteAngle(yawDeg);
 
-      // move tilt (pitch) — reuse tiltGoToPosition. Assume tilt expects degrees.
-      tiltGoToPosition(pitchDeg);
+      double tiltTargetRotations = (pitchDeg / 360.0);
+      tiltGoToPosition(tiltTargetRotations);
     }
 }
 }
