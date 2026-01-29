@@ -29,7 +29,7 @@ public final class Constants {
     public static final int shooterId = 16;
     public static final boolean shooterInverted = false;
     public static final int tiltLimitSwitchId = 0;
-    public static final int kShooterHeightMeters = 0;
+    public static final double kShooterHeightMeters = 0.5;
 
     public static final double tildKp = 0.04;
     public static final double tildKi = 0.0;

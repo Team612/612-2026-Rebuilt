@@ -200,27 +200,32 @@ public double[] calculateShootingAnglesWithOfficialOffset() {
     double hubOffsetY = 0.0;
     double hubOffsetZ = 0.0;
 
-    switch (tagID) { /// NEED TO ADD THE TAG OFFSETS TO HUB
-        case 1:
-            hubOffsetX = 0.0;
-            hubOffsetY = 0.0;
-            hubOffsetZ = 0.0;
-            break;
-        case 2:
-            hubOffsetX = 0.0; 
-            hubOffsetY = 0.0;
-            hubOffsetZ = 0.0;
-            break;
-        case 3:
-            hubOffsetX = 0.0;
-            hubOffsetY = 0.0;
-            hubOffsetZ = 0.0;
-            break;
-        default:
-            hubOffsetX = 0.0;
-            hubOffsetY = 0.0;
-            hubOffsetZ = 0.0;
-            break;
+    switch (tagID) {
+    case 9:  // Red Hub - Front, lower
+        hubOffsetX = 23.77;   // 492.88 - 469.11
+        hubOffsetY = -14.0;   // 144.84 - 158.84
+        hubOffsetZ = 44.25;
+        break;
+    case 10: // Red Hub - Front, center
+        hubOffsetX = 23.77;   // 492.88 - 469.11
+        hubOffsetY = 0.0;     // 158.84 - 158.84
+        hubOffsetZ = 44.25;
+        break;
+    case 25: // Blue Hub - Back, upper
+        hubOffsetX = -9.77;   // 158.34 - 168.11
+        hubOffsetY = 14.0;    // 172.84 - 158.84
+        hubOffsetZ = 44.25;
+        break;
+    case 26: // Blue Hub - Back, center
+        hubOffsetX = -9.77;   // 158.34 - 168.11
+        hubOffsetY = 0.0;     // 158.84 - 158.84
+        hubOffsetZ = 44.25;
+        break;
+    default:
+        hubOffsetX = 0.0;
+        hubOffsetY = 0.0;
+        hubOffsetZ = 0.0;
+        break;
     }
 
 
