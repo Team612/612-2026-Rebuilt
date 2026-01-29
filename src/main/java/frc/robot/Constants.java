@@ -32,7 +32,7 @@ public final class Constants {
 
     public static final double maxTurretSpeed = 0.1;
 
-    public static final double kShooterHeightMeters = 0.2; // this is a guess put in the actual measurement
+    public static final double kShooterHeightMeters = 0.5;
   }
 
   public static class VisionConstants {
