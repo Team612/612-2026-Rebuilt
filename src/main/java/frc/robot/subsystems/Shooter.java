@@ -77,8 +77,6 @@ public class Shooter extends SubsystemBase {
             break;
     }
 
-
-
     double targetX = tagX + hubOffsetX;
     double targetY = tagY + hubOffsetY;
     double targetZ = tagZ + hubOffsetZ;
