@@ -33,6 +33,15 @@ public class Shooter extends SubsystemBase {
   private PIDController tiltPID;
   private double targetPosition = 0.0;
   private boolean positionModeEnabled = false;
+  // Turret (yaw) control
+  private PIDController turretPID;
+  private double turretTargetAngleDeg = 0.0; // absolute degrees: 0 = straight ahead
+  private boolean turretPositionModeEnabled = false;
+  private boolean turretSweeping = false;
+  private int sweepDirection = 1; // 1 == clockwise, -1 == counter-clockwise
+  private static final double turretSweepOpenLoopPower = 0.05; // as requested
+  private static final double turretGearRatio = 10.0; // motor:output = 10:1 (motor rotates 10x output)
+  private final com.revrobotics.RelativeEncoder turretEncoder;
   private final DoubleLogEntry velocityLogEntry;
   public Shooter() {
     DataLog log = DataLogManager.getLog();
@@ -49,6 +58,11 @@ public class Shooter extends SubsystemBase {
 
     tiltPID = new PIDController(ShooterConstants.tildKp, ShooterConstants.tildKi, ShooterConstants.tildKd);
     tiltPID.setTolerance(0.5);
+    turretPID = new PIDController(ShooterConstants.turretKp, ShooterConstants.turretKi, ShooterConstants.turretKd);
+    turretPID.setTolerance(1.0); // 1 degree tolerance
+    turretEncoder = turretMotor.getEncoder();
+    // assume turret starts facing straight ahead -> set encoder zero
+    turretEncoder.setPosition(0.0);
   }
 
   public void setShooterSpeed(double speed){
@@ -108,7 +122,7 @@ private double applyLimitSwitchSafety(double requestedPower) {
 
 //move to position 
 /** Move motor to a specific encoder position. */
-public void goToPosition(double target) {
+public void tiltGoToPosition(double target) {
     targetPosition = target;
     tiltPID.setSetpoint(target+defaultPos);
     positionModeEnabled = true;
@@ -118,6 +132,59 @@ public void goToPosition(double target) {
 public boolean atTarget() {
     return tiltPID.atSetpoint();
 }
+
+  // -------------------- Turret helpers --------------------
+  /** Convert degrees (output shaft) to motor rotations using gearing. */
+  private double degreesToMotorRotations(double degrees) {
+    double outputRotations = degrees / 360.0;
+    return outputRotations * turretGearRatio;
+  }
+
+  /** Convert motor rotations to output shaft degrees. */
+  private double motorRotationsToDegrees(double motorRotations) {
+    double outputRotations = motorRotations / turretGearRatio;
+    return outputRotations * 360.0;
+  }
+
+  /** Move turret to an absolute angle in degrees (0 = straight ahead). */
+  public void turretGoToAbsoluteAngle(double angleDeg) {
+    turretTargetAngleDeg = angleDeg;
+    // normalize to [-180,180]
+    if (turretTargetAngleDeg > 180.0) turretTargetAngleDeg = ((turretTargetAngleDeg + 180) % 360) - 180;
+    if (turretTargetAngleDeg <= -180.0) turretTargetAngleDeg = ((turretTargetAngleDeg - 180) % 360) + 180;
+    double setpointMotorRot = degreesToMotorRotations(turretTargetAngleDeg);
+    turretPID.setSetpoint(setpointMotorRot);
+    turretPositionModeEnabled = true;
+    turretSweeping = false; // stop sweeping when we explicitly aim
+  }
+
+  public boolean atTurretTarget() {
+    if (!turretPositionModeEnabled) return false;
+    return turretPID.atSetpoint();
+  }
+
+  public void startTurretSweep() {
+    turretSweeping = true;
+    turretPositionModeEnabled = false;
+    sweepDirection = 1;
+  }
+
+  public void stopTurretSweep() {
+    turretSweeping = false;
+    turretMotor.stopMotor();
+  }
+
+  public void manualTurretPower(double power) {
+    turretPositionModeEnabled = false;
+    turretSweeping = false;
+    turretMotor.set(power);
+  }
+
+  public void stopTurretMotor() {
+    turretPositionModeEnabled = false;
+    turretSweeping = false;
+    turretMotor.stopMotor();
+  }
 
   @Override
   public void periodic() {
@@ -132,14 +199,48 @@ public boolean atTarget() {
 
   }
 
+    // Run turret closed-loop control if enabled
+    if (turretPositionModeEnabled) {
+      double currentMotorPos = turretEncoder.getPosition();
+      double output = turretPID.calculate(currentMotorPos);
+      // PID output is motor rotations/sec approx — scale/clamp to [-1,1]
+      // simple clamp: assume max reasonable command magnitude
+      if (output > 1.0) output = 1.0;
+      if (output < -1.0) output = -1.0;
+      turretMotor.set(output);
+    }
 
-  // GABE AND JUNSEO HERE IS WHAT YOU NEED TO DO HERE:
+    // If sweeping, run a slow open-loop sweep but stop/reverse at +/-180 degrees
+    if (turretSweeping) {
+      // get current output shaft angle
+      double currentAngle = motorRotationsToDegrees(turretEncoder.getPosition());
+      // normalize currentAngle into [-180,180]
+      if (currentAngle > 180.0) currentAngle = ((currentAngle + 180) % 360) - 180;
+      if (currentAngle <= -180.0) currentAngle = ((currentAngle - 180) % 360) + 180;
 
+      // reverse direction at the limits to avoid continuous rotation and cable tangles
+      if (currentAngle >= 180.0 - 1.0) {
+        sweepDirection = -1;
+      } else if (currentAngle <= -180.0 + 1.0) {
+        sweepDirection = 1;
+      }
+      turretMotor.set(turretSweepOpenLoopPower * sweepDirection);
+    }
 
+    // Vision-based detection and aiming
+    frc.robot.subsystems.ShooterVision vision = frc.robot.subsystems.ShooterVision.getVisionInstance();
+    if (vision != null && vision.shooterHasTag()) {
+      // stop any sweeping and aim
+      stopTurretSweep();
+      double[] angles = vision.calculateShootingAnglesWithOfficialOffset();
+      double yawDeg = angles[0];
+      double pitchDeg = angles[1];
 
-  // 1. SWIVEL SHOOTER BACK AND FORTH
-  // 2. CHECK VISION TO SEE IF CATCH TAG
-  // 3. IF CATCH A TAG, GET THE ABSOLUTE POSITION OF THE TAG calculateShootingAnglesWithOfficialOffset
-  // 4. TURN TO THOSE ABSOLUTE POSITIONS
+      // move turret (yaw) closed-loop to yawDeg
+      turretGoToAbsoluteAngle(yawDeg);
+
+      // move tilt (pitch) — reuse tiltGoToPosition. Assume tilt expects degrees.
+      tiltGoToPosition(pitchDeg);
+    }
 }
 }

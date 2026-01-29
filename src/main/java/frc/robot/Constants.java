@@ -34,6 +34,10 @@ public final class Constants {
     public static final double tildKp = 0.04;
     public static final double tildKi = 0.0;
     public static final double tildKd = 0.0;
+    // Turret PID defaults (tune as needed)
+    public static final double turretKp = 0.02;
+    public static final double turretKi = 0.0;
+    public static final double turretKd = 0.001;
   }
 
   public static class VisionConstants {
