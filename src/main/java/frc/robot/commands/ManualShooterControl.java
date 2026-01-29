@@ -23,15 +23,16 @@ public class ManualShooterControl extends Command {
   public void execute() {
     m_shooter.setShooterMotor(controller.getRightTriggerAxis() - controller.getLeftTriggerAxis());
 
-    double x = controller.getRightX();
     double y = controller.getLeftY();
 
-    if (Math.abs(x) < ShooterConstants.DEADBAND) x = 0;
     if (Math.abs(y) < ShooterConstants.DEADBAND) y = 0;
 
-    x *= ShooterConstants.maxTurretSpeed;
+    double xComponent = controller.getRightX();
+    double yComponent = controller.getRightY();
 
-    m_shooter.setTurretMotor(x);
+    double desiredRadians = Math.atan2(yComponent,xComponent);
+
+    m_shooter.setTurretPos(desiredRadians);
     m_shooter.setTiltMotor(y);
   }
 

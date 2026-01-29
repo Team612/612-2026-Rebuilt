@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.spark.SparkMax;
 
 import org.photonvision.PhotonCamera;
@@ -8,6 +9,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -20,22 +22,29 @@ public class Shooter extends SubsystemBase {
   private SparkMax turretMotor = new SparkMax(ShooterConstants.turretMotorID, MotorType.kBrushless);
   private SparkMax tiltMotor = new SparkMax(ShooterConstants.tiltMotorID, MotorType.kBrushed);
 
+  private CANcoder cancoder = new CANcoder(ShooterConstants.cancoderID);
+
   private PhotonCamera shooterCamera = new PhotonCamera(ShooterConstants.shooterCameraName);
+
+  private PIDController turretPID = new PIDController(ShooterConstants.turretKp, ShooterConstants.turretKi, ShooterConstants.turretKd);
 
   public Shooter() {}
 
   public void setShooterMotor(double speed){
     shooterMotor.set(speed);
   }
-  public void setTurretMotor(double speed){
-    turretMotor.set(speed);
-  }
   public void setTiltMotor(double speed){
     tiltMotor.set(speed);
   }
 
-  public double[] calculateShootingAnglesWithOfficialOffset() {
+  public void setTurretPos(double positionInRad){
+    // if ((positionInRad) > ShooterConstants.largestTurretAngle) positionInRad = ShooterConstants.largestTurretAngle;
+    // if ((positionInRad) < ShooterConstants.smallestTurretAngle) positionInRad = ShooterConstants.largestTurretAngle;
 
+    turretMotor.set(turretPID.calculate(getCurrentAngle(), positionInRad));
+  }
+
+  public double[] calculateShootingAnglesWithOfficialOffset() {
     PhotonPipelineResult result = shooterCamera.getLatestResult();
     if (!result.hasTargets()) {
         return new double[]{0.0, 0.0};
@@ -99,7 +108,14 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Calculated Shooter Pitch", pitchDeg);
 
     return new double[]{yawDeg, pitchDeg};
-}
+  }
+
+  public double getCurrentAngle() {
+    double rotations = cancoder.getAbsolutePosition().getValueAsDouble() - ShooterConstants.turretCANcoderOffset;
+    if (rotations < -0.5)
+      rotations += 1;
+    return rotations * 2 * Math.PI;
+  }
 
   @Override
   public void periodic() {

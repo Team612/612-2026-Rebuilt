@@ -19,12 +19,18 @@ public final class Constants {
 
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
+
+    // in meters
+    public static final double blueHubXPos = 4.625594;
+    public static final double hubYPos = 4.034536;
+    public static final double redHubPos = 11.915394;
   }
 
     public static class ShooterConstants{
     public static final int shooterMotorID = 8;
     public static final int turretMotorID = 2;
     public static final int tiltMotorID = 1;
+    public static final int cancoderID = 1; // this is a guess verify before running
 
     public static final String shooterCameraName = "PC Camera";
 
@@ -33,6 +39,15 @@ public final class Constants {
     public static final double maxTurretSpeed = 0.1;
 
     public static final double kShooterHeightMeters = 0.5;
+
+    public static final double turretCANcoderOffset = 0.0; // this is a guess
+
+    public static final double largestTurretAngle = Math.PI/2;
+    public static final double smallestTurretAngle = -Math.PI/2;
+
+    public static final double turretKp = 0.017; // this is a guess tune in real life
+    public static final double turretKi = 0;
+    public static final double turretKd = 0;
   }
 
   public static class VisionConstants {
