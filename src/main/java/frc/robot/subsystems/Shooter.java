@@ -1,145 +1,126 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
-
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
+
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.util.datalog.DataLog;
-import edu.wpi.first.util.datalog.DoubleLogEntry;
-import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.VisionConstants;
 
 public class Shooter extends SubsystemBase {
-  /** Creates a new Shooter. */
-  private SparkMax shooterMotor;
-  private SparkMax tiltMotor;
-  private SparkMax turretMotor;
-  private final RelativeEncoder tiltEncoder;
-  private final DigitalInput tiltLimitSwitch;
 
-  private static final double defaultPos = 0.0;
+  private SparkMax shooterMotor = new SparkMax(ShooterConstants.shooterMotorID, MotorType.kBrushless);
+  private SparkMax turretMotor = new SparkMax(ShooterConstants.turretMotorID, MotorType.kBrushless);
+  private SparkMax tiltMotor = new SparkMax(ShooterConstants.tiltMotorID, MotorType.kBrushed);
 
-  private PIDController tiltPID;
-  private double targetPosition = 0.0;
-  private boolean positionModeEnabled = false;
-  private final DoubleLogEntry velocityLogEntry;
-  public Shooter() {
-    DataLog log = DataLogManager.getLog();
+  private PhotonCamera shooterCamera = new PhotonCamera(ShooterConstants.shooterCameraName);
 
-    // Create the log entry ONCE
-    velocityLogEntry = new DoubleLogEntry(log, "/Shooter/Velocity");
-    tiltMotor = new SparkMax(ShooterConstants.tiltId, MotorType.kBrushed);
-    turretMotor = new SparkMax(ShooterConstants.turretId, MotorType.kBrushless);
-    shooterMotor = new SparkMax(ShooterConstants.shooterId, MotorType.kBrushless);
+  public Shooter() {}
 
-    tiltEncoder = tiltMotor.getEncoder();
-    tiltEncoder.setPosition(0.0);
-    tiltLimitSwitch = new DigitalInput(ShooterConstants.tiltLimitSwitchId);
-
-    tiltPID = new PIDController(ShooterConstants.tildKp, ShooterConstants.tildKi, ShooterConstants.tildKd);
-    tiltPID.setTolerance(0.5);
-  }
-
-  public void setShooterSpeed(double speed){
+  public void setShooterMotor(double speed){
     shooterMotor.set(speed);
   }
-  
-  public void stopShooterMotor() {
-    positionModeEnabled = false;
-    shooterMotor.stopMotor();
-}
-
-
-public void setTiltPower(double power) {
-    positionModeEnabled = false;
-    double safePower = applyLimitSwitchSafety(power);
-    tiltMotor.set(safePower);
-}
-
-public void stopTilt() {
-    positionModeEnabled = false;
-    tiltMotor.stopMotor();
-}
-
-  public double getShooterVelocity(){
-    return shooterMotor.getEncoder().getVelocity();
+  public void setTurretMotor(double speed){
+    turretMotor.set(speed);
   }
-/** Manually reset the encoder to 0. */
-public void resetTiltEncoder() {
-    tiltEncoder.setPosition(defaultPos);
-}
+  public void setTiltMotor(double speed){
+    tiltMotor.set(speed);
+  }
 
-public double getTiltPosition() {
-    return tiltEncoder.getPosition()-defaultPos;
-}
+  public double[] calculateShootingAnglesWithOfficialOffset() {
 
-public double getTiltVelocity() {
-    return tiltEncoder.getVelocity();
-}
-
-//limit switch thing
-
-/** Returns true if the limit switch is pressed. */
-public boolean isLimitSwitchPressed() {
-    // NOTE: many switches are wired "normally closed" so you might need '!' here.
-    return tiltLimitSwitch.get();  // assume pressed = circuit closed = returns false → invert
-}
-
-private double applyLimitSwitchSafety(double requestedPower) {
-    if(isLimitSwitchPressed() && requestedPower > 0.0) {
-        return 0.0;
+    PhotonPipelineResult result = shooterCamera.getLatestResult();
+    if (!result.hasTargets()) {
+        return new double[]{0.0, 0.0};
     }
-    if (getTiltPosition() > 1 && requestedPower < 0.0) {
-        return 0.0;
+    PhotonTrackedTarget target = shooterCamera.getLatestResult().getBestTarget();
+
+    int tagID = target.getFiducialId();
+
+    Transform3d tagPoseCam = target.getBestCameraToTarget();
+    Transform3d tagPoseShooter = tagPoseCam.plus(VisionConstants.shooterCameraTransform);
+    double tagX = tagPoseShooter.getTranslation().getX();
+    double tagY = tagPoseShooter.getTranslation().getY();
+    double tagZ = tagPoseShooter.getTranslation().getZ();
+
+    double hubOffsetX = 0.0;
+    double hubOffsetY = 0.0;
+    double hubOffsetZ = 0.0;
+
+    switch (tagID) { /// NEED TO ADD THE TAG OFFSETS TO HUB
+        case 1:
+            hubOffsetX = 0.0;
+            hubOffsetY = 0.0;
+            hubOffsetZ = 0.0;
+            break;
+        case 2:
+            hubOffsetX = 0.0; 
+            hubOffsetY = 0.0;
+            hubOffsetZ = 0.0;
+            break;
+        case 3:
+            hubOffsetX = 0.0;
+            hubOffsetY = 0.0;
+            hubOffsetZ = 0.0;
+            break;
+        default:
+            hubOffsetX = 0.0;
+            hubOffsetY = 0.0;
+            hubOffsetZ = 0.0;
+            break;
     }
-    return requestedPower;
-}
 
-//move to position 
-/** Move motor to a specific encoder position. */
-public void goToPosition(double target) {
-    targetPosition = target;
-    tiltPID.setSetpoint(target+defaultPos);
-    positionModeEnabled = true;
-}
 
-/** Returns true when the motor reaches the target. */
-public boolean atTarget() {
-    return tiltPID.atSetpoint();
+
+    double targetX = tagX + hubOffsetX;
+    double targetY = tagY + hubOffsetY;
+    double targetZ = tagZ + hubOffsetZ;
+
+    double yawRad = Math.atan2(targetX, targetZ);
+    double yawDeg = Math.toDegrees(yawRad);
+
+    double horizontalDistance = Math.sqrt(targetX * targetX + targetZ * targetZ);
+
+    double shooterHeight = ShooterConstants.kShooterHeightMeters;
+    double pitchRad = Math.atan2(targetY - shooterHeight, horizontalDistance);
+    double pitchDeg = Math.toDegrees(pitchRad);
+
+    SmartDashboard.putNumber("Calculated Turret Yaw", yawDeg);
+    SmartDashboard.putNumber("Calculated Shooter Pitch", pitchDeg);
+
+    return new double[]{yawDeg, pitchDeg};
 }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-        if (isLimitSwitchPressed()) {
-          stopShooterMotor();
-          resetTiltEncoder();
-      }
-    velocityLogEntry.append(getShooterVelocity());
-// Position control (only runs if enabled and not stopped above)
-      if (positionModeEnabled) {
+    SmartDashboard.putNumber("Shooter Pos", shooterMotor.getEncoder().getPosition());
+    SmartDashboard.putNumber("Turret Pos", turretMotor.getEncoder().getPosition());
+    SmartDashboard.putNumber("Tilt Pos", tiltMotor.getEncoder().getPosition());
 
+    SmartDashboard.putNumber("Shooter Speed", shooterMotor.get());
+    SmartDashboard.putNumber("Turret Speed", turretMotor.get());
+    SmartDashboard.putNumber("Tilt Speed", tiltMotor.get());
+
+    PhotonPipelineResult result = shooterCamera.getLatestResult();
+    if (result.hasTargets()){
+
+      Transform3d cameraToAprilTag = result.getBestTarget().bestCameraToTarget;
+
+      SmartDashboard.putNumber("April Tag X", cameraToAprilTag.getX());
+      SmartDashboard.putNumber("April Tag Y", cameraToAprilTag.getY());
+      SmartDashboard.putNumber("April Tag Z", cameraToAprilTag.getZ());
+    }
+    else{
+      SmartDashboard.putNumber("April Tag X", 0);
+      SmartDashboard.putNumber("April Tag Y", 0);
+      SmartDashboard.putNumber("April Tag Z", 0);
+    }
   }
-
-
-  // GABE AND JUNSEO HERE IS WHAT YOU NEED TO DO HERE:
-
-
-
-  // 1. SWIVEL SHOOTER BACK AND FORTH
-  // 2. CHECK VISION TO SEE IF CATCH TAG
-  // 3. IF CATCH A TAG, GET THE ABSOLUTE POSITION OF THE TAG calculateShootingAnglesWithOfficialOffset
-  // 4. TURN TO THOSE ABSOLUTE POSITIONS
-}
 }
