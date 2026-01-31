@@ -8,11 +8,15 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.AutonomousRoutine;
 import frc.robot.subsystems.TankDrive;
+
+import com.ctre.phoenix6.hardware.Pigeon2;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class RobotContainer {
-  private TankDrive m_tankDrive = new TankDrive();
+  private Pigeon2 m_gyro = new Pigeon2(Constants.DriveConstants.gyroID);
+  private TankDrive m_tankDrive = new TankDrive(m_gyro);
   private final AutonomousRoutine routine = new AutonomousRoutine(m_tankDrive);
   // private boolean red;
   // if (DriverStation.getAlliance().isPresent()) {
