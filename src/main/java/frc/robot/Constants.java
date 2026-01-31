@@ -1,82 +1,15 @@
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Translation2d;
-
 public final class Constants {
 
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
 
-  public static class DriveConstants {
-    public static final double abosulteMaxCurrentLimit = 100;
-    public static final double steerSupplyCurrent = 5;
-    public static final double driveSupplyCurrent = (abosulteMaxCurrentLimit-steerSupplyCurrent*4)/4;
-
-    public static final double trackWidth = 0.555;
-    public static final double wheelBase = 0.550;
-    public static final double radiusInMeters = Math.sqrt(trackWidth*trackWidth+wheelBase*wheelBase)/2;
-
-    public static final double maxMetersPerSecondSpeed = 5;
-    public static final double metersPerSecondToPercent = 1/maxMetersPerSecondSpeed;
-    public static final double maxRadiansPerSecondSpeed = maxMetersPerSecondSpeed/radiusInMeters;
-    public static final double radiansPerSecondToPercent = 1/maxRadiansPerSecondSpeed;
-
-    public static final double rotationsToMeters = 0.0653451271947;
-
-    public static final double xPercent = 1;
-    public static final double yPercent = 1;
-    public static final double zPercent = 1;
-
-    public static final double zNecessaryOffset = zPercent/radiusInMeters;
-
-    public static final int gyroID = 0;
-
-    public static final double DEADBAND = 0.05;
-
-    public static final double kp = 0.5;
-
-    public static final double frontLEncoderOffset = -0.01;
-    public static final int frontLSteerMotorID = 7;
-    public static final int frontLDriveMotorID = 6;
-    public static final int frontLCANcoderID = 4;
-
-    public static final double frontREncoderOffset = -0.473;
-    public static final int frontRSteerMotorID = 5;
-    public static final int frontRDriveMotorID = 4;
-    public static final int frontRCANcoderID = 3;
-
-    public static final double backLEncoderOffset = 0.272;
-    public static final int backLSteerMotorID = 1;
-    public static final int backLDriveMotorID = 8;
-    public static final int backLCANcoderID = 1;
-
-    public static final double backREncoderOffset = -0.352;
-    public static final int backRSteerMotorID = 3;
-    public static final int backRDriveMotorID = 2;
-    public static final int backRCANcoderID = 2;
+  public static class TransferConstants {
+    public static final int motor1ID = 1; // this is a guess
+    public static final int motor2ID = 2; // this is a guess
+    public static final int motor3ID = 3; // this is a guess
+    public static final int motor4ID = 4; // this is a guess
   }
-
-  public static class VisionConstants {
-    public static final int CANdleID = 1;
-  }
-  
-  public static class HopperConstants {
-    
-    public static final int hopperMotorAChannel = 0;
-    public static final int hopperMotorBChannel = 1;
-    public static final int hopperSensorDIO = 0; // beam-break / IR sensor at hopper entrance :)
-    // default setting
-    public static final double hopperForwardSpeed = 0.6;
-    public static final double hopperReverseSpeed = -0.4;
-  }
-
-  public static class IndexerConstants {
-    //  using one 550 motor for the indexer
-    public static final int indexerMotorChannel = 2;
-    public static final int indexerSensorDIO = 1; // beam-break / IR sensor between hopper and shooter
-    public static final double indexerForwardSpeed = 0.55;
-    public static final double indexerReverseSpeed = -0.35;
-  }
-
 }
