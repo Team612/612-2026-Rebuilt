@@ -6,15 +6,6 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
-import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
-import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.Timer;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,21 +17,6 @@ public class TankDrive extends SubsystemBase {
   private final TalonFX rightMotor2 = new TalonFX(4);
   private static final double kCountsPerRevolution = 1440.0;
   private static final double kWheelDiameterInch = 2.75591;
-  private static final double kWheelDiameterMeters = kWheelDiameterInch * 0.0254;
-  private static final double kTrackWidthMeters = 0.6;
-  private final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
-
-  private final DifferentialDriveKinematics kinematics =
-    new DifferentialDriveKinematics(kTrackWidthMeters);
-
-  private final DifferentialDriveOdometry odometry;
-
-  private final SimpleMotorFeedforward feedforward =
-    new SimpleMotorFeedforward(0.2, 2.0, 0.3);
-
-  private double prevLeftMeters = 0.0;
-  private double prevRightMeters = 0.0;
-  private double prevTime = Timer.getFPGATimestamp();
 
   
   private final Encoder m_leftEncoder = new Encoder(4, 5);
@@ -66,13 +42,7 @@ public class TankDrive extends SubsystemBase {
     leftMotor.getConfigurator().apply(leftConfig);
     rightMotor.getConfigurator().apply(rightConfig);
 
-    gyro.reset();
-
-    odometry = new DifferentialDriveOdometry(
-      gyro.getRotation2d(),
-      getLeftDistanceMeters(),
-      getRightDistanceMeters()
-    );
+    
   }
 
   public void drive(double forward, double turn) {
@@ -106,56 +76,8 @@ public class TankDrive extends SubsystemBase {
   public double getRightDistanceInch() {
     return m_rightEncoder.getDistance();
   }
-
-  public Pose2d getPose() {
-    return odometry.getPoseMeters();
-  }
-
-  public void resetPose(Pose2d pose) {
-    resetEncoders();
-    odometry.resetPosition(
-        gyro.getRotation2d(),
-        getLeftDistanceMeters(),
-        getRightDistanceMeters(),
-        pose
-    );
-  }
-
-  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    double currentTime = Timer.getFPGATimestamp();
-
-    double leftMeters = getLeftDistanceMeters();
-    double rightMeters = getRightDistanceMeters();
-
-    double leftRate = (leftMeters - prevLeftMeters) / (currentTime - prevTime);
-    double rightRate = (rightMeters - prevRightMeters) / (currentTime - prevTime);
-
-    prevLeftMeters = leftMeters;
-    prevRightMeters = rightMeters;
-    prevTime = currentTime;
-
-    return new DifferentialDriveWheelSpeeds(leftRate, rightRate);
-  }
-
-  public ChassisSpeeds getRobotRelativeSpeeds() {
-    return kinematics.toChassisSpeeds(getWheelSpeeds());
-  }
-
-  public void driveRobotRelative(ChassisSpeeds speeds) {
-    DifferentialDriveWheelSpeeds wheelSpeeds =
-      kinematics.toWheelSpeeds(speeds);
-    
-    drive(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
-  }
-
-
   @Override
   public void periodic() {
-    odometry.update(
-      gyro.getRotation2d(),
-      getLeftDistanceMeters(),
-      getRightDistanceMeters()
-    );
   }
 
   public void stop() {
