@@ -40,12 +40,7 @@ public class Shooter extends SubsystemBase {
     turretMotor.set(speed);
   }
 
-  // public void setTurretPos(double positionInRad){
-  //   // if ((positionInRad) > ShooterConstants.largestTurretAngle) positionInRad = ShooterConstants.largestTurretAngle;
-  //   // if ((positionInRad) < ShooterConstants.smallestTurretAngle) positionInRad = ShooterConstants.largestTurretAngle;
 
-  //   turretMotor.set(turretPID.calculate(getCurrentAngle(), positionInRad));
-  // }
 
   public double[] calculateShootingAnglesWithOfficialOffset() {
     PhotonPipelineResult result = shooterCamera.getLatestResult();
@@ -120,6 +115,17 @@ public class Shooter extends SubsystemBase {
     return rotations * 2 * Math.PI;
   }
 
+  public boolean shooterHasTag() {
+    return shooterCamera.getLatestResult().hasTargets();
+  }
+
+  public int frontTagID() {
+    if (shooterHasTag()) {
+      return shooterCamera.getLatestResult().getBestTarget().getFiducialId();
+    }
+    return -1;
+  }
+
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Shooter Pos", shooterMotor.getEncoder().getPosition());
@@ -132,6 +138,13 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Turret Speed", turretMotor.get());
     SmartDashboard.putNumber("Tilt Speed", tiltMotor.get());
 
+
+    SmartDashboard.putBoolean("Shooter Camera Has Tag? ", shooterHasTag());
+    SmartDashboard.putNumber("Which tag does it have? ", frontTagID());
+
+
+    
+
     PhotonPipelineResult result = shooterCamera.getLatestResult();
     if (result.hasTargets()){
 
@@ -140,11 +153,17 @@ public class Shooter extends SubsystemBase {
       SmartDashboard.putNumber("April Tag X", cameraToAprilTag.getX());
       SmartDashboard.putNumber("April Tag Y", cameraToAprilTag.getY());
       SmartDashboard.putNumber("April Tag Z", cameraToAprilTag.getZ());
+      SmartDashboard.putNumber("Yaw:", calculateShootingAnglesWithOfficialOffset()[0]);
+      SmartDashboard.putNumber("Pitch:", calculateShootingAnglesWithOfficialOffset()[1]);
+
     }
     else{
       SmartDashboard.putNumber("April Tag X", 0);
       SmartDashboard.putNumber("April Tag Y", 0);
       SmartDashboard.putNumber("April Tag Z", 0);
+      SmartDashboard.putNumber("Yaw:", 0);
+      SmartDashboard.putNumber("Pitch:", 0);
+
     }
   }
 }
