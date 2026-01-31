@@ -7,6 +7,8 @@ package frc.robot.commands;
 import frc.robot.Constants;
 import frc.robot.subsystems.Climb;
 import edu.wpi.first.wpilibj2.command.Command;
+
+
 public class L1 extends Command {
   Climb m_climb;
   double rotation;
@@ -31,11 +33,12 @@ public class L1 extends Command {
     m_climb.SetMotor(0);
   }
 
+
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     //placeholder
-    if(m_climb.getMotorPosition() >= 100) {
+    if(m_climb.getMotorPosition() >= Constants.ClimbConstants.height) {
       return true;
     }
     return false;
