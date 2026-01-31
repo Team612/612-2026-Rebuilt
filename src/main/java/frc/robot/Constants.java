@@ -10,7 +10,7 @@ public final class Constants {
   }
 
   public static class DriveConstants {
-    public static final double abosulteMaxCurrentLimit = 100; // keep in mind in practice the highest it will realistically go it 80% of this
+    public static final double abosulteMaxCurrentLimit = 100;
     public static final double steerSupplyCurrent = 5;
     public static final double driveSupplyCurrent = (abosulteMaxCurrentLimit-steerSupplyCurrent*4)/4;
 
@@ -69,4 +69,22 @@ public final class Constants {
     public static final int CANdleID = 1;
   }
   
+  public static class HopperConstants {
+    
+    public static final int hopperMotorAChannel = 0;
+    public static final int hopperMotorBChannel = 1;
+    public static final int hopperSensorDIO = 0; // beam-break / IR sensor at hopper entrance :)
+    // default setting
+    public static final double hopperForwardSpeed = 0.6;
+    public static final double hopperReverseSpeed = -0.4;
+  }
+
+  public static class IndexerConstants {
+    //  using one 550 motor for the indexer
+    public static final int indexerMotorChannel = 2;
+    public static final int indexerSensorDIO = 1; // beam-break / IR sensor between hopper and shooter
+    public static final double indexerForwardSpeed = 0.55;
+    public static final double indexerReverseSpeed = -0.35;
+  }
+
 }
