@@ -7,6 +7,8 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -21,7 +23,7 @@ public class Shooter extends SubsystemBase {
   private SparkMax shooterMotor = new SparkMax(ShooterConstants.shooterMotorID, MotorType.kBrushless);
   private SparkMax turretMotor = new SparkMax(ShooterConstants.turretMotorID, MotorType.kBrushless);
   private SparkMax tiltMotor = new SparkMax(ShooterConstants.tiltMotorID, MotorType.kBrushed);
-  
+  private SparkClosedLoopController controller = turretMotor.getClosedLoopController();
   private CANcoder cancoder = new CANcoder(ShooterConstants.cancoderID);
   private PhotonCamera shooterCamera = new PhotonCamera(ShooterConstants.shooterCameraName);
 
@@ -40,6 +42,10 @@ public class Shooter extends SubsystemBase {
   }
 
 
+  public void setTurretPos(double positionInRad){
+    controller.setReference(positionInRad, ControlType.kPosition);
+    turretMotor.set(turretPID.calculate(getCurrentAngle(), positionInRad));
+  }
 
   public double[] calculateShootingAnglesWithOfficialOffset() {
     PhotonPipelineResult result = shooterCamera.getLatestResult();
@@ -60,45 +66,45 @@ public class Shooter extends SubsystemBase {
     double hubOffsetY = 0.0;
     double hubOffsetZ = 0.0;
 
-    switch (tagID) {
-      case 9:  // Red Hub - Front, lower
-        hubOffsetX = 23.77;   // 492.88 - 469.11
-        hubOffsetY = -14.0;   // 144.84 - 158.84
-        hubOffsetZ = 44.25;
-        break;
-      case 10: // Red Hub - Front, center
-        hubOffsetX = 23.77;   // 492.88 - 469.11
-        hubOffsetY = 0.0;     // 158.84 - 158.84
-        hubOffsetZ = 44.25;
-        break;
-      case 25: // Blue Hub - Back, upper
-        hubOffsetX = -9.77;   // 158.34 - 168.11
-        hubOffsetY = 14.0;    // 172.84 - 158.84
-        hubOffsetZ = 44.25;
-        break;
-      case 26: // Blue Hub - Back, center
-        hubOffsetX = -9.77;   // 158.34 - 168.11
-        hubOffsetY = 0.0;     // 158.84 - 158.84
-        hubOffsetZ = 44.25;
-        break;
-      default:
-        hubOffsetX = 0.0;
-        hubOffsetY = 0.0;
-        hubOffsetZ = 0.0;
-        break;
-    }
+    // switch (tagID) {
+    //   case 9:  // Red Hub - Front, lower
+    //     hubOffsetX = 23.77;   // 492.88 - 469.11
+    //     hubOffsetY = -14.0;   // 144.84 - 158.84
+    //     hubOffsetZ = 44.25;
+    //     break;
+    //   case 10: // Red Hub - Front, center
+    //     hubOffsetX = 23.77;   // 492.88 - 469.11
+    //     hubOffsetY = 0.0;     // 158.84 - 158.84
+    //     hubOffsetZ = 44.25;
+    //     break;
+    //   case 25: // Blue Hub - Back, upper
+    //     hubOffsetX = -9.77;   // 158.34 - 168.11
+    //     hubOffsetY = 14.0;    // 172.84 - 158.84
+    //     hubOffsetZ = 44.25;
+    //     break;
+    //   case 26: // Blue Hub - Back, center
+    //     hubOffsetX = -9.77;   // 158.34 - 168.11
+    //     hubOffsetY = 0.0;     // 158.84 - 158.84
+    //     hubOffsetZ = 44.25;
+    //     break;
+    //   default:
+    //     hubOffsetX = 0.0;
+    //     hubOffsetY = 0.0;
+    //     hubOffsetZ = 0.0;
+    //     break;
+    // }
 
     double targetX = tagX + hubOffsetX;
     double targetY = tagY + hubOffsetY;
     double targetZ = tagZ + hubOffsetZ;
+    double shooterHeight = ShooterConstants.kShooterHeightMeters;
 
-    double yawRad = Math.atan2(targetX, targetZ);
+    double yawRad = Math.atan2(targetX, targetY-shooterHeight);
     double yawDeg = Math.toDegrees(yawRad);
 
-    double horizontalDistance = Math.sqrt(targetX * targetX + targetZ * targetZ);
+    // double horizontalDistance = Math.sqrt(targetX * targetX + targetZ * targetZ);
 
-    double shooterHeight = ShooterConstants.kShooterHeightMeters;
-    double pitchRad = Math.atan2(targetY - shooterHeight, horizontalDistance);
+    double pitchRad = Math.atan2(targetX, targetZ);
     double pitchDeg = Math.toDegrees(pitchRad);
 
     SmartDashboard.putNumber("Calculated Turret Yaw", yawDeg);
@@ -130,6 +136,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Shooter Pos", shooterMotor.getEncoder().getPosition());
     SmartDashboard.putNumber("Turret Pos", turretMotor.getEncoder().getPosition());
     SmartDashboard.putNumber("Tilt Pos", tiltMotor.getEncoder().getPosition());
+    SmartDashboard.putNumber("Turret Angle", getCurrentAngle());
     SmartDashboard.putNumber("Shooter Velocity", shooterMotor.getEncoder().getVelocity());
     SmartDashboard.putNumber("Shooter Current", shooterMotor.getOutputCurrent());
 

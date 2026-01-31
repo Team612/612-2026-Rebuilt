@@ -15,7 +15,7 @@ import frc.robot.subsystems.Shooter;
 public class AutoTurretAim extends Command {
 
   private Shooter m_shooter;
-  
+
   public AutoTurretAim(Shooter m_shooter) {
     this.m_shooter = m_shooter;
   }
@@ -27,15 +27,9 @@ public class AutoTurretAim extends Command {
 
   @Override
   public void execute() {
-    Pose2d robotPose = new Pose2d(0.0, 0.0, new Rotation2d(0.0)); 
-    
-    double xLen = true ? OperatorConstants.blueHubXPos - robotPose.getX() : OperatorConstants.redHubPos - robotPose.getX();
-    double yLen = OperatorConstants.hubYPos - robotPose.getY();
 
 
-    double desiredRadians = Math.atan2(yLen, xLen) - robotPose.getRotation().getRadians();
-
-    // m_shooter.setTurretPos(desiredRadians);
+    m_shooter.setTurretPos(Math.PI/6);
 
 
   }
