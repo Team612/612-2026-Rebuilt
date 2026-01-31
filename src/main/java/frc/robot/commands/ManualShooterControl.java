@@ -27,12 +27,14 @@ public class ManualShooterControl extends Command {
 
     if (Math.abs(y) < ShooterConstants.DEADBAND) y = 0;
 
-    double xComponent = controller.getRightX();
-    double yComponent = controller.getRightY();
+    // double xComponent = controller.getRightX();
+    // double yComponent = controller.getRightY();
+    // double desiredRadians = Math.atan2(yComponent,xComponent);
+    // m_shooter.setTurretPos(desiredRadians);
+    double x = controller.getRightX();
+    if (Math.abs(x) < ShooterConstants.DEADBAND) x = 0;
+    m_shooter.setTurretMotor(x * ShooterConstants.maxTurretSpeed);
 
-    double desiredRadians = Math.atan2(yComponent,xComponent);
-
-    m_shooter.setTurretPos(desiredRadians);
     m_shooter.setTiltMotor(y);
   }
 

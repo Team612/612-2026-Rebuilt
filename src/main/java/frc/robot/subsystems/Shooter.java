@@ -36,13 +36,16 @@ public class Shooter extends SubsystemBase {
   public void setTiltMotor(double speed){
     tiltMotor.set(speed);
   }
-
-  public void setTurretPos(double positionInRad){
-    // if ((positionInRad) > ShooterConstants.largestTurretAngle) positionInRad = ShooterConstants.largestTurretAngle;
-    // if ((positionInRad) < ShooterConstants.smallestTurretAngle) positionInRad = ShooterConstants.largestTurretAngle;
-
-    turretMotor.set(turretPID.calculate(getCurrentAngle(), positionInRad));
+  public void setTurretMotor(double speed){
+    turretMotor.set(speed);
   }
+
+  // public void setTurretPos(double positionInRad){
+  //   // if ((positionInRad) > ShooterConstants.largestTurretAngle) positionInRad = ShooterConstants.largestTurretAngle;
+  //   // if ((positionInRad) < ShooterConstants.smallestTurretAngle) positionInRad = ShooterConstants.largestTurretAngle;
+
+  //   turretMotor.set(turretPID.calculate(getCurrentAngle(), positionInRad));
+  // }
 
   public double[] calculateShootingAnglesWithOfficialOffset() {
     PhotonPipelineResult result = shooterCamera.getLatestResult();
@@ -122,6 +125,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Shooter Pos", shooterMotor.getEncoder().getPosition());
     SmartDashboard.putNumber("Turret Pos", turretMotor.getEncoder().getPosition());
     SmartDashboard.putNumber("Tilt Pos", tiltMotor.getEncoder().getPosition());
+    SmartDashboard.putNumber("Shooter Velocity", shooterMotor.getEncoder().getVelocity());
 
     SmartDashboard.putNumber("Shooter Speed", shooterMotor.get());
     SmartDashboard.putNumber("Turret Speed", turretMotor.get());
