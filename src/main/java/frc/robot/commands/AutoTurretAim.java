@@ -35,7 +35,7 @@ public class AutoTurretAim extends Command {
 
     double desiredRadians = Math.atan2(yLen, xLen) - robotPose.getRotation().getRadians();
 
-    m_shooter.setTurretPos(desiredRadians);
+    // m_shooter.setTurretPos(desiredRadians);
 
 
   }

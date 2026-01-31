@@ -126,6 +126,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Turret Pos", turretMotor.getEncoder().getPosition());
     SmartDashboard.putNumber("Tilt Pos", tiltMotor.getEncoder().getPosition());
     SmartDashboard.putNumber("Shooter Velocity", shooterMotor.getEncoder().getVelocity());
+    SmartDashboard.putNumber("Shooter Current", shooterMotor.getOutputCurrent());
 
     SmartDashboard.putNumber("Shooter Speed", shooterMotor.get());
     SmartDashboard.putNumber("Turret Speed", turretMotor.get());
