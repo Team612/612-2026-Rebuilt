@@ -7,21 +7,14 @@ import frc.robot.Constants;
 
 /**
  * Indexer subsystem for moving balls from the hopper toward the shooter.
- *
- * Responsibilities:
- * - Run indexer motor at configurable speeds.
- * - Read an indexer beam-break sensor to detect ball presence.
- *
- * This class intentionally exposes a simple API so commands or higher-level
- * subsystems can coordinate hopper->indexer behavior without tight coupling.
- */
+*/
 public class Indexer extends SubsystemBase {
 
   private final PWMVictorSPX indexerMotor;
   private final DigitalInput indexerSensor;
 
   public Indexer() {
-  indexerMotor = new PWMVictorSPX(Constants.IndexerConstants.indexerMotorChannel);
+    indexerMotor = new PWMVictorSPX(Constants.IndexerConstants.indexerMotorChannel);
     indexerSensor = new DigitalInput(Constants.IndexerConstants.indexerSensorDIO);
   }
 
@@ -47,7 +40,7 @@ public class Indexer extends SubsystemBase {
 
   /**
    * Returns true when a ball is detected in the indexer staging area.
-   * This method assumes the sensor returns false when the beam is broken. Invert if needed.
+   * This method assumes the sensor returns false when the beam is broken. Invert if needed pls
    */
   public boolean isBallPresent() {
     return !indexerSensor.get();

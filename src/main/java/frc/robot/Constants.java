@@ -1,7 +1,6 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 
 public final class Constants {
 
@@ -16,13 +15,6 @@ public final class Constants {
 
     public static final double trackWidth = 0.555;
     public static final double wheelBase = 0.550;
-
-    public static final SwerveDriveKinematics swerveKinematics =
-        new SwerveDriveKinematics(
-            new Translation2d(wheelBase / 2.0, trackWidth / 2.0),
-            new Translation2d(wheelBase / 2.0, -trackWidth / 2.0),
-            new Translation2d(-wheelBase / 2.0, trackWidth / 2.0),
-            new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0));
     public static final double radiusInMeters = Math.sqrt(trackWidth*trackWidth+wheelBase*wheelBase)/2;
 
     public static final double maxMetersPerSecondSpeed = 5;
