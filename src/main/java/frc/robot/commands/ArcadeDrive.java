@@ -9,15 +9,15 @@ import frc.robot.subsystems.TankDrive;
 
 public class ArcadeDrive extends Command {
 
-  private final TankDrive drivetrain;
+  private final TankDrive m_drivetrain;
   private final DoubleSupplier forward;
   private final DoubleSupplier turn;
 
-  public ArcadeDrive(TankDrive drivetrain, DoubleSupplier forward, DoubleSupplier turn) {
-    this.drivetrain = drivetrain;
+  public ArcadeDrive(TankDrive m_drivetrain, DoubleSupplier forward, DoubleSupplier turn) {
+    this.m_drivetrain = m_drivetrain;
     this.forward = forward;
     this.turn = turn;
-    addRequirements(drivetrain);
+    addRequirements(m_drivetrain);
   }
 
   @Override
@@ -32,13 +32,13 @@ public class ArcadeDrive extends Command {
       forw = 0;
     if (Math.abs(tur) < DriveConstants.DEADBAND)
       tur = 0;
-    drivetrain.drive(forw, tur);
+    m_drivetrain.drive(forw, tur);
   }
 
 
   @Override
   public void end(boolean interrupted) {
-    drivetrain.stop();
+    m_drivetrain.drive(0,0);
   }
 
 

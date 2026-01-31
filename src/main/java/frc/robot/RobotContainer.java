@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class RobotContainer {
   private TankDrive m_tankDrive = new TankDrive();
-  private final AutonomousRoutine routine = new AutonomousRoutine(m_tankDrive);
   private Intake m_intake = new Intake();
+  
   private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   public RobotContainer() {
@@ -27,6 +27,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return routine;
+    return new AutonomousRoutine(m_tankDrive);
   }
 }
