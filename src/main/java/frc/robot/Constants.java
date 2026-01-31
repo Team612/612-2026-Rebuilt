@@ -32,13 +32,13 @@ public final class Constants {
     public static final int tiltMotorID = 1;
     public static final int cancoderID = 1; // this is a guess verify before running
 
-    public static final String shooterCameraName = "PC Camera";
+    public static final String shooterCameraName = "PC_Camera";
 
     public static final double DEADBAND = 0.03;
 
     public static final double maxTurretSpeed = 0.1;
 
-    public static final double kShooterHeightMeters = 0.5;
+    public static final double kShooterHeightMeters = 0.0;
 
     public static final double turretCANcoderOffset = 0.0; // this is a guess
 
