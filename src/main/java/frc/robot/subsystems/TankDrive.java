@@ -7,117 +7,167 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPLTVController;
+
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
-import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.Constants.DriveConstants;
 
 public class TankDrive extends SubsystemBase {
-  private final TalonFX leftMotor = new TalonFX(1);
-  private final TalonFX rightMotor  =new TalonFX(2);
-  private final TalonFX leftMotor2 = new TalonFX(3);
-  private final TalonFX rightMotor2 = new TalonFX(4);
-  private final Encoder m_leftEncoder = new Encoder(4, 5);
-  private final Encoder m_rightEncoder = new Encoder(6, 7);
-  private final Pigeon2 m_gyro;
-  private final Pose2d m_pose;
-  private final DifferentialDriveOdometry m_odometry;
-  private final Alliance m_alliance;
-  public TankDrive(Pigeon2 gyro, Pose2d pose) {
+
+  private final TalonFX leftMotor = new TalonFX(DriveConstants.leftMotorID);
+  private final TalonFX rightMotor  =new TalonFX(DriveConstants.rightMotorID);
+  private final TalonFX leftMotor2 = new TalonFX(DriveConstants.leftMotor2ID);
+  private final TalonFX rightMotor2 = new TalonFX(DriveConstants.rightMotor2ID);
+
+  private boolean red;
+
+  private final Pigeon2 gyro = new Pigeon2(DriveConstants.gyroID);
+
+  private DifferentialDrivePoseEstimator poseEstimator;
+
+  private RobotConfig config;
+
+  private final Field2d field = new Field2d();
+
+  public TankDrive(Pose2d initialPos) {
+    SmartDashboard.putData("Field", field);
+
+    if (DriverStation.getAlliance().isPresent()) {
+      if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
+        red = true;
+    }
+
     TalonFXConfiguration leftConfig = new TalonFXConfiguration();
     TalonFXConfiguration rightConfig = new TalonFXConfiguration();
-    leftMotor2.setControl(new Follower(1, MotorAlignmentValue.Aligned));
-    rightMotor2.setControl(new Follower(2, MotorAlignmentValue.Aligned));
-    m_leftEncoder.setDistancePerPulse(Constants.DriveConstants.encoderDistancePerPulse);
-    m_rightEncoder.setDistancePerPulse(Constants.DriveConstants.encoderDistancePerPulse);
-    resetEncoders();
     leftConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     rightConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     leftConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     rightConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     leftMotor.getConfigurator().apply(leftConfig);
     rightMotor.getConfigurator().apply(rightConfig);
-    m_gyro = gyro;
-    m_pose = pose;
-    m_alliance = DriverStation.getAlliance().get();
-    m_odometry = new DifferentialDriveOdometry(gyro.getRotation2d(), m_leftEncoder.getDistance(), m_rightEncoder.getDistance(), pose);
-  }
-  public TankDrive(Pigeon2 gyro) {
-    TalonFXConfiguration leftConfig = new TalonFXConfiguration();
-    TalonFXConfiguration rightConfig = new TalonFXConfiguration();
-    leftMotor2.setControl(new Follower(1, MotorAlignmentValue.Aligned));
-    rightMotor2.setControl(new Follower(2, MotorAlignmentValue.Aligned));
-    m_leftEncoder.setDistancePerPulse(Constants.DriveConstants.encoderDistancePerPulse);
-    m_rightEncoder.setDistancePerPulse(Constants.DriveConstants.encoderDistancePerPulse);
-    resetEncoders();
-    leftConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    rightConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    leftConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    rightConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    leftMotor.getConfigurator().apply(leftConfig);
-    rightMotor.getConfigurator().apply(rightConfig);
-    m_gyro = gyro;
-    m_pose = Pose2d.kZero;
-    m_alliance = DriverStation.getAlliance().get();
-    m_odometry = new DifferentialDriveOdometry(gyro.getRotation2d(), m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
+  
+    leftMotor2.setControl(new Follower(DriveConstants.leftMotorID, MotorAlignmentValue.Aligned));
+    rightMotor2.setControl(new Follower(DriveConstants.rightMotorID, MotorAlignmentValue.Aligned));
+
+    // this might not be necessary
+    leftMotor.setPosition(0);
+    rightMotor.setPosition(0);
+    gyro.reset();
+
+    poseEstimator = new DifferentialDrivePoseEstimator(
+      DriveConstants.driveKinematics,
+      getHeading(),
+      getLeftDistanceMeters(),
+      getRightDistanceMeters(),
+      initialPos,
+      // Odometry Standard Deviations, x y & z
+      VecBuilder.fill(0.003, 0.003, 0.001),
+      // Vision measurement std deviations
+      VecBuilder.fill(0.025, 0.025, 0.035)
+    );
+
+    try{
+      config = RobotConfig.fromGUISettings();
+    } catch (Exception e) {
+      // Handle exception as needed
+      e.printStackTrace();
+    }
+
+    AutoBuilder.configure(
+      this::getPose, // Robot pose supplier
+      this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+      this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+      (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+      new PPLTVController(0.00), // PPLTVController is the built in path following controller for differential drive trains
+      config, // The robot configuration
+      () -> {
+      // Boolean supplier that controls when the path will be mirrored for the red alliance
+      // This will flip the path being followed to the red side of the field.
+      // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+      var alliance = DriverStation.getAlliance();
+      if (alliance.isPresent()) {
+      return alliance.get() == DriverStation.Alliance.Red;
+      }
+      return false;
+      },
+      this // Reference to this subsystem to set requirements
+    );
   }
 
-  public void drive(double forward, double turn) {
-    leftMotor.set(forward + turn);
-    rightMotor.set(forward - turn);
+  public double getLeftDistanceMeters(){
+    return leftMotor.getPosition().getValueAsDouble() * DriveConstants.encoderToMeters;
   }
-  public void resetEncoders() {
-    m_leftEncoder.reset();
-    m_rightEncoder.reset();
+  public double getRightDistanceMeters(){
+    return rightMotor.getPosition().getValueAsDouble() * DriveConstants.encoderToMeters;
   }
-  public int getLeftEncoderCount() {
-    return m_leftEncoder.get();
+  public Rotation2d getHeading(){
+    return Rotation2d.fromDegrees(Math.IEEEremainder(gyro.getYaw().getValueAsDouble(), 360));
   }
 
-  public int getRightEncoderCount() {
-    return m_rightEncoder.get();
+  // drives the robot using a m/s ChassisSpeed
+  public void driveRobotRelative(ChassisSpeeds speeds) {
+    drive(new ChassisSpeeds(speeds.vxMetersPerSecond / DriveConstants.maxAttainableSpeed, 0, speeds.omegaRadiansPerSecond));
   }
 
-  public double getLeftDistanceMeters() {
-    return m_leftEncoder.getDistance();
+  // drives the robot using a percentage ChassisSpeed
+  public void drive(ChassisSpeeds speeds) {
+    DifferentialDriveWheelSpeeds wheelSpeeds = DriveConstants.driveKinematics.toWheelSpeeds(speeds);
+
+    wheelSpeeds.desaturate(1);
+
+    leftMotor.set(wheelSpeeds.leftMetersPerSecond);
+    rightMotor.set(wheelSpeeds.rightMetersPerSecond);
   }
 
-  public double getRightDistanceMeters() {
-    return m_rightEncoder.getDistance();
+  public Pose2d getPose(){
+    return poseEstimator.getEstimatedPosition();
   }
 
-  public double getLeftDistanceInch() {
-    return m_leftEncoder.getDistance() * Constants.DriveConstants.metersToInches;
+  public void resetPose(Pose2d pos){
+    gyro.reset();
+    leftMotor.setPosition(0);
+    rightMotor.setPosition(0);
+
+    poseEstimator.resetPosition(
+      getHeading(),
+      getLeftDistanceMeters(),
+      getRightDistanceMeters(),
+      new Pose2d()
+    );
   }
 
-  public double getRightDistanceInch() {
-    return m_rightEncoder.getDistance() * Constants.DriveConstants.metersToInches;
+  public ChassisSpeeds getRobotRelativeSpeeds(){
+    double vx = (leftMotor.getVelocity().getValueAsDouble()*DriveConstants.encoderToMeters + rightMotor.getVelocity().getValueAsDouble()*DriveConstants.encoderToMeters) / 2.0;
+    double omega = gyro.getAngularVelocityZDevice().getValueAsDouble();
+
+    return new ChassisSpeeds(vx,0,omega);
   }
-  public Pose2d updateOdometry() {
-    return m_odometry.update(m_gyro.getRotation2d(), m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
-  }
-  public void resetPosition(Pose2d newPose) {
-    m_odometry.resetPose(newPose);
-  }
-  public void resetToDefaultPose() {
-    m_odometry.resetPose(m_pose);
-  }
-  public Pose2d getPose() {
-    if (m_alliance == Alliance.Blue) return new Pose2d(m_odometry.getPoseMeters().getTranslation(), m_gyro.getRotation2d());
-    return new Pose2d(m_odometry.getPoseMeters().getTranslation().times(-1.0), m_gyro.getRotation2d());
-  }
-  public void resetGyro() {
-    m_gyro.reset();
-  }
+
   @Override
   public void periodic() {
-    updateOdometry();
-  }
-  public void stop() {
-    leftMotor.stopMotor();
-    rightMotor.stopMotor();
+    if (red)
+      poseEstimator.update(getHeading().times(-1), -getLeftDistanceMeters(), -getRightDistanceMeters()); 
+    else
+      poseEstimator.update(getHeading(), getLeftDistanceMeters(), getRightDistanceMeters()); 
+
+    field.setRobotPose(poseEstimator.getEstimatedPosition());
+
+    SmartDashboard.putNumber("leftSideSpeed", leftMotor.get());
+    SmartDashboard.putNumber("rightSideSpeed",rightMotor.get());
+
+    SmartDashboard.putNumber("gyro velocity", gyro.getAngularVelocityZDevice().getValueAsDouble()); // check if this is in rad/sec or degrees/sec
   }
 }
