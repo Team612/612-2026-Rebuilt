@@ -27,6 +27,7 @@ public class Climb extends SubsystemBase {
   private CANcoder encoder = new CANcoder(2);
   private TalonFX motor = new TalonFX(ClimbConstants.climbMotorID);
   private double kp = 2;
+
   private XboxController xboxController = new XboxController(0);
   private PIDController pidController = new PIDController(kp, 0, 0);
 
@@ -39,12 +40,14 @@ public class Climb extends SubsystemBase {
   public void SetMotor(double value) {
     motor.set(value);
   }
+  
   public double getMotorPosition() {
     return motor.getPosition().getValueAsDouble();
   }
 
   @Override
   public void periodic() {
+    /*
     double x = -xboxController.getRawAxis(1);
     double y = -xboxController.getRawAxis(0);
     double degree = Math.atan2(x,y);
@@ -56,5 +59,6 @@ public class Climb extends SubsystemBase {
 
     //double error = encoder.getAbsolutePosition().getValueAsDouble() - degree;
     motor.set(-pidController.calculate(encoder.getAbsolutePosition().getValueAsDouble(), degree));
+    */
   }
 }
