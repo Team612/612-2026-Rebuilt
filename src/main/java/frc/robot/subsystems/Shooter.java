@@ -7,12 +7,18 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
@@ -21,30 +27,47 @@ import frc.robot.Constants.VisionConstants;
 public class Shooter extends SubsystemBase {
 
   private SparkMax shooterMotor = new SparkMax(ShooterConstants.shooterMotorID, MotorType.kBrushless);
-  private SparkMax turretMotor = new SparkMax(ShooterConstants.turretMotorID, MotorType.kBrushless);
+  
+  
   private SparkMax tiltMotor = new SparkMax(ShooterConstants.tiltMotorID, MotorType.kBrushed);
-  private SparkClosedLoopController controller = turretMotor.getClosedLoopController();
+  private SparkMaxConfig tiltControllerConfig = new SparkMaxConfig();
+  private SparkClosedLoopController tiltController = tiltMotor.getClosedLoopController();
+
+  private SparkMax turretMotor = new SparkMax(ShooterConstants.turretMotorID, MotorType.kBrushless);
+  private SparkClosedLoopController turretController = turretMotor.getClosedLoopController();
+  private SparkMaxConfig turretControllerConfig = new SparkMaxConfig();
+  
   private CANcoder cancoder = new CANcoder(ShooterConstants.cancoderID);
   private PhotonCamera shooterCamera = new PhotonCamera(ShooterConstants.shooterCameraName);
 
-  private PIDController turretPID = new PIDController(ShooterConstants.turretKp, ShooterConstants.turretKi, ShooterConstants.turretKd);
+  public Shooter() {
+    turretControllerConfig.closedLoop.p(ShooterConstants.turretKp).i(ShooterConstants.turretKi).d(ShooterConstants.turretKd).outputRange(-ShooterConstants.maxTurretSpeed, ShooterConstants.maxTurretSpeed);
+    turretMotor.configure(turretControllerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);  
 
-  public Shooter() {}
+    tiltControllerConfig.closedLoop.p(ShooterConstants.tiltKp).i(ShooterConstants.tiltKi).d(ShooterConstants.tiltKd).outputRange(-0.5, 0.5);
+    tiltMotor.configure(tiltControllerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+  }
 
   public void setShooterMotor(double speed){
     shooterMotor.set(speed);
   }
+
   public void setTiltMotor(double speed){
     tiltMotor.set(speed);
   }
   public void setTurretMotor(double speed){
     turretMotor.set(speed);
   }
-
+  
+  public void setTiltPos(double positionInRad){
+    double positionInRotation = positionInRad  /  (2 * Math.PI) * ShooterConstants.tiltGearRatio;
+    tiltController.setSetpoint(positionInRotation, ControlType.kPosition);
+  }
 
   public void setTurretPos(double positionInRad){
-    controller.setReference(positionInRad, ControlType.kPosition);
-    turretMotor.set(turretPID.calculate(getCurrentAngle(), positionInRad));
+    double positionInRotation = positionInRad  /  (2 * Math.PI) * ShooterConstants.turretGearRatio;
+    turretController.setSetpoint(positionInRotation, ControlType.kPosition);
   }
 
   public double[] calculateShootingAnglesWithOfficialOffset() {
@@ -113,11 +136,18 @@ public class Shooter extends SubsystemBase {
     return new double[]{yawDeg, pitchDeg};
   }
 
-  public double getCurrentAngle() {
-    double rotations = cancoder.getAbsolutePosition().getValueAsDouble() - ShooterConstants.turretCANcoderOffset;
+  public double getCurrentTurretAngle() {
+    double rotations = turretMotor.getEncoder().getPosition()
     if (rotations < -0.5)
       rotations += 1;
-    return rotations * 2 * Math.PI;
+    return rotations * 2 * Math.PI * ShooterConstants.turretGearRatio;
+  }
+
+  public double getCurrentTiltAngle() {
+    double rotations = tiltMotor.getEncoder().getPosition();
+    if (rotations < -0.5)
+      rotations += 1;
+    return rotations * 2 * Math.PI * ShooterConstants.tiltGearRatio;
   }
 
   public boolean shooterHasTag() {
@@ -136,7 +166,8 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Shooter Pos", shooterMotor.getEncoder().getPosition());
     SmartDashboard.putNumber("Turret Pos", turretMotor.getEncoder().getPosition());
     SmartDashboard.putNumber("Tilt Pos", tiltMotor.getEncoder().getPosition());
-    SmartDashboard.putNumber("Turret Angle", getCurrentAngle());
+    SmartDashboard.putNumber("Turret Angle", getCurrentTurretAngle());
+    SmartDashboard.putNumber("Tilt Angle", getCurrentTiltAngle());
     SmartDashboard.putNumber("Shooter Velocity", shooterMotor.getEncoder().getVelocity());
     SmartDashboard.putNumber("Shooter Current", shooterMotor.getOutputCurrent());
 
@@ -156,11 +187,12 @@ public class Shooter extends SubsystemBase {
 
       Transform3d cameraToAprilTag = result.getBestTarget().bestCameraToTarget;
 
+      double[] angles = calculateShootingAnglesWithOfficialOffset();
       SmartDashboard.putNumber("April Tag X", cameraToAprilTag.getX());
       SmartDashboard.putNumber("April Tag Y", cameraToAprilTag.getY());
       SmartDashboard.putNumber("April Tag Z", cameraToAprilTag.getZ());
-      SmartDashboard.putNumber("Yaw:", calculateShootingAnglesWithOfficialOffset()[0]);
-      SmartDashboard.putNumber("Pitch:", calculateShootingAnglesWithOfficialOffset()[1]);
+      SmartDashboard.putNumber("Yaw:", angles[0]);
+      SmartDashboard.putNumber("Pitch:", angles[1]);
 
     }
     else{

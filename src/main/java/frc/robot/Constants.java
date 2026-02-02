@@ -48,6 +48,12 @@ public final class Constants {
     public static final double turretKp = 0.017; // this is a guess tune in real life
     public static final double turretKi = 0;
     public static final double turretKd = 0;
+    public static final double turretGearRatio = 200.0 / 20.0;
+
+    public static final double tiltKp = 0.1; 
+    public static final double tiltKi = 0;
+    public static final double tiltKd = 0;
+    public static final double tiltGearRatio = 310.0 / 31.0; 
   }
 
   public static class VisionConstants {
