@@ -14,6 +14,8 @@ public class TestTransfer extends Command {
     addRequirements(m_transfer);
   }
 
+  /* individually control every motor with the buttons y, x, b, a and put the previous stuff you did to be controlled by the bumpers
+  */
   @Override
   public void initialize() {
     m_transfer.setMotor2(0.5);
