@@ -70,6 +70,10 @@ public class Shooter extends SubsystemBase {
     turretController.setSetpoint(positionInRotation, ControlType.kPosition);
   }
 
+  public void resetEncoder(){
+    turretMotor.getEncoder().setPosition(0);
+  }
+
   public double[] calculateShootingAnglesWithOfficialOffset() {
     PhotonPipelineResult result = shooterCamera.getLatestResult();
     if (!result.hasTargets()) {
@@ -137,7 +141,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public double getCurrentTurretAngle() {
-    double rotations = turretMotor.getEncoder().getPosition()
+    double rotations = turretMotor.getEncoder().getPosition();
     if (rotations < -0.5)
       rotations += 1;
     return rotations * 2 * Math.PI * ShooterConstants.turretGearRatio;
