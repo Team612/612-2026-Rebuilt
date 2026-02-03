@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TransferConstants;
 
 public class Transfer extends SubsystemBase{
-
+    // SparkMax motor1 is 550 motor, SparkFlex motors are vortex motors
     private final SparkMax motor1 = new SparkMax(TransferConstants.motor1ID, MotorType.kBrushless);
     private final SparkFlex motor2 = new SparkFlex(TransferConstants.motor2ID, MotorType.kBrushless);
     private final SparkFlex motor3 = new SparkFlex(TransferConstants.motor3ID, MotorType.kBrushless);
@@ -33,5 +33,7 @@ public class Transfer extends SubsystemBase{
     }
 
     @Override
-    public void periodic() {}
+    public void periodic() {
+
+    }
 }
