@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Transfer;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
+
 public class ManualTest extends Command {
   private final Transfer m_transfer;
   private final CommandXboxController m_controller;
@@ -19,11 +19,13 @@ public class ManualTest extends Command {
     m_transfer = transfer;
     m_controller = controller;
     addRequirements(m_transfer);
+
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -53,7 +55,7 @@ public class ManualTest extends Command {
     }
   }
 
-  // Called once the command ends or is interrupted.
+  // Called once the command ends or is interrupted
   @Override
   public void end(boolean interrupted) {
     m_transfer.setMotor1(0.0);
@@ -61,7 +63,6 @@ public class ManualTest extends Command {
     m_transfer.setMotor3(0.0);
     m_transfer.setMotor4(0.0);
   }
-
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
