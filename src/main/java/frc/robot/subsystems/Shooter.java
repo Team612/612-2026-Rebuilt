@@ -70,6 +70,10 @@ public class Shooter extends SubsystemBase {
     turretController.setSetpoint(positionInRotation, ControlType.kPosition);
   }
 
+  public void resetEncoder(){
+    turretMotor.getEncoder().setPosition(0);
+  }
+
   public double[] calculateShootingAnglesWithOfficialOffset() {
     PhotonPipelineResult result = shooterCamera.getLatestResult();
     if (!result.hasTargets()) {

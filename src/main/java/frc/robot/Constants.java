@@ -28,7 +28,7 @@ public final class Constants {
 
     public static class ShooterConstants{
     public static final int shooterMotorID = 8;
-    public static final int turretMotorID = 2;
+    public static final int turretMotorID = 17;
     public static final int tiltMotorID = 1;
     public static final int cancoderID = 1; // this is a guess verify before running
 
@@ -58,7 +58,7 @@ public final class Constants {
 
   public static class VisionConstants {
     public static final int CANdleID = 1;
-    public static final String shooterCamera = "PC Camera";
+    public static final String shooterCamera = "PC_Camera";
     public static final Transform3d shooterCameraTransform = new Transform3d(0,0,0, new Rotation3d(0,0,0));
   }
 }
