@@ -45,7 +45,7 @@ public final class Constants {
     public static final double largestTurretAngle = Math.PI/2;
     public static final double smallestTurretAngle = -Math.PI/2;
 
-    public static final double turretKp = 0.017; // this is a guess tune in real life
+    public static final double turretKp = 0.042;
     public static final double turretKi = 0;
     public static final double turretKd = 0;
     public static final double turretGearRatio = 200.0 / 20.0;
@@ -54,6 +54,8 @@ public final class Constants {
     public static final double tiltKi = 0;
     public static final double tiltKd = 0;
     public static final double tiltGearRatio = 310.0 / 31.0; 
+
+    public static final double encoderToRadians = 0.628152;
   }
 
   public static class VisionConstants {

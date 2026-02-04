@@ -2,7 +2,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Shooter;
 
 public class ManualShooterControl extends Command {
@@ -21,11 +20,16 @@ public class ManualShooterControl extends Command {
 
   @Override
   public void execute() {
-    m_shooter.setShooterMotor((controller.getRightTriggerAxis() - controller.getLeftTriggerAxis()) * 0.5);
+
+    double x = -controller.getRawAxis(1);
+    double y = -controller.getRawAxis(0);
+    double rad = Math.atan2(x,y);
+    rad -= Math.PI/2;
+    if (rad < -Math.PI)
+      rad+= 2 * Math.PI;
     
-    double y = controller.getLeftY();
-    
-    m_shooter.setTurretMotor(y);
+    m_shooter.setTurretPos(rad);
+
   }
 
   @Override
