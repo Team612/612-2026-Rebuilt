@@ -21,9 +21,10 @@ public class ManualShooterControl extends Command {
   @Override
   public void execute() {
 
-    double x = -controller.getRawAxis(1);
-    double y = -controller.getRawAxis(0);
-    double rad = Math.atan2(x,y);
+    double x = controller.getRawAxis(1);
+    double y = controller.getRawAxis(0);
+    double rad = -Math.atan2(x,y);
+
     rad -= Math.PI/2;
     if (rad < -Math.PI)
       rad+= 2 * Math.PI;

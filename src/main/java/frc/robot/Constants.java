@@ -55,7 +55,7 @@ public final class Constants {
     public static final double tiltKd = 0;
     public static final double tiltGearRatio = 310.0 / 31.0; 
 
-    public static final double encoderToRadians = 0.628152;
+    public static final double encoderToRadians = -0.628152;
   }
 
   public static class VisionConstants {
