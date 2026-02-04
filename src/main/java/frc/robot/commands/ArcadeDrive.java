@@ -1,45 +1,53 @@
 package frc.robot.commands;
 
-import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.TankDrive;
 
 
+
+
 public class ArcadeDrive extends Command {
 
-  private final TankDrive m_drivetrain;
-  private final DoubleSupplier forward;
-  private final DoubleSupplier turn;
 
-  public ArcadeDrive(TankDrive m_drivetrain, DoubleSupplier forward, DoubleSupplier turn) {
-    this.m_drivetrain = m_drivetrain;
-    this.forward = forward;
-    this.turn = turn;
-    addRequirements(m_drivetrain);
+  private final TankDrive m_tankDrive;
+  private final CommandXboxController controller;
+
+
+  public ArcadeDrive(TankDrive m_tankDrive, CommandXboxController controller) {
+    this.controller = controller;
+    this.m_tankDrive = m_tankDrive;
+    addRequirements(m_tankDrive);
   }
+
 
   @Override
   public void initialize() {}
 
+
   @Override
   public void execute() {
-    double forw = forward.getAsDouble();
-    double tur = turn.getAsDouble();
+    double speed = -controller.getLeftY();
+    double turn = -controller.getRightX();
 
-    if (Math.abs(forw) < DriveConstants.DEADBAND)
-      forw = 0;
-    if (Math.abs(tur) < DriveConstants.DEADBAND)
-      tur = 0;
-    m_drivetrain.drive(forw, tur);
+
+    if (Math.abs(speed) < DriveConstants.DEADBAND) speed = 0;
+    if (Math.abs(turn) < DriveConstants.DEADBAND) turn = 0;
+
+
+    m_tankDrive.drive(new ChassisSpeeds(speed,0,turn));
   }
+
+
 
 
   @Override
-  public void end(boolean interrupted) {
-    m_drivetrain.drive(0,0);
-  }
+  public void end(boolean interrupted) {}
+
+
 
 
   @Override

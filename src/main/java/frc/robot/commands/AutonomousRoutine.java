@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.TankDrive;
 
@@ -14,8 +15,7 @@ public class AutonomousRoutine extends Command {
 
   @Override
   public void initialize() {
-    m_tankDrive.resetEncoders();
-    m_tankDrive.drive(0.2,0);
+    m_tankDrive.drive(new ChassisSpeeds(0.1,0,0));
   }
 
   @Override
@@ -23,7 +23,7 @@ public class AutonomousRoutine extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    m_tankDrive.drive(0, 0);
+    m_tankDrive.drive(new ChassisSpeeds());
   }
 
   @Override
