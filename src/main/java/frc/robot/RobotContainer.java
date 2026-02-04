@@ -8,25 +8,28 @@ import frc.robot.Constants.OperatorConstants;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.ArcadeClimb;
 import frc.robot.commands.L1;
 import frc.robot.subsystems.Climb;
 
 public class RobotContainer {
 
-  private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController climbController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
+
   private final Climb climb = new Climb();
-  private final L1 climbCom = new L1(climb);
 
   public RobotContainer() {
     configureBindings();
   }
 
   private void configureBindings() {
+    climb.setDefaultCommand(new ArcadeClimb(climb, climbController));
   }
 
   public Command getAutonoumousCommand() {
     return new SequentialCommandGroup(
-      climbCom.withTimeout(12)
+      //new ArcadeClimb(climb, climbController)
+      //new L1(climb).withTimeout(12)
     );
   }
 }
