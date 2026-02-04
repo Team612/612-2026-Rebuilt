@@ -54,7 +54,7 @@ public class Shooter extends SubsystemBase {
 
   }
   public void setTurretPos(double pos){
-    turretMotor.set(turretPID.calculate(turretMotor.getEncoder().getPosition() * ShooterConstants.encoderToRadians,pos));
+    turretMotor.set(-turretPID.calculate(turretMotor.getEncoder().getPosition() * ShooterConstants.encoderToRadians,pos));
   }
   public void setTurretEncoderPosition(double encoderPos){
     turretMotor.getEncoder().setPosition(encoderPos);
@@ -157,7 +157,7 @@ public class Shooter extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Shooter Pos", shooterMotor.getEncoder().getPosition());
-    SmartDashboard.putNumber("Turret Pos", turretMotor.getEncoder().getPosition());
+    SmartDashboard.putNumber("Turret Pos", turretMotor.getEncoder().getPosition() * ShooterConstants.encoderToRadians);
     SmartDashboard.putNumber("Tilt Pos", tiltMotor.getEncoder().getPosition());
     SmartDashboard.putNumber("Turret Angle", getCurrentTurretAngle());
     SmartDashboard.putNumber("Tilt Angle", getCurrentTiltAngle());
