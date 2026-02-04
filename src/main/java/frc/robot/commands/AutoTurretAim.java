@@ -29,9 +29,11 @@ public class AutoTurretAim extends Command {
   public void execute() {
     
 
-
-    m_shooter.setTurretPos(Math.PI/6);
-
+    if(m_shooter.shooterHasTag()){
+        double offset =  m_shooter.calculateShootingAnglesWithOfficialOffset()[0];
+        double current = m_shooter.getCurrentTurretAngle();
+        m_shooter.setTurretPos(current += offset);
+    }
 
   }
 
