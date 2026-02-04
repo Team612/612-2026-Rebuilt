@@ -24,7 +24,7 @@ public class ManualShooterControl extends Command {
     m_shooter.setShooterMotor((controller.getRightTriggerAxis() - controller.getLeftTriggerAxis()) * 0.5);
     
     double y = controller.getLeftY();
-  
+    
     m_shooter.setTurretMotor(y);
   }
 
