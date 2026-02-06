@@ -30,6 +30,10 @@ public class ManualShooterControl extends Command {
       rad+= 2 * Math.PI;
     
     m_shooter.setTurretPos(rad);
+    // if (m_shooter.shooterHasTag()){
+    //   // System.out.println(- (m_shooter.tagOff()-(Math.PI/2)));
+    //   m_shooter.setTurretPos(m_shooter.getCurrentTurretAngle() - (m_shooter.tagOff()-(Math.PI/2)));
+    // }
 
   }
 

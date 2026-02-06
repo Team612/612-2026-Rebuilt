@@ -71,13 +71,14 @@ public class Shooter extends SubsystemBase {
 
     Transform3d tagPoseCam = target.getBestCameraToTarget();
     Transform3d tagPoseShooter = tagPoseCam.plus(VisionConstants.shooterCameraTransform);
+
     double tagX = tagPoseShooter.getTranslation().getX();
     double tagY = tagPoseShooter.getTranslation().getY();
-    double tagZ = tagPoseShooter.getTranslation().getZ();
+
+    double angleError = -(Math.atan2(tagX,tagY)-(Math.PI/2));
 
     double hubOffsetX = 0.0;
     double hubOffsetY = 0.0;
-    double hubOffsetZ = 0.0;
 
     // switch (tagID) {
     //   case 9:  // Red Hub - Front, lower
@@ -109,7 +110,6 @@ public class Shooter extends SubsystemBase {
 
     double targetX = tagX + hubOffsetX;
     double targetY = tagY + hubOffsetY;
-    double targetZ = tagZ + hubOffsetZ;
     double shooterHeight = ShooterConstants.kShooterHeightMeters;
 
     double yawRad = Math.atan2(targetX, targetY-shooterHeight);
@@ -117,16 +117,13 @@ public class Shooter extends SubsystemBase {
 
     // double horizontalDistance = Math.sqrt(targetX * targetX + targetZ * targetZ);
 
-    double pitchRad = Math.atan2(targetX, targetZ);
-    double pitchDeg = Math.toDegrees(pitchRad);
 
     SmartDashboard.putNumber("Calculated Turret Yaw", yawDeg);
-    SmartDashboard.putNumber("Calculated Shooter Pitch", pitchDeg);
     SmartDashboard.putNumber("Calculated Turret Yaw Radians", yawRad);
     SmartDashboard.putNumber("Calculated Shooter Pitch Radians", yawRad);
 
 
-    return new double[]{yawRad, pitchRad};
+    return new double[]{angleError, 0};
   }
 
   public double getCurrentTurretAngle() {
@@ -138,6 +135,13 @@ public class Shooter extends SubsystemBase {
     if (rotations < -0.5)
       rotations += 1;
     return rotations * 2 * Math.PI * ShooterConstants.tiltGearRatio;
+  }
+
+  public double tagOff(){
+    PhotonPipelineResult result = shooterCamera.getLatestResult();
+    if (!result.hasTargets())
+      return 0;
+    return Math.atan2(result.getBestTarget().getBestCameraToTarget().getX(),result.getBestTarget().getBestCameraToTarget().getY());
   }
 
   public boolean shooterHasTag() {

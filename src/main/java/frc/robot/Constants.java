@@ -45,7 +45,7 @@ public final class Constants {
     public static final double largestTurretAngle = Math.PI/2;
     public static final double smallestTurretAngle = -Math.PI/2;
 
-    public static final double turretKp = 0.042;
+    public static final double turretKp = 0.21;
     public static final double turretKi = 0;
     public static final double turretKd = 0;
     public static final double turretGearRatio = 200.0 / 20.0;
