@@ -122,8 +122,11 @@ public class Shooter extends SubsystemBase {
 
     SmartDashboard.putNumber("Calculated Turret Yaw", yawDeg);
     SmartDashboard.putNumber("Calculated Shooter Pitch", pitchDeg);
+    SmartDashboard.putNumber("Calculated Turret Yaw Radians", yawRad);
+    SmartDashboard.putNumber("Calculated Shooter Pitch Radians", yawRad);
 
-    return new double[]{yawDeg, pitchDeg};
+
+    return new double[]{yawRad, pitchRad};
   }
 
   public double getCurrentTurretAngle() {
