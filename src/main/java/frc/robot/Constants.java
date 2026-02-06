@@ -23,7 +23,7 @@ public final class Constants {
     // in meters
     public static final double blueHubXPos = 4.625594;
     public static final double hubYPos = 4.034536;
-    public static final double redHubPos = 11.915394;
+    public static final double redHubXPos = 11.915394;
   }
 
     public static class ShooterConstants{
