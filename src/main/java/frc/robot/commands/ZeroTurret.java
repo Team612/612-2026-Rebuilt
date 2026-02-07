@@ -14,7 +14,7 @@ public class ZeroTurret extends InstantCommand {
 
   @Override
   public void initialize() {
-    m_shooter.setTurretEncoderPosition(0);
-    m_shooter.setTiltPos(0);
+    m_shooter.setTurretEncoderPos(0);
+    m_shooter.setEncoderTiltPos(0);
   }
 }

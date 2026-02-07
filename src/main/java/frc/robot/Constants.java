@@ -45,17 +45,15 @@ public final class Constants {
     public static final double largestTurretAngle = Math.PI/2;
     public static final double smallestTurretAngle = -Math.PI/2;
 
-    public static final double turretKp = 0.42;
-    public static final double turretKi = 0;
-    public static final double turretKd = 0;
-    public static final double turretGearRatio = 200.0 / 20.0;
+    public static final double turretKp = 0.15;
+    public static final double turretKi = 0.13;
+    public static final double turretKd = 0.013;
 
-    public static final double tiltKp = 0.1; 
-    public static final double tiltKi = 0;
+    public static final double tiltKp = 3.975; 
+    public static final double tiltKi = 3.01;
     public static final double tiltKd = 0;
-    public static final double tiltGearRatio = 310.0 / 31.0; 
 
-    public static final double encoderToRadians = -0.628152;
+    public static final double turretEncoderToRadians = -0.628152;
   }
 
   public static class VisionConstants {

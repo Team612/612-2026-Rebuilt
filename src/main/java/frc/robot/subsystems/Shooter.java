@@ -4,13 +4,8 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.revrobotics.PersistMode;
-import com.revrobotics.ResetMode;
-import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -22,42 +17,47 @@ import frc.robot.Constants.VisionConstants;
 public class Shooter extends SubsystemBase {
 
   private SparkMax shooterMotor = new SparkMax(ShooterConstants.shooterMotorID, MotorType.kBrushless);
-  
   private SparkMax tiltMotor = new SparkMax(ShooterConstants.tiltMotorID, MotorType.kBrushed);
-  private SparkMaxConfig tiltControllerConfig = new SparkMaxConfig();
-  private SparkClosedLoopController tiltController = tiltMotor.getClosedLoopController();
-
   private SparkMax turretMotor = new SparkMax(ShooterConstants.turretMotorID, MotorType.kBrushless);
   
-  private CANcoder cancoder = new CANcoder(ShooterConstants.cancoderID);
   private PhotonCamera shooterCamera = new PhotonCamera(ShooterConstants.shooterCameraName);
 
-  private PIDController turretPID = new PIDController(ShooterConstants.turretKp, 0, 0);
+  private PIDController turretPID = new PIDController(ShooterConstants.turretKp, ShooterConstants.turretKi, ShooterConstants.turretKd);
+  private PIDController tiltPID = new PIDController(ShooterConstants.tiltKp,ShooterConstants.tiltKi,ShooterConstants.tiltKd);
 
   public Shooter() {
-    // turretPID.enableContinuousInput(-Math.PI,Math.PI);
-    tiltControllerConfig.closedLoop.p(ShooterConstants.tiltKp).i(ShooterConstants.tiltKi).d(ShooterConstants.tiltKd).outputRange(-0.5, 0.5);
-    tiltMotor.configure(tiltControllerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    turretPID.setIZone(0.1);
+    tiltPID.setIZone(0.02);
   }
 
   public void setShooterMotor(double speed){
     shooterMotor.set(speed);
   }
-  public void setTiltMotor(double speed){
-    tiltMotor.set(speed);
-  }
   public void setTurretMotor(double speed){
     turretMotor.set(speed);
   }
+  public void setTiltMotor(double speed){
+    tiltMotor.set(speed);
+  }
   
+  
+  public void setTurretPos(double pos){
+    SmartDashboard.putNumber("anotherTurretPos",turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians);
+    turretMotor.set(-turretPID.calculate(turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians, pos));
+  }
+  public void setTurretEncoderPos(double encoderPos){
+    turretMotor.getEncoder().setPosition(encoderPos);
+  }
+
   public void setTiltPos(double pos){
+    tiltMotor.set(-tiltPID.calculate(tiltMotor.getEncoder().getPosition(), pos));
+  }
+  public void setEncoderTiltPos(double pos){
     tiltMotor.getEncoder().setPosition(pos);
   }
-  public void setTurretPos(double pos){
-    turretMotor.set(-turretPID.calculate(turretMotor.getEncoder().getPosition() * ShooterConstants.encoderToRadians,pos));
-  }
-  public void setTurretEncoderPosition(double encoderPos){
-    turretMotor.getEncoder().setPosition(encoderPos);
+
+  public double getCurrentTurretAngle() {
+    return turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians;
   }
 
   public double[] calculateShootingAnglesWithOfficialOffset() {
@@ -111,70 +111,8 @@ public class Shooter extends SubsystemBase {
     return new double[]{angleError, Math.sqrt(hubX*hubX+hubY*hubY+hubZ*hubZ)};
   }
 
-  public double getCurrentTurretAngle() {
-    return turretMotor.getEncoder().getPosition() * ShooterConstants.encoderToRadians;
-  }
-
-  public double getCurrentTiltAngle() {
-    double rotations = tiltMotor.getEncoder().getPosition();
-    if (rotations < -0.5)
-      rotations += 1;
-    return rotations * 2 * Math.PI * ShooterConstants.tiltGearRatio;
-  }
-
-  public boolean shooterHasTag() {
-    return shooterCamera.getLatestResult().hasTargets();
-  }
-
-  public int frontTagID() {
-    if (shooterHasTag()) {
-      return shooterCamera.getLatestResult().getBestTarget().getFiducialId();
-    }
-    return -1;
-  }
-
   @Override
   public void periodic() {
-    // SmartDashboard.putNumber("Shooter Pos", shooterMotor.getEncoder().getPosition());
-    // SmartDashboard.putNumber("Turret Pos", turretMotor.getEncoder().getPosition() * ShooterConstants.encoderToRadians);
-    // SmartDashboard.putNumber("Tilt Pos", tiltMotor.getEncoder().getPosition());
-    // SmartDashboard.putNumber("Absolute Tilt Pos", tiltMotor.getAlternateEncoder().getPosition());
-    // SmartDashboard.putNumber("Turret Angle", getCurrentTurretAngle());
-    // SmartDashboard.putNumber("Tilt Angle", getCurrentTiltAngle());
-    // SmartDashboard.putNumber("Shooter Velocity", shooterMotor.getEncoder().getVelocity());
-    // SmartDashboard.putNumber("Shooter Current", shooterMotor.getOutputCurrent());
-
-    // SmartDashboard.putNumber("Shooter Speed", shooterMotor.get());
-    // SmartDashboard.putNumber("Turret Speed", turretMotor.get());
-    // SmartDashboard.putNumber("Tilt Speed", tiltMotor.get());
-
-
-    // SmartDashboard.putBoolean("Shooter Camera Has Tag? ", shooterHasTag());
-    // SmartDashboard.putNumber("Which tag does it have? ", frontTagID());
-
-
-    
-
-    // PhotonPipelineResult result = shooterCamera.getLatestResult();
-    // if (result.hasTargets()){
-
-    //   Transform3d cameraToAprilTag = result.getBestTarget().bestCameraToTarget;
-
-    //   double[] angles = calculateShootingAnglesWithOfficialOffset();
-    //   SmartDashboard.putNumber("April Tag X", cameraToAprilTag.getX());
-    //   SmartDashboard.putNumber("April Tag Y", cameraToAprilTag.getY());
-    //   SmartDashboard.putNumber("April Tag Z", cameraToAprilTag.getZ());
-    //   SmartDashboard.putNumber("Yaw:", angles[0]);
-    //   SmartDashboard.putNumber("Pitch:", angles[1]);
-
-    // }
-    // else{
-    //   SmartDashboard.putNumber("April Tag X", 0);
-    //   SmartDashboard.putNumber("April Tag Y", 0);
-    //   SmartDashboard.putNumber("April Tag Z", 0);
-    //   SmartDashboard.putNumber("Yaw:", 0);
-    //   SmartDashboard.putNumber("Pitch:", 0);
-
-    // }
+    SmartDashboard.putNumber("turretPos",turretMotor.getEncoder().getPosition());
   }
 }
