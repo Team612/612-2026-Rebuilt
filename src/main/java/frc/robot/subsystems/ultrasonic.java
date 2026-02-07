@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.io.IOException;
+
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.I2C;
@@ -16,14 +18,22 @@ public class ultrasonic extends SubsystemBase {
   public ultrasonic() {
     m_sensor = new Ultrasonic(0, 1);
   }
-  public double getDistance() {
+  public double getDistance() throws IOException {
+    if (!m_sensor.isEnabled()) m_sensor.setEnabled(true);
+    if (!m_sensor.isRangeValid()) return 0.0;
     return m_sensor.getRangeMM()*1000;
   }
-  public double getDistanceInch() {
+  public double getDistanceInch() throws IOException {
+    if (!m_sensor.isEnabled()) m_sensor.setEnabled(true);
+    if (!m_sensor.isRangeValid()) return 0.0;
     return m_sensor.getRangeInches();
   }
   @Override
   public void periodic() {
-    System.out.printf("The distance, in meters is: %.15f\n", getDistance());
+    try {
+      System.out.printf("The distance, in meters is: %.15f\n", getDistance());
+    } catch (IOException e) {
+      System.out.println(e);
+    }
   }
 }
