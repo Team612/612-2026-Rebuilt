@@ -27,9 +27,9 @@ public final class Constants {
   }
 
     public static class ShooterConstants{
-    public static final int shooterMotorID = 8;
+    public static final int shooterMotorID = 2;
     public static final int turretMotorID = 17;
-    public static final int tiltMotorID = 1;
+    public static final int tiltMotorID = 8;
     public static final int cancoderID = 1; // this is a guess verify before running
 
     public static final String shooterCameraName = "PC_Camera";
@@ -45,7 +45,7 @@ public final class Constants {
     public static final double largestTurretAngle = Math.PI/2;
     public static final double smallestTurretAngle = -Math.PI/2;
 
-    public static final double turretKp = 0.21;
+    public static final double turretKp = 0.42;
     public static final double turretKi = 0;
     public static final double turretKd = 0;
     public static final double turretGearRatio = 200.0 / 20.0;
@@ -61,6 +61,6 @@ public final class Constants {
   public static class VisionConstants {
     public static final int CANdleID = 1;
     public static final String shooterCamera = "PC_Camera";
-    public static final Transform3d shooterCameraTransform = new Transform3d(0.15,0,0.2, new Rotation3d(0,0,0));
+    public static final Transform3d shooterCameraTransform = new Transform3d(-0.15,0,-0.2, new Rotation3d(0,0,0));
   }
 }

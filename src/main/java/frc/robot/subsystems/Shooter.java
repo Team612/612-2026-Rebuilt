@@ -50,8 +50,8 @@ public class Shooter extends SubsystemBase {
     turretMotor.set(speed);
   }
   
-  public void setTiltPos(double positionInRad){
-
+  public void setTiltPos(double pos){
+    tiltMotor.getEncoder().setPosition(pos);
   }
   public void setTurretPos(double pos){
     turretMotor.set(-turretPID.calculate(turretMotor.getEncoder().getPosition() * ShooterConstants.encoderToRadians,pos));
@@ -74,22 +74,22 @@ public class Shooter extends SubsystemBase {
     double hubOffsetZ = 0.0;
 
     switch (tagID) {
-      case 9:  // Red Hub - center
-        hubOffsetX = -0.6034024;
-        hubOffsetY = 0.0;
-        hubOffsetZ = 0.309650003;
-        break;
-      case 10: // Red Hub - offset
-        hubOffsetX = -0.6034024;
-        hubOffsetY = 0.3556;
-        hubOffsetZ = 0.309650003;
-        break;
-      case 25: // Blue Hub - center
+      case 10:  // Red Hub - center
         hubOffsetX = 0.6034024;
         hubOffsetY = 0.0;
         hubOffsetZ = 0.309650003;
         break;
-      case 26: // Blue Hub - offset
+      case 9: // Red Hub - offset
+        hubOffsetX = 0.6034024;
+        hubOffsetY = -0.3556;
+        hubOffsetZ = 0.309650003;
+        break;
+      case 26: // Blue Hub - center
+        hubOffsetX = 0.6034024;
+        hubOffsetY = 0.0;
+        hubOffsetZ = 0.309650003;
+        break;
+      case 25: // Blue Hub - offset
         hubOffsetX = 0.6034024;
         hubOffsetY = -0.3556;
         hubOffsetZ = 0.309650003;
@@ -99,6 +99,7 @@ public class Shooter extends SubsystemBase {
       return new double[]{-1, -1};
 
     Transform3d tagPoseCam = target.getBestCameraToTarget();
+
     Transform3d tagPoseShooter = tagPoseCam.plus(VisionConstants.shooterCameraTransform);
 
     double hubX = tagPoseShooter.getTranslation().getX() + hubOffsetX;
@@ -134,45 +135,46 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Shooter Pos", shooterMotor.getEncoder().getPosition());
-    SmartDashboard.putNumber("Turret Pos", turretMotor.getEncoder().getPosition() * ShooterConstants.encoderToRadians);
-    SmartDashboard.putNumber("Tilt Pos", tiltMotor.getEncoder().getPosition());
-    SmartDashboard.putNumber("Turret Angle", getCurrentTurretAngle());
-    SmartDashboard.putNumber("Tilt Angle", getCurrentTiltAngle());
-    SmartDashboard.putNumber("Shooter Velocity", shooterMotor.getEncoder().getVelocity());
-    SmartDashboard.putNumber("Shooter Current", shooterMotor.getOutputCurrent());
+    // SmartDashboard.putNumber("Shooter Pos", shooterMotor.getEncoder().getPosition());
+    // SmartDashboard.putNumber("Turret Pos", turretMotor.getEncoder().getPosition() * ShooterConstants.encoderToRadians);
+    // SmartDashboard.putNumber("Tilt Pos", tiltMotor.getEncoder().getPosition());
+    // SmartDashboard.putNumber("Absolute Tilt Pos", tiltMotor.getAlternateEncoder().getPosition());
+    // SmartDashboard.putNumber("Turret Angle", getCurrentTurretAngle());
+    // SmartDashboard.putNumber("Tilt Angle", getCurrentTiltAngle());
+    // SmartDashboard.putNumber("Shooter Velocity", shooterMotor.getEncoder().getVelocity());
+    // SmartDashboard.putNumber("Shooter Current", shooterMotor.getOutputCurrent());
 
-    SmartDashboard.putNumber("Shooter Speed", shooterMotor.get());
-    SmartDashboard.putNumber("Turret Speed", turretMotor.get());
-    SmartDashboard.putNumber("Tilt Speed", tiltMotor.get());
+    // SmartDashboard.putNumber("Shooter Speed", shooterMotor.get());
+    // SmartDashboard.putNumber("Turret Speed", turretMotor.get());
+    // SmartDashboard.putNumber("Tilt Speed", tiltMotor.get());
 
 
-    SmartDashboard.putBoolean("Shooter Camera Has Tag? ", shooterHasTag());
-    SmartDashboard.putNumber("Which tag does it have? ", frontTagID());
+    // SmartDashboard.putBoolean("Shooter Camera Has Tag? ", shooterHasTag());
+    // SmartDashboard.putNumber("Which tag does it have? ", frontTagID());
 
 
     
 
-    PhotonPipelineResult result = shooterCamera.getLatestResult();
-    if (result.hasTargets()){
+    // PhotonPipelineResult result = shooterCamera.getLatestResult();
+    // if (result.hasTargets()){
 
-      Transform3d cameraToAprilTag = result.getBestTarget().bestCameraToTarget;
+    //   Transform3d cameraToAprilTag = result.getBestTarget().bestCameraToTarget;
 
-      double[] angles = calculateShootingAnglesWithOfficialOffset();
-      SmartDashboard.putNumber("April Tag X", cameraToAprilTag.getX());
-      SmartDashboard.putNumber("April Tag Y", cameraToAprilTag.getY());
-      SmartDashboard.putNumber("April Tag Z", cameraToAprilTag.getZ());
-      SmartDashboard.putNumber("Yaw:", angles[0]);
-      SmartDashboard.putNumber("Pitch:", angles[1]);
+    //   double[] angles = calculateShootingAnglesWithOfficialOffset();
+    //   SmartDashboard.putNumber("April Tag X", cameraToAprilTag.getX());
+    //   SmartDashboard.putNumber("April Tag Y", cameraToAprilTag.getY());
+    //   SmartDashboard.putNumber("April Tag Z", cameraToAprilTag.getZ());
+    //   SmartDashboard.putNumber("Yaw:", angles[0]);
+    //   SmartDashboard.putNumber("Pitch:", angles[1]);
 
-    }
-    else{
-      SmartDashboard.putNumber("April Tag X", 0);
-      SmartDashboard.putNumber("April Tag Y", 0);
-      SmartDashboard.putNumber("April Tag Z", 0);
-      SmartDashboard.putNumber("Yaw:", 0);
-      SmartDashboard.putNumber("Pitch:", 0);
+    // }
+    // else{
+    //   SmartDashboard.putNumber("April Tag X", 0);
+    //   SmartDashboard.putNumber("April Tag Y", 0);
+    //   SmartDashboard.putNumber("April Tag Z", 0);
+    //   SmartDashboard.putNumber("Yaw:", 0);
+    //   SmartDashboard.putNumber("Pitch:", 0);
 
-    }
+    // }
   }
 }

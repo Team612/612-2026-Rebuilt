@@ -1,7 +1,9 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.Shooter;
@@ -15,7 +17,7 @@ public class AutoTurretAim extends Command {
 
   // this is a stand in for the drivetrain replace when done
   public Pose2d getPose(){
-    return new Pose2d();
+    return new Pose2d(0,4.034536,new Rotation2d());
   }
 
   public AutoTurretAim(Shooter m_shooter) {
@@ -53,6 +55,9 @@ public class AutoTurretAim extends Command {
     }
     else {
       double desiredTheta = m_shooter.getCurrentTurretAngle() + m_shooter.calculateShootingAnglesWithOfficialOffset()[0];
+
+      SmartDashboard.putNumber("hubTheta",m_shooter.calculateShootingAnglesWithOfficialOffset()[0]);
+      SmartDashboard.putNumber("hubDist",m_shooter.calculateShootingAnglesWithOfficialOffset()[1]);
 
       Math.IEEEremainder(desiredTheta,2*Math.PI);
 
