@@ -1,17 +1,22 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+public class linetracker extends TimedRobot {
 
-public class linetracker extends SubsystemBase {
-  /** Creates a new linetracker. */
-  public linetracker() {}
+    private final AnalogInput leftSensor = new AnalogInput(0);
+    private final AnalogInput centerSensor = new AnalogInput(1);
+    private final AnalogInput rightSensor = new AnalogInput(2);
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
+    @Override
+    public void teleopPeriodic() {
+
+        int leftVal = leftSensor.getValue();
+        int centerVal = centerSensor.getValue();
+        int rightVal = rightSensor.getValue();
+        SmartDashboard.putNumber("Left Sensor", leftVal);
+        SmartDashboard.putNumber("Center Sensor", centerVal);
+        SmartDashboard.putNumber("Right Sensor", rightVal);
+    }
 }
