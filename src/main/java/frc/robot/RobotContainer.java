@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.ArcadeClimb;
 import frc.robot.commands.L1;
+import frc.robot.commands.L1Descend;
+
 import frc.robot.subsystems.Climb;
 
 public class RobotContainer {
@@ -29,7 +31,8 @@ public class RobotContainer {
   public Command getAutonoumousCommand() {
     return new SequentialCommandGroup(
       //new ArcadeClimb(climb, climbController)
-      //new L1(climb).withTimeout(12)
+      //new L1(climb).withTimeout(12),
+      //new L1Descend(climb).withTimeout(12)
     );
   }
 }

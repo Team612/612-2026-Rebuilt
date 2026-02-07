@@ -10,6 +10,7 @@ public class L1 extends Command {
   double rotation;
 
   public L1(Climb m_climb) {
+    m_climb.SetMotor(0);
     this.m_climb = m_climb;
     addRequirements(m_climb);
   }
