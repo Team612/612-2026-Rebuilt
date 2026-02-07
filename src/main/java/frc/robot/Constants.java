@@ -30,9 +30,8 @@ public final class Constants {
     public static final DifferentialDriveKinematics driveKinematics = new DifferentialDriveKinematics(trackWidth);
 
 
-    public static final double maxAttainableSpeed = 5;
+    public static final double maxAttainableSpeed = 5.0; 
   }
-
 
   public static class IntakeConstants{
     public static final int INTAKE_MOTOR_ID = 10; // this is a guess

@@ -137,7 +137,7 @@ public class TankDrive extends SubsystemBase {
 
   // drives the robot using a m/s ChassisSpeed
   public void driveRobotRelative(ChassisSpeeds speeds) {
-    drive(new ChassisSpeeds(speeds.vxMetersPerSecond / DriveConstants.maxAttainableSpeed, 0, speeds.omegaRadiansPerSecond));
+    drive(new ChassisSpeeds(speeds.vxMetersPerSecond, 0, speeds.omegaRadiansPerSecond));
   }
 
 
@@ -145,12 +145,20 @@ public class TankDrive extends SubsystemBase {
   public void drive(ChassisSpeeds speeds) {
     DifferentialDriveWheelSpeeds wheelSpeeds = DriveConstants.driveKinematics.toWheelSpeeds(speeds);
 
+    wheelSpeeds.desaturate(DriveConstants.maxAttainableSpeed);
 
-    wheelSpeeds.desaturate(1);
+    double leftPercent = clip(wheelSpeeds.leftMetersPerSecond / DriveConstants.maxAttainableSpeed, -1.0, 1.0);
+    double rightPercent = clip(wheelSpeeds.rightMetersPerSecond / DriveConstants.maxAttainableSpeed, -1.0, 1.0);
 
+    leftMotor.set(leftPercent);
+    rightMotor.set(rightPercent);
 
-    leftMotor.set(wheelSpeeds.leftMetersPerSecond);
-    rightMotor.set(wheelSpeeds.rightMetersPerSecond);
+    SmartDashboard.putNumber("leftPercentCmd", leftPercent);
+    SmartDashboard.putNumber("rightPercentCmd", rightPercent);
+  }
+
+  private double clip(double v, double lo, double hi) {
+    return Math.max(lo, Math.min(hi, v));
   }
 
 
