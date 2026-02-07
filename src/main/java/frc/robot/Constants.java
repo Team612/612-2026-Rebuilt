@@ -61,6 +61,6 @@ public final class Constants {
   public static class VisionConstants {
     public static final int CANdleID = 1;
     public static final String shooterCamera = "PC_Camera";
-    public static final Transform3d shooterCameraTransform = new Transform3d(0,0,0, new Rotation3d(0,0,0));
+    public static final Transform3d shooterCameraTransform = new Transform3d(0.15,0,0.2, new Rotation3d(0,0,0));
   }
 }

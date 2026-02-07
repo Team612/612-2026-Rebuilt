@@ -11,6 +11,8 @@ public class AutoTurretAim extends Command {
   private Shooter m_shooter;
   private boolean red;
 
+  private double hubXpos;
+
   // this is a stand in for the drivetrain replace when done
   public Pose2d getPose(){
     return new Pose2d();
@@ -27,17 +29,16 @@ public class AutoTurretAim extends Command {
       if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
         red = true;
     }
+    if (red)
+      hubXpos = OperatorConstants.redHubXPos;
+    else 
+      hubXpos = OperatorConstants.blueHubXPos;
+
   }
 
   @Override
   public void execute() {
     if ((m_shooter.calculateShootingAnglesWithOfficialOffset()[0] == -1) && (m_shooter.calculateShootingAnglesWithOfficialOffset()[1] == -1)){
-      double hubXpos = 0;
-      if (red)
-        hubXpos = OperatorConstants.redHubXPos;
-      else 
-        hubXpos = OperatorConstants.blueHubXPos;
-
       Pose2d robotPos = getPose();
   
       double xdiff = hubXpos - robotPos.getX();

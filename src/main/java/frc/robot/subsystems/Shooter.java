@@ -35,7 +35,7 @@ public class Shooter extends SubsystemBase {
   private PIDController turretPID = new PIDController(ShooterConstants.turretKp, 0, 0);
 
   public Shooter() {
-    turretPID.enableContinuousInput(-Math.PI,Math.PI);
+    // turretPID.enableContinuousInput(-Math.PI,Math.PI);
     tiltControllerConfig.closedLoop.p(ShooterConstants.tiltKp).i(ShooterConstants.tiltKi).d(ShooterConstants.tiltKd).outputRange(-0.5, 0.5);
     tiltMotor.configure(tiltControllerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
@@ -63,67 +63,51 @@ public class Shooter extends SubsystemBase {
   public double[] calculateShootingAnglesWithOfficialOffset() {
     PhotonPipelineResult result = shooterCamera.getLatestResult();
     if (!result.hasTargets()) {
-        return new double[]{-1, -1};
+      return new double[]{-1, -1};
     }
     PhotonTrackedTarget target = shooterCamera.getLatestResult().getBestTarget();
 
     int tagID = target.getFiducialId();
 
+    double hubOffsetX = 0.0;
+    double hubOffsetY = 0.0;
+    double hubOffsetZ = 0.0;
+
+    switch (tagID) {
+      case 9:  // Red Hub - center
+        hubOffsetX = -0.6034024;
+        hubOffsetY = 0.0;
+        hubOffsetZ = 0.309650003;
+        break;
+      case 10: // Red Hub - offset
+        hubOffsetX = -0.6034024;
+        hubOffsetY = 0.3556;
+        hubOffsetZ = 0.309650003;
+        break;
+      case 25: // Blue Hub - center
+        hubOffsetX = 0.6034024;
+        hubOffsetY = 0.0;
+        hubOffsetZ = 0.309650003;
+        break;
+      case 26: // Blue Hub - offset
+        hubOffsetX = 0.6034024;
+        hubOffsetY = -0.3556;
+        hubOffsetZ = 0.309650003;
+        break;
+    }
+    if (hubOffsetZ == 0)
+      return new double[]{-1, -1};
+
     Transform3d tagPoseCam = target.getBestCameraToTarget();
     Transform3d tagPoseShooter = tagPoseCam.plus(VisionConstants.shooterCameraTransform);
 
-    double tagX = tagPoseShooter.getTranslation().getX();
-    double tagY = tagPoseShooter.getTranslation().getY();
+    double hubX = tagPoseShooter.getTranslation().getX() + hubOffsetX;
+    double hubY = tagPoseShooter.getTranslation().getY() + hubOffsetY;
+    double hubZ = tagPoseShooter.getTranslation().getZ() + hubOffsetZ;
 
-    double angleError = -(Math.atan2(tagX,tagY)-(Math.PI/2));
+    double angleError = -(Math.atan2(hubX,hubY)-(Math.PI/2));
 
-    double hubOffsetX = 0.0;
-    double hubOffsetY = 0.0;
-
-    // switch (tagID) {
-    //   case 9:  // Red Hub - Front, lower
-    //     hubOffsetX = 23.77;   // 492.88 - 469.11
-    //     hubOffsetY = -14.0;   // 144.84 - 158.84
-    //     hubOffsetZ = 44.25;
-    //     break;
-    //   case 10: // Red Hub - Front, center
-    //     hubOffsetX = 23.77;   // 492.88 - 469.11
-    //     hubOffsetY = 0.0;     // 158.84 - 158.84
-    //     hubOffsetZ = 44.25;
-    //     break;
-    //   case 25: // Blue Hub - Back, upper
-    //     hubOffsetX = -9.77;   // 158.34 - 168.11
-    //     hubOffsetY = 14.0;    // 172.84 - 158.84
-    //     hubOffsetZ = 44.25;
-    //     break;
-    //   case 26: // Blue Hub - Back, center
-    //     hubOffsetX = -9.77;   // 158.34 - 168.11
-    //     hubOffsetY = 0.0;     // 158.84 - 158.84
-    //     hubOffsetZ = 44.25;
-    //     break;
-    //   default:
-    //     hubOffsetX = 0.0;
-    //     hubOffsetY = 0.0;
-    //     hubOffsetZ = 0.0;
-    //     break;
-    // }
-
-    double targetX = tagX + hubOffsetX;
-    double targetY = tagY + hubOffsetY;
-    double shooterHeight = ShooterConstants.kShooterHeightMeters;
-
-    double yawRad = Math.atan2(targetX, targetY-shooterHeight);
-    double yawDeg = Math.toDegrees(yawRad);
-
-    // double horizontalDistance = Math.sqrt(targetX * targetX + targetZ * targetZ);
-
-
-    SmartDashboard.putNumber("Calculated Turret Yaw", yawDeg);
-    SmartDashboard.putNumber("Calculated Turret Yaw Radians", yawRad);
-    SmartDashboard.putNumber("Calculated Shooter Pitch Radians", yawRad);
-
-
-    return new double[]{angleError, 0};
+    return new double[]{angleError, Math.sqrt(hubX*hubX+hubY*hubY+hubZ*hubZ)};
   }
 
   public double getCurrentTurretAngle() {
@@ -135,13 +119,6 @@ public class Shooter extends SubsystemBase {
     if (rotations < -0.5)
       rotations += 1;
     return rotations * 2 * Math.PI * ShooterConstants.tiltGearRatio;
-  }
-
-  public double tagOff(){
-    PhotonPipelineResult result = shooterCamera.getLatestResult();
-    if (!result.hasTargets())
-      return 0;
-    return Math.atan2(result.getBestTarget().getBestCameraToTarget().getX(),result.getBestTarget().getBestCameraToTarget().getY());
   }
 
   public boolean shooterHasTag() {
