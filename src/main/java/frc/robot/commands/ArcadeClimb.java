@@ -33,7 +33,6 @@ public class ArcadeClimb extends Command {
 
   @Override
   public boolean isFinished() {
-
     return false;
   }
 }

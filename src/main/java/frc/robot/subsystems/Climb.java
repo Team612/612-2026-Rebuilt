@@ -4,8 +4,7 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -13,7 +12,7 @@ import frc.robot.Constants.ClimbConstants;
 
 public class Climb extends SubsystemBase {
 
-  private SparkMax motor = new SparkMax(ClimbConstants.climbMotorID, MotorType.kBrushless);
+  private TalonFX motor = new TalonFX(ClimbConstants.climbMotorID);
 
   public Climb() {}
 
@@ -22,11 +21,12 @@ public class Climb extends SubsystemBase {
   }
   
   public double getMotorPosition() {
-    return motor.getEncoder().getPosition();
+    return motor.getPosition().getValueAsDouble();
   }
+  public void resetEncoder() {}
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("climbPos",motor.getEncoder().getPosition());
+    SmartDashboard.putNumber("climbPos",motor.getPosition().getValueAsDouble());
   }
 }

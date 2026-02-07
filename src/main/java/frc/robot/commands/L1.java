@@ -1,23 +1,21 @@
 package frc.robot.commands;
 
-import frc.robot.Constants;
+import frc.robot.Constants.ClimbConstants;
 import frc.robot.subsystems.Climb;
 
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class L1 extends Command {
-  Climb m_climb;
-  double rotation;
+  private Climb m_climb;
 
   public L1(Climb m_climb) {
-    m_climb.SetMotor(0);
     this.m_climb = m_climb;
     addRequirements(m_climb);
   }
 
   @Override
   public void initialize() {
-    m_climb.SetMotor(0.5);
+    m_climb.SetMotor(ClimbConstants.climbSpeed);
   }
 
   @Override
@@ -30,7 +28,7 @@ public class L1 extends Command {
 
   @Override
   public boolean isFinished() {
-    if(m_climb.getMotorPosition() >= Constants.ClimbConstants.l1Distance) {
+    if(m_climb.getMotorPosition() >= ClimbConstants.l1Distance) {
       return true;
     }
     return false;

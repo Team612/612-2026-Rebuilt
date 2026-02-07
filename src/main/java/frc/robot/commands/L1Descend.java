@@ -1,6 +1,5 @@
 package frc.robot.commands;
 
-import frc.robot.Constants;
 import frc.robot.subsystems.Climb;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -8,10 +7,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 public class L1Descend extends Command {
     Climb m_climb;
-    double rotation;
 
     public L1Descend(Climb m_climb) {
-        m_climb.SetMotor(0);
         this.m_climb = m_climb;
         addRequirements(m_climb);
     }
