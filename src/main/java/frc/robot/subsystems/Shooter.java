@@ -8,7 +8,9 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
@@ -98,17 +100,32 @@ public class Shooter extends SubsystemBase {
     if (hubOffsetZ == 0)
       return new double[]{-1, -1};
 
-    Transform3d tagPoseCam = target.getBestCameraToTarget();
+    Transform3d camToAprilTag = target.getBestCameraToTarget();
 
-    Transform3d tagPoseShooter = tagPoseCam.plus(VisionConstants.shooterCameraTransform);
+    Transform3d shooterToAprilTag = camToAprilTag.plus(VisionConstants.shooterCameraTransform);
 
-    double hubX = tagPoseShooter.getTranslation().getX() + hubOffsetX;
-    double hubY = tagPoseShooter.getTranslation().getY() + hubOffsetY;
-    double hubZ = tagPoseShooter.getTranslation().getZ() + hubOffsetZ;
+    // potentially more elegant way to program it
+    // Transform3d shooterToAprilTag = VisionConstants.shooterCameraTransform.plus(camToAprilTag);
 
-    double angleError = -(Math.atan2(hubX,hubY)-(Math.PI/2));
+    // Transform3d tagToHub =
+    // new Transform3d(
+    //   new Translation3d(hubOffsetX, hubOffsetY, hubOffsetZ),
+    //   new Rotation3d()
+    // );
 
-    return new double[]{angleError, Math.sqrt(hubX*hubX+hubY*hubY+hubZ*hubZ)};
+    // Transform3d shooterToHub = shooterToAprilTag.plus(tagToHub);
+
+    // double shooterToHubX = shooterToHub.getX();
+    // double shooterToHubY = shooterToHub.getY();
+    // double shooterToHubZ = shooterToHub.getZ();
+
+    double shooterToHubX = shooterToAprilTag.getX() + Math.cos(target.getYaw())*hubOffsetX + Math.sin(target.getYaw())*hubOffsetY;
+    double shooterToHubY = shooterToAprilTag.getY() + Math.sin(target.getYaw())*hubOffsetX - Math.cos(target.getYaw())*hubOffsetY;
+    double shooterToHubZ = shooterToAprilTag.getZ() + hubOffsetZ;
+
+    double angleError = -(Math.atan2(shooterToHubX,shooterToHubY)-(Math.PI/2));
+
+    return new double[]{angleError, Math.sqrt(shooterToHubX*shooterToHubX+shooterToHubY*shooterToHubY+shooterToHubZ*shooterToHubZ)};
   }
 
   @Override
