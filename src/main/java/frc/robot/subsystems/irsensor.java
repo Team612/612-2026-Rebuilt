@@ -2,12 +2,14 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.SharpIR;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
 public class irsensor extends SubsystemBase {
 
-  
+  DigitalInput irSensor = new DigitalInput(0);
+  SharpIR distanceSensor = SharpIR.GP2Y0A21YK0F(0);
   private static I2C.Port i2cPort = I2C.Port.kOnboard;
     
       private final boolean m_inverted;
@@ -29,9 +31,15 @@ public class irsensor extends SubsystemBase {
     boolean raw = getRaw();
     return m_inverted ? !raw : raw;
   }
-
+  public double getDistance() {
+    return distanceSensor.getRangeCM();
+  }
+  public boolean isThere() {
+    return irSensor.get();
+  }
   @Override
   public void periodic() {
-    System.out.printf("IR digital: %s%n", isDetected() ? "DETECTED" : "CLEAR");
+    // System.out.printf("IR digital: %s%n", isDetected() ? "DETECTED" : "CLEAR");
+    System.out.println(isThere() + " - " + getDistance());
   }
 }
