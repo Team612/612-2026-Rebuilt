@@ -11,6 +11,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
@@ -27,6 +28,9 @@ public class Shooter extends SubsystemBase {
   private PIDController turretPID = new PIDController(ShooterConstants.turretKp, ShooterConstants.turretKi, ShooterConstants.turretKd);
   private PIDController tiltPID = new PIDController(ShooterConstants.tiltKp,ShooterConstants.tiltKi,ShooterConstants.tiltKd);
 
+  private DigitalInput rightLimit = new DigitalInput(ShooterConstants.rightLimitDIO);
+  private DigitalInput leftLimit = new DigitalInput(ShooterConstants.leftLimitDIO);
+
   public Shooter() {
     turretPID.setIZone(0.1);
     tiltPID.setIZone(0.02);
@@ -36,6 +40,12 @@ public class Shooter extends SubsystemBase {
     shooterMotor.set(speed);
   }
   public void setTurretMotor(double speed){
+    if(leftLimitPressed() && speed<0) {
+      speed=0;
+    }
+    if(rightLimitPressed() && speed>0) {
+      speed=0;
+    }
     turretMotor.set(speed);
   }
   public void setTiltMotor(double speed){
@@ -60,6 +70,19 @@ public class Shooter extends SubsystemBase {
 
   public double getCurrentTurretAngle() {
     return turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians;
+  }
+
+  public boolean rightLimitPressed() {
+    if(!rightLimit.get()) {
+      setTurretEncoderPos(ShooterConstants.rightLimit);
+    }
+    return !rightLimit.get(); 
+  }
+  public boolean leftLimitPressed() {
+    if(!leftLimit.get()) {
+      setTurretEncoderPos(ShooterConstants.leftLimit);
+    }
+    return !leftLimit.get(); 
   }
 
   public double[] calculateShootingAnglesWithOfficialOffset() {

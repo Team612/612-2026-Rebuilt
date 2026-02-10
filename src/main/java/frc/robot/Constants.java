@@ -54,6 +54,11 @@ public final class Constants {
     public static final double tiltKd = 0;
 
     public static final double turretEncoderToRadians = -0.628152;
+
+    public static final int rightLimitDIO = 0;
+    public static final int leftLimitDIO = 0;
+    public static final double rightLimit = -Math.PI/3;
+    public static final double leftLimit = Math.PI/3;
   }
 
   public static class VisionConstants {
