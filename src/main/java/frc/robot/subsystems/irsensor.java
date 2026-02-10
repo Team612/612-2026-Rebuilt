@@ -1,25 +1,29 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
 public class irsensor extends SubsystemBase {
-  private final DigitalInput m_sensor;
-  private final boolean m_inverted;
 
-  public irsensor() {
-    this(0, false);
-  }
- 
-  public irsensor(int channel, boolean inverted) {
-    m_sensor = new DigitalInput(channel);
+  
+  private static I2C.Port i2cPort = I2C.Port.kOnboard;
+    
+      private final boolean m_inverted;
+    
+      public irsensor() {
+        this(i2cPort, false);
+    }
+   
+    public irsensor(I2C.Port channel, boolean inverted) {
+      i2cPort = channel;
     m_inverted = inverted;
   }
 
   
   public boolean getRaw() {
-    return m_sensor.get();
+    return m_inverted;
   }
   public boolean isDetected() {
     boolean raw = getRaw();

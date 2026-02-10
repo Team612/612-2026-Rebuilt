@@ -25,9 +25,7 @@ public class colorsensor extends TimedRobot {
     double IR = m_colorSensor.getIR();
 
 
-    SmartDashboard.putNumber("Red", detectedColor.red);
-    SmartDashboard.putNumber("Green", detectedColor.green);
-    SmartDashboard.putNumber("Blue", detectedColor.blue);
+    SmartDashboard.putString("Detected Color", detectedColor.toString());
     SmartDashboard.putNumber("IR", IR);
 
 

@@ -26,12 +26,11 @@ public class TankDrive extends SubsystemBase {
 
     leftConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     rightConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-
+    
 
     leftConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     rightConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-
-
+    
     leftMotor.getConfigurator().apply(leftConfig);
     rightMotor.getConfigurator().apply(rightConfig);
     leftMotor2.getConfigurator().apply(leftConfig);
