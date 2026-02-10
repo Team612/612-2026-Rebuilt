@@ -8,9 +8,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
@@ -60,6 +58,19 @@ public class Shooter extends SubsystemBase {
 
   public double getCurrentTurretAngle() {
     return turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians;
+  }
+
+  public double getRegressionModelTilt(double distance){
+    double tilt = 0.05333333 * distance - 1.34066666;
+    if (tilt > 0)
+      tilt = 0;
+    if (tilt < -1.33)
+      tilt = -1.33;
+    return tilt;
+  }
+
+  public double getRegressionModelDutyCycle(double distance){
+    return -0.00639338*distance*distance+0.10147*distance+0.401483;
   }
 
   public double[] calculateShootingAnglesWithOfficialOffset() {
@@ -121,11 +132,11 @@ public class Shooter extends SubsystemBase {
 
     double shooterToHubX = shooterToAprilTag.getX() + Math.cos(target.getYaw())*hubOffsetX + Math.sin(target.getYaw())*hubOffsetY;
     double shooterToHubY = shooterToAprilTag.getY() + Math.sin(target.getYaw())*hubOffsetX - Math.cos(target.getYaw())*hubOffsetY;
-    double shooterToHubZ = shooterToAprilTag.getZ() + hubOffsetZ;
+    // double shooterToHubZ = shooterToAprilTag.getZ() + hubOffsetZ;
 
     double angleError = -(Math.atan2(shooterToHubX,shooterToHubY)-(Math.PI/2));
 
-    return new double[]{angleError, Math.sqrt(shooterToHubX*shooterToHubX+shooterToHubY*shooterToHubY+shooterToHubZ*shooterToHubZ)};
+    return new double[]{angleError, Math.sqrt(shooterToHubX*shooterToHubX+shooterToHubY*shooterToHubY)};
   }
 
   @Override

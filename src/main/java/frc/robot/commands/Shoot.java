@@ -1,3 +1,7 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -7,21 +11,21 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.Shooter;
 
-public class AutoTurretAim extends Command {
+/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
+public class Shoot extends Command {
 
   private Shooter m_shooter;
-  private boolean red;
 
+  private boolean red;
   private double hubXpos;
 
-  // this is a stand in for the drivetrain replace when done
+    // this is a stand in for the drivetrain replace when done
   public Pose2d getPose(){
     return new Pose2d(0,4.034536,new Rotation2d());
-  }
+  } 
 
-  public AutoTurretAim(Shooter m_shooter) {
+  public Shoot(Shooter m_shooter) {
     this.m_shooter = m_shooter;
-    addRequirements(m_shooter);
   }
 
   @Override
@@ -34,7 +38,6 @@ public class AutoTurretAim extends Command {
       hubXpos = OperatorConstants.redHubXPos;
     else 
       hubXpos = OperatorConstants.blueHubXPos;
-
   }
 
   @Override
@@ -44,27 +47,18 @@ public class AutoTurretAim extends Command {
   
       double xdiff = hubXpos - robotPos.getX();
       double ydiff = OperatorConstants.hubYPos - robotPos.getY();
-
-      double desiredTheta = Math.atan2(ydiff,xdiff);
-      desiredTheta -= robotPos.getRotation().getRadians();
-
-      Math.IEEEremainder(desiredTheta,2*Math.PI);
-
-      m_shooter.setTurretPos(desiredTheta);
-      m_shooter.setTiltPos(m_shooter.getRegressionModelTilt(Math.sqrt(xdiff*xdiff+ydiff*ydiff)));
+      
+      m_shooter.setShooterMotor(m_shooter.getRegressionModelDutyCycle(Math.sqrt(xdiff*xdiff+ydiff*ydiff)));
     }
-    else {
-      double desiredTheta = m_shooter.getCurrentTurretAngle() + m_shooter.calculateShootingAnglesWithOfficialOffset()[0];
-
-      Math.IEEEremainder(desiredTheta,2*Math.PI);
-
-      m_shooter.setTurretPos(desiredTheta);
-      m_shooter.setTiltPos(m_shooter.getRegressionModelTilt(m_shooter.calculateShootingAnglesWithOfficialOffset()[1]));
+    else{
+      m_shooter.setShooterMotor(m_shooter.getRegressionModelDutyCycle(m_shooter.calculateShootingAnglesWithOfficialOffset()[1]));
     }
   }
 
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    m_shooter.setShooterMotor(0);
+  }
 
   @Override
   public boolean isFinished() {
