@@ -137,7 +137,7 @@ public class Shooter extends SubsystemBase {
       case 9:   // Red Hub - offset (left side)
         hubOffsetX = 0.6034024;
         hubOffsetY = -0.3556;
-        hubOffsetZ = 0.309650003;
+        hubOffsetZ = 0.309650003; 
         break;
       case 11:  // Red Hub - offset (right side)
         hubOffsetX = 0.6034024;
