@@ -134,19 +134,29 @@ public class Shooter extends SubsystemBase {
         hubOffsetY = 0.0;
         hubOffsetZ = 0.309650003;
         break;
-      case 9: // Red Hub - offset
+      case 9:   // Red Hub - offset (left side)
         hubOffsetX = 0.6034024;
         hubOffsetY = -0.3556;
         hubOffsetZ = 0.309650003;
         break;
-      case 26: // Blue Hub - center
+      case 11:  // Red Hub - offset (right side)
+        hubOffsetX = 0.6034024;
+        hubOffsetY = 0.3556;
+        hubOffsetZ = 0.309650003;
+        break;
+      case 26:  // Blue Hub - center
         hubOffsetX = 0.6034024;
         hubOffsetY = 0.0;
         hubOffsetZ = 0.309650003;
         break;
-      case 25: // Blue Hub - offset
+      case 25:  // Blue Hub - offset (left side)
         hubOffsetX = 0.6034024;
         hubOffsetY = -0.3556;
+        hubOffsetZ = 0.309650003;
+        break;
+      case 27:  // Blue Hub - offset (right side)
+        hubOffsetX = 0.6034024;
+        hubOffsetY = 0.3556;
         hubOffsetZ = 0.309650003;
         break;
     }
