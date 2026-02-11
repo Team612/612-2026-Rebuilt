@@ -6,7 +6,9 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArcadeDrive;
+import frc.robot.commands.irsensorcom;
 import frc.robot.subsystems.TankDrive;
+import frc.robot.subsystems.irsensor;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
@@ -20,6 +22,7 @@ public class RobotContainer {
   // }
 
   private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final irsensor m_Irsensor = new irsensor();
 
   public RobotContainer() {
     configureBindings();
@@ -29,6 +32,7 @@ public class RobotContainer {
     new ArcadeDrive(m_tankDrive, 
     () -> m_driverController.getLeftY(), 
     () -> m_driverController.getLeftX());
+    m_driverController.a().whileTrue(new irsensorcom(m_Irsensor));
   }
 
   public Command getAutonomousCommand() {
