@@ -1,3 +1,8 @@
+/**
+ * This code is derived from edu.wpi.first.wpilibj.SharpIR class.
+ * This code will not work with Simulation. Only physical objects will work.
+ */
+
 package frc.robot.subsystems;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -65,6 +70,14 @@ public class irsensor extends SubsystemBase implements AutoCloseable{
     return in_range;
   }
 
+  public double getRawVoltage() { // for optimization
+    // return m_sensor.getVoltage();
+    // for direct calculation use the following:
+    long LSB_Weight = m_sensor.getLSBWeight();
+    int value = m_sensor.getValue();
+    int offset = m_sensor.getOffset();
+    return (LSB_Weight * value - offset) * 1.0e-9;
+  }
   @Override
   public void initSendable(SendableBuilder b) {
     b.setSmartDashboardType("Ultrasonic");
