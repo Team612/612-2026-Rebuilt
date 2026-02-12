@@ -21,7 +21,7 @@ public class irsensorcom extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.printf("%b - %.15f\n", irsensor.isThere(), irsensor.getDistance());
+    System.out.printf("%b - %.15f\n", irsensor.objectExists(), irsensor.getDistanceMeters());
   }
 
   // Called once the command ends or is interrupted.

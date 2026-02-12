@@ -1,38 +1,76 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Micro;
-
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.SharpIR;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+public class irsensor extends SubsystemBase implements AutoCloseable{
 
-public class irsensor extends SubsystemBase {
-  AnalogInput irSensor = new AnalogInput(0);
-  SharpIR distanceSensor = SharpIR.GP2Y0A21YK0F(0);
-  private final I2C.Port i2cPort;
-  private final boolean m_inverted;  
-    public irsensor() {
-      i2cPort = I2C.Port.kOnboard;
-      m_inverted = false;
+  private AnalogInput m_sensor;
+  private final double a, b, min, max;
+  private boolean in_range;
+
+  public static irsensor M2Y0A02(int channel) {
+    return new irsensor(channel, 62.28, -1.092, 20, 150.0);
+  }
+
+  public static irsensor M2Y0A21(int channel) {
+    return new irsensor(channel, 26.449, -1.226, 10.0, 80.0);
+  }
+
+  public static irsensor M2Y0A41(int channel) {
+    return new irsensor(channel, 12.354, -1.07, 4.0, 30.0);
+  }
+
+  public static irsensor M2Y0A51(int channel) {
+    return new irsensor(channel, 5.2819, -1.161, 2.0, 15.0);
+  }
+
+  private irsensor(int channel, double a, double b, double min, double max) {
+    m_sensor = new AnalogInput(channel);
+    this.a = a;
+    this.b = b;
+    this.min = min;
+    this.max = max;
+    SendableRegistry.addLW(this, "IR Sensor", channel);
+  }
+
+  @Override
+  public void close() {
+    SendableRegistry.remove(this);
+    m_sensor.close();
+    m_sensor = null;
+  }
+
+  public int getChannel() {
+    return m_sensor.getChannel();
+  }
+
+  public double getDistanceMeters() {
+    var v = Math.max(m_sensor.getVoltage(), 0.00001);
+    double distance = a*Math.pow(v, b);
+    if (distance > max) {
+      in_range = false;
+      return max;
+    } else if (distance < min) {
+      in_range = false;
+      return min;
     }
-  public irsensor(I2C.Port channel, boolean inverted) {
-    i2cPort = channel;
-    m_inverted = inverted;
+    in_range = true;
+    return distance;
   }
-  public boolean getRaw() {
-    return m_inverted;
+
+  public boolean objectExists() {
+    return in_range;
   }
-  public boolean isDetected() {
-    return m_inverted;
+
+  @Override
+  public void initSendable(SendableBuilder b) {
+    b.setSmartDashboardType("Ultrasonic");
+    b.addDoubleProperty("Value", this::getDistanceMeters, null);
   }
-  public double getDistance() {
-    return distanceSensor.getRangeCM()*100;
-  }
-  public boolean isThere() {
-    return irSensor.getVoltage()> 3;
-  }
+
   @Override
   public void periodic() {
     // System.out.printf("IR digital: %s%n", isDetected() ? "DETECTED" : "CLEAR");

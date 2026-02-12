@@ -22,7 +22,7 @@ public class RobotContainer {
   // }
 
   private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
-  private final irsensor m_Irsensor = new irsensor();
+  private final irsensor m_Irsensor = irsensor.M2Y0A02(0);
 
   public RobotContainer() {
     configureBindings();
