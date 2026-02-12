@@ -36,6 +36,15 @@ public class Shooter extends SubsystemBase {
     tiltPID.setIZone(0.02);
   }
 
+  public boolean GetLeftTurretLimits() {
+    return turretMotor.getForwardLimitSwitch().isPressed();
+  }
+
+  public boolean GetRightTurretLimits() {
+    return turretMotor.getReverseLimitSwitch().isPressed();
+  }
+
+
   public void setShooterMotor(double speed){
     shooterMotor.set(speed);
   }
@@ -48,6 +57,7 @@ public class Shooter extends SubsystemBase {
     }
     turretMotor.set(speed);
   }
+
   public void setTiltMotor(double speed){
     tiltMotor.set(speed);
   }
@@ -115,6 +125,10 @@ public class Shooter extends SubsystemBase {
     return !leftLimit.get(); 
   }
 
+
+  public boolean hasTag(){
+    return shooterCamera.getLatestResult().hasTargets();
+  }
   public double[] calculateShootingAnglesWithOfficialOffset() {
     PhotonPipelineResult result = shooterCamera.getLatestResult();
     if (!result.hasTargets()) {
