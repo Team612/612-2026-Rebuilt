@@ -9,6 +9,7 @@ import frc.robot.subsystems.irsensor;
 public class irsensorcom extends Command {
   /** Creates a new irsensorcom. */
   private final irsensor irsensor;
+  private int counter = 0;
   public irsensorcom(irsensor irsensor) {
     this.irsensor = irsensor;
     addRequirements(irsensor);
@@ -17,11 +18,12 @@ public class irsensorcom extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {}
-
+  int avg;
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     System.out.printf("%b - %.15f\n", irsensor.objectExists(), irsensor.getDistanceMeters());
+    // System.out.println(irsensor.getRawVoltage());
   }
 
   // Called once the command ends or is interrupted.
