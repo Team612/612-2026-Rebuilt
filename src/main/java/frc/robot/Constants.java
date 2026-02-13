@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 
 public final class Constants {
@@ -14,23 +15,26 @@ public final class Constants {
     public static final int leftMotor2ID = 2; // this is a guess
     public static final int rightMotor2ID = 4; // this is a guess
 
-
     public static final int gyroID = 0;
 
+    public static final double xPercent = 1;
+    public static final double zPercent = 1;
 
     public static final double DEADBAND = 0.05;
-
 
     public static final double kCountsPerRevolution = 1440.0;
     public static final double kWheelDiameterMeter = 0.192;
     public static final double encoderToMeters = ((Math.PI * kWheelDiameterMeter) / kCountsPerRevolution);
 
-
     public static final double trackWidth = 0.508;
     public static final DifferentialDriveKinematics driveKinematics = new DifferentialDriveKinematics(trackWidth);
 
+    public static final double maxAttainableSpeed = 5.0;
+    public static final double metersPerSecondToPercent = 1/maxAttainableSpeed;
+    public static final double maxRadiansPerSecond = maxAttainableSpeed/(trackWidth/2);
+    public static final double radiansPerSecondToPercent = 1/maxRadiansPerSecond;
 
-    public static final double maxAttainableSpeed = 5.0; 
+    public static final double zNecessaryOffset = 1/(trackWidth/2);
   }
 
   public static class IntakeConstants{
@@ -38,6 +42,19 @@ public final class Constants {
 
     public static final double INTAKE_SPEED = 0.85;  // this is a guess
     public static final double OUTTAKE_SPEED = -0.65;  // this is a guess
+  }
+
+  public static class VisionConstans{
+    public static final String frontCameraName = "FrontCamera";
+
+    public static final Transform3d frontCameraTransform = 
+    new Transform3d(
+      new edu.wpi.first.math.geometry.Translation3d(
+        edu.wpi.first.math.util.Units.inchesToMeters(0), // this is a guess
+        edu.wpi.first.math.util.Units.inchesToMeters(0), // this is a guess
+        edu.wpi.first.math.util.Units.inchesToMeters(0)),// this is a guess
+      new edu.wpi.first.math.geometry.Rotation3d()
+    );
   }
   
 }

@@ -1,10 +1,11 @@
 package frc.robot.subsystems;
 
+import org.photonvision.targeting.PhotonPipelineResult;
 
-import com.ctre.phoenix6.hardware.Pigeon2;
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.hardware.Pigeon2;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -12,53 +13,44 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPLTVController;
 
-
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 
-
 public class TankDrive extends SubsystemBase {
-
 
   private final TalonFX leftMotor = new TalonFX(DriveConstants.leftMotorID);
   private final TalonFX rightMotor  =new TalonFX(DriveConstants.rightMotorID);
   private final TalonFX leftMotor2 = new TalonFX(DriveConstants.leftMotor2ID);
   private final TalonFX rightMotor2 = new TalonFX(DriveConstants.rightMotor2ID);
 
-
   private boolean red;
-
 
   private final Pigeon2 gyro = new Pigeon2(DriveConstants.gyroID);
 
-
   private DifferentialDrivePoseEstimator poseEstimator;
-
 
   private RobotConfig config;
 
-
   private final Field2d field = new Field2d();
 
+  private final Vision m_vision;
 
-  public TankDrive(Pose2d initialPos) {
+  public TankDrive(Pose2d initialPos, Vision m_vision) {
     SmartDashboard.putData("Field", field);
-
 
     if (DriverStation.getAlliance().isPresent()) {
       if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
         red = true;
     }
-
 
     TalonFXConfiguration leftConfig = new TalonFXConfiguration();
     TalonFXConfiguration rightConfig = new TalonFXConfiguration();
@@ -72,12 +64,10 @@ public class TankDrive extends SubsystemBase {
     leftMotor2.setControl(new Follower(DriveConstants.leftMotorID, MotorAlignmentValue.Aligned));
     rightMotor2.setControl(new Follower(DriveConstants.rightMotorID, MotorAlignmentValue.Aligned));
 
-
     // this might not be necessary
     leftMotor.setPosition(0);
     rightMotor.setPosition(0);
     gyro.reset();
-
 
     poseEstimator = new DifferentialDrivePoseEstimator(
       DriveConstants.driveKinematics,
@@ -91,6 +81,7 @@ public class TankDrive extends SubsystemBase {
       VecBuilder.fill(0.025, 0.025, 0.035)
     );
 
+    this.m_vision = m_vision;
 
     try{
       config = RobotConfig.fromGUISettings();
@@ -123,7 +114,6 @@ public class TankDrive extends SubsystemBase {
     );
   }
 
-
   public double getLeftDistanceMeters(){
     return leftMotor.getPosition().getValueAsDouble() * DriveConstants.encoderToMeters;
   }
@@ -134,44 +124,34 @@ public class TankDrive extends SubsystemBase {
     return Rotation2d.fromDegrees(Math.IEEEremainder(gyro.getYaw().getValueAsDouble(), 360));
   }
 
-
   // drives the robot using a m/s ChassisSpeed
   public void driveRobotRelative(ChassisSpeeds speeds) {
-    drive(new ChassisSpeeds(speeds.vxMetersPerSecond, 0, speeds.omegaRadiansPerSecond));
+    drive(new ChassisSpeeds(speeds.vxMetersPerSecond*DriveConstants.metersPerSecondToPercent, 0, speeds.omegaRadiansPerSecond*DriveConstants.radiansPerSecondToPercent));
   }
-
 
   // drives the robot using a percentage ChassisSpeed
   public void drive(ChassisSpeeds speeds) {
+    speeds.omegaRadiansPerSecond = speeds.omegaRadiansPerSecond * DriveConstants.zNecessaryOffset;
+
     DifferentialDriveWheelSpeeds wheelSpeeds = DriveConstants.driveKinematics.toWheelSpeeds(speeds);
 
-    wheelSpeeds.desaturate(DriveConstants.maxAttainableSpeed);
+    wheelSpeeds.desaturate(1);
 
-    double leftPercent = clip(wheelSpeeds.leftMetersPerSecond / DriveConstants.maxAttainableSpeed, -1.0, 1.0);
-    double rightPercent = clip(wheelSpeeds.rightMetersPerSecond / DriveConstants.maxAttainableSpeed, -1.0, 1.0);
+    leftMotor.set(wheelSpeeds.leftMetersPerSecond);
+    rightMotor.set(wheelSpeeds.rightMetersPerSecond);
 
-    leftMotor.set(leftPercent);
-    rightMotor.set(rightPercent);
-
-    SmartDashboard.putNumber("leftPercentCmd", leftPercent);
-    SmartDashboard.putNumber("rightPercentCmd", rightPercent);
+    SmartDashboard.putNumber("leftPercentCmd", wheelSpeeds.leftMetersPerSecond);
+    SmartDashboard.putNumber("rightPercentCmd", wheelSpeeds.rightMetersPerSecond);
   }
-
-  private double clip(double v, double lo, double hi) {
-    return Math.max(lo, Math.min(hi, v));
-  }
-
 
   public Pose2d getPose(){
     return poseEstimator.getEstimatedPosition();
   }
 
-
   public void resetPose(Pose2d pos){
     gyro.reset();
     leftMotor.setPosition(0);
     rightMotor.setPosition(0);
-
 
     poseEstimator.resetPosition(
       getHeading(),
@@ -181,15 +161,12 @@ public class TankDrive extends SubsystemBase {
     );
   }
 
-
   public ChassisSpeeds getRobotRelativeSpeeds(){
     double vx = (leftMotor.getVelocity().getValueAsDouble()*DriveConstants.encoderToMeters + rightMotor.getVelocity().getValueAsDouble()*DriveConstants.encoderToMeters) / 2.0;
     double omega = gyro.getAngularVelocityZDevice().getValueAsDouble();
 
-
     return new ChassisSpeeds(vx,0,omega);
   }
-
 
   @Override
   public void periodic() {
@@ -198,13 +175,21 @@ public class TankDrive extends SubsystemBase {
     else
       poseEstimator.update(getHeading(), getLeftDistanceMeters(), getRightDistanceMeters());
 
+    PhotonPipelineResult result = m_vision.returnLatestCameraResult();
+    if (result.hasTargets()) {
+      if (result.getBestTarget().getPoseAmbiguity() < 0.3){ // test if this is necessary
+        var estimatedPoseOptional = m_vision.returnPhotonPos(result);
+        if (estimatedPoseOptional.isPresent()) {
+          var estimatedPose = estimatedPoseOptional.get().estimatedPose;
+          poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), result.getTimestampSeconds());
+        }
+      }
+    }
 
     field.setRobotPose(poseEstimator.getEstimatedPosition());
 
-
     SmartDashboard.putNumber("leftSideSpeed", leftMotor.get());
     SmartDashboard.putNumber("rightSideSpeed",rightMotor.get());
-
 
     SmartDashboard.putNumber("gyro velocity", gyro.getAngularVelocityZDevice().getValueAsDouble()); // check if this is in rad/sec or degrees/sec
   }

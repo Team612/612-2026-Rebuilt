@@ -4,7 +4,7 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.subsystems.TankDrive;
-
+import frc.robot.subsystems.Vision;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -19,28 +19,23 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class RobotContainer {
 
-
   private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
-
-  private final TankDrive m_tankDrive = new TankDrive(new Pose2d());
-
+  private final Vision m_vision = new Vision();
+  private final TankDrive m_tankDrive = new TankDrive(new Pose2d(), m_vision);
 
   public RobotContainer() {
     configureBindings();
   }
 
-
   private void configureBindings() {
     m_tankDrive.setDefaultCommand(new ArcadeDrive(m_tankDrive, m_driverController));
   }
-
 
   public Command getAutonomousCommand() {
     try{
         // Load the path you want to follow using its name in the GUI
         PathPlannerPath path = PathPlannerPath.fromPathFile("TestPath");
-
 
         // Create a path following command using AutoBuilder. This will also trigger event markers.
         return AutoBuilder.followPath(path);
