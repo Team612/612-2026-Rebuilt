@@ -3,6 +3,8 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArcadeDrive;
+import frc.robot.commands.ArcadeIntake;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.TankDrive;
 import frc.robot.subsystems.Vision;
 
@@ -23,6 +25,7 @@ public class RobotContainer {
 
   private final Vision m_vision = new Vision();
   private final TankDrive m_tankDrive = new TankDrive(new Pose2d(), m_vision);
+  private final Intake m_intake = new Intake();
 
   public RobotContainer() {
     configureBindings();
@@ -30,6 +33,7 @@ public class RobotContainer {
 
   private void configureBindings() {
     m_tankDrive.setDefaultCommand(new ArcadeDrive(m_tankDrive, m_driverController));
+    m_intake.setDefaultCommand(new ArcadeIntake(m_intake, m_driverController));
   }
 
   public Command getAutonomousCommand() {
