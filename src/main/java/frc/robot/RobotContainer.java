@@ -3,8 +3,11 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArcadeDrive;
-import frc.robot.commands.ArcadeIntake;
-import frc.robot.subsystems.Intake;
+import frc.robot.commands.AutoTurretAim;
+import frc.robot.commands.ManualShooterControl;
+import frc.robot.commands.Shoot;
+import frc.robot.commands.ZeroTurret;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.TankDrive;
 import frc.robot.subsystems.Vision;
 
@@ -25,7 +28,7 @@ public class RobotContainer {
 
   private final Vision m_vision = new Vision();
   private final TankDrive m_tankDrive = new TankDrive(new Pose2d(), m_vision);
-  private final Intake m_intake = new Intake();
+  private final Shooter m_shooter = new Shooter();
 
   public RobotContainer() {
     configureBindings();
@@ -33,19 +36,27 @@ public class RobotContainer {
 
   private void configureBindings() {
     m_tankDrive.setDefaultCommand(new ArcadeDrive(m_tankDrive, m_driverController));
-    m_intake.setDefaultCommand(new ArcadeIntake(m_intake, m_driverController));
+    m_shooter.setDefaultCommand(new ManualShooterControl(m_shooter, m_driverController));
+    m_driverController.x().whileTrue(new Shoot(m_shooter));
+    m_driverController.rightBumper().onTrue(new ZeroTurret(m_shooter)); 
+
   }
 
   public Command getAutonomousCommand() {
-    try{
-        // Load the path you want to follow using its name in the GUI
-        PathPlannerPath path = PathPlannerPath.fromPathFile("TestPath");
+    //Drivetrain Commands
 
-        // Create a path following command using AutoBuilder. This will also trigger event markers.
-        return AutoBuilder.followPath(path);
-    } catch (Exception e) {
-        DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
-        return Commands.none();
-    }
+    // try{
+    //     // Load the path you want to follow using its name in the GUI
+    //     PathPlannerPath path = PathPlannerPath.fromPathFile("TestPath");
+
+    //     // Create a path following command using AutoBuilder. This will also trigger event markers.
+    //     return AutoBuilder.followPath(path);
+    // } catch (Exception e) {
+    //     DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+    //     return Commands.none();
+    // }
+
+    // Shooter Auto Commands
+    return new AutoTurretAim(m_shooter);
   }
 }
