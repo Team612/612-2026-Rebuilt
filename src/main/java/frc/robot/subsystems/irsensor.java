@@ -4,6 +4,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class irsensor extends SubsystemBase implements AutoCloseable{
 
@@ -12,6 +13,8 @@ public class irsensor extends SubsystemBase implements AutoCloseable{
   private final long LSB_Weight;
   private final int offset;
   private boolean in_range;
+  private int counter = 0;
+  private boolean fuel = false;
   
   /**
   * @author: Achyut Dipukumar
@@ -83,6 +86,14 @@ public class irsensor extends SubsystemBase implements AutoCloseable{
     // for direct calculation use the following:
     int value = m_sensor.getValue();
     return (LSB_Weight * value - offset) * 1.0e-9;
+  }
+  public boolean fuelExists() {
+    fuel = getRawVoltage() < Constants.SensorConstants.kVoltagePeak;
+    return fuel;
+  }
+  public int countBalls() {
+    if (!fuel && fuelExists()) counter++;
+    return counter;
   }
   @Override
   public void initSendable(SendableBuilder b) {
