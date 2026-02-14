@@ -15,6 +15,8 @@ public class irsensor extends SubsystemBase implements AutoCloseable{
   private boolean in_range;
   private int counter = 0;
   private boolean fuel = false;
+  private boolean available = true;
+
   
   /**
   * @author: Achyut Dipukumard
@@ -87,13 +89,25 @@ public class irsensor extends SubsystemBase implements AutoCloseable{
     int value = m_sensor.getValue();
     return (LSB_Weight * value - offset) * 1.0e-9;
   }
+  
   public boolean fuelExists() {
     fuel = getRawVoltage() < Constants.SensorConstants.kVoltagePeak;
     return fuel;
   }
+  /*
   public int countBalls() {
     if (!fuel && fuelExists()) counter++;
     return counter;
+  }
+  */
+  public void countBalls() {
+    if(available && fuelExists()) {
+      available = false;
+      counter++;
+    }
+    else if(!available && !fuelExists()) {
+      available = true;
+    }
   }
 
 
