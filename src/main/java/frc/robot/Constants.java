@@ -13,6 +13,6 @@ public final class Constants {
     public static final double DEADBAND = 0.05;
   }
   public static class SensorConstants {
-    public static final double kVoltagePeak = 0.26; // 13 cm
+    public static final double kVoltagePeak = 2.6; // 13
   }
 }

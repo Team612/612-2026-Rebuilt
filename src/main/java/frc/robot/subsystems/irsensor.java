@@ -13,7 +13,7 @@ public class irsensor extends SubsystemBase implements AutoCloseable{
   private final long LSB_Weight;
   private final int offset;
   private boolean in_range;
-  private int counter = 0;
+  private int counter = -1;
   private boolean fuel = false;
   private boolean available = true;
 
@@ -26,6 +26,7 @@ public class irsensor extends SubsystemBase implements AutoCloseable{
   * This code will return about 2 cm error, more accurate than the actual SharpIR library.<br><br>
   * The recommended range for the sensor is 20 cm to 100 cm, but it can theoretically measure up to 150 cm.<br><br>
   * The code should also be faster than the SharpIR library as the voltage usage here is faster than the default WPILIB voltage calculations.<br><br>
+  * The only way to be faster would be to utilize JNI optimizations, preferably with JNA. Talk to me if the code does need to be faster.<br><br>
   */
   public static irsensor M2Y0A02(int channel) {
     return new irsensor(channel, 0.5922, -1.08, 0.20, 1.500);
@@ -42,7 +43,6 @@ public class irsensor extends SubsystemBase implements AutoCloseable{
   public static irsensor M2Y0A51(int channel) {
     return new irsensor(channel, 5.2819, -1.161, 2.0, 15.0);
   }
-
   private irsensor(int channel, double a, double b, double min, double max) {
     m_sensor = new AnalogInput(channel);
     LSB_Weight = m_sensor.getLSBWeight();
@@ -53,18 +53,15 @@ public class irsensor extends SubsystemBase implements AutoCloseable{
     this.max = max;
     SendableRegistry.addLW(this, "IR Sensor", channel);
   }
-
   @Override
   public void close() {
     SendableRegistry.remove(this);
     m_sensor.close();
     m_sensor = null;
   }
-
   public int getChannel() {
     return m_sensor.getChannel();
   }
-
   public double getDistanceMeters() {
     var v = Math.max(getRawVoltage(), 0.00001);
     double distance = a*Math.pow(v, b);
@@ -78,28 +75,18 @@ public class irsensor extends SubsystemBase implements AutoCloseable{
     in_range = true;
     return distance;
   }
-
   public boolean objectExists() {
     return in_range;
   }
-
   public double getRawVoltage() { // for optimization
     // return m_sensor.getVoltage();
     // for direct calculation use the following:
-    int value = m_sensor.getValue();
-    return (LSB_Weight * value - offset) * 1.0e-9;
+    return (LSB_Weight * m_sensor.getValue() - offset) * 1.0e-9;
   }
-  
   public boolean fuelExists() {
-    fuel = objectExists() &&getRawVoltage() > Constants.SensorConstants.kVoltagePeak;
+    fuel = getRawVoltage() < Constants.SensorConstants.kVoltagePeak;
     return fuel;
   }
-  /*
-  public int countBalls() {
-    if (!fuel && fuelExists()) counter++;
-    return counter;
-  }
-  */
   public void countBalls() {
     if(available && fuelExists()) {
       available = false;
@@ -109,14 +96,8 @@ public class irsensor extends SubsystemBase implements AutoCloseable{
       available = true;
     }
   }
-
   public int getCount() {
     return counter;
-  }
-
-
-  public boolean newFuelExists() {
-    return true;
   }
   @Override
   public void initSendable(SendableBuilder b) {
