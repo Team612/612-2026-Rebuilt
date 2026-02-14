@@ -9,10 +9,10 @@ public final class Constants {
   }
 
   public static class DriveConstants {
-    public static final int leftMotorID = 1; // this is a guess
-    public static final int rightMotorID = 3; // this is a guess
-    public static final int leftMotor2ID = 2; // this is a guess
-    public static final int rightMotor2ID = 4; // this is a guess
+    public static final int leftMotorID = 0; // this is a guess
+    public static final int rightMotorID = 5; // this is a guess
+    public static final int leftMotor2ID = 8; // this is a guess
+    public static final int rightMotor2ID = 1; // this is a guess
 
 
     public static final int gyroID = 0;
@@ -27,6 +27,7 @@ public final class Constants {
 
 
     public static final double trackWidth = 0.508;
+    public static final double zNecessaryOffset = 1/(trackWidth/2);
     public static final DifferentialDriveKinematics driveKinematics = new DifferentialDriveKinematics(trackWidth);
 
 

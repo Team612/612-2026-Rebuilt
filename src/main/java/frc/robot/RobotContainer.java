@@ -37,16 +37,17 @@ public class RobotContainer {
 
 
   public Command getAutonomousCommand() {
-    try{
-        // Load the path you want to follow using its name in the GUI
-        PathPlannerPath path = PathPlannerPath.fromPathFile("TestPath");
+    return null;
+  //   try{
+  //       // Load the path you want to follow using its name in the GUI
+  //       PathPlannerPath path = PathPlannerPath.fromPathFile("TestPath");
 
 
-        // Create a path following command using AutoBuilder. This will also trigger event markers.
-        return AutoBuilder.followPath(path);
-    } catch (Exception e) {
-        DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
-        return Commands.none();
-    }
+  //       // Create a path following command using AutoBuilder. This will also trigger event markers.
+  //       return AutoBuilder.followPath(path);
+  //   } catch (Exception e) {
+  //       DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+  //       return Commands.none();
+  //   }
   }
 }

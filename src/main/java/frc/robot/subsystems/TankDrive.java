@@ -33,7 +33,7 @@ public class TankDrive extends SubsystemBase {
   private final TalonFX rightMotor  =new TalonFX(DriveConstants.rightMotorID);
   private final TalonFX leftMotor2 = new TalonFX(DriveConstants.leftMotor2ID);
   private final TalonFX rightMotor2 = new TalonFX(DriveConstants.rightMotor2ID);
-
+  // leftMotor.setInverted;
 
   private boolean red;
 
@@ -41,7 +41,7 @@ public class TankDrive extends SubsystemBase {
   private final Pigeon2 gyro = new Pigeon2(DriveConstants.gyroID);
 
 
-  private DifferentialDrivePoseEstimator poseEstimator;
+  // private DifferentialDrivePoseEstimator poseEstimator;
 
 
   private RobotConfig config;
@@ -53,24 +53,27 @@ public class TankDrive extends SubsystemBase {
   public TankDrive(Pose2d initialPos) {
     SmartDashboard.putData("Field", field);
 
-
     if (DriverStation.getAlliance().isPresent()) {
       if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
         red = true;
     }
 
 
-    TalonFXConfiguration leftConfig = new TalonFXConfiguration();
-    TalonFXConfiguration rightConfig = new TalonFXConfiguration();
-    leftConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    rightConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    leftConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    rightConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    leftMotor.getConfigurator().apply(leftConfig);
-    rightMotor.getConfigurator().apply(rightConfig);
- 
-    leftMotor2.setControl(new Follower(DriveConstants.leftMotorID, MotorAlignmentValue.Aligned));
-    rightMotor2.setControl(new Follower(DriveConstants.rightMotorID, MotorAlignmentValue.Aligned));
+    // TalonFXConfiguration leftConfig = new TalonFXConfiguration();
+    // TalonFXConfiguration rightConfig = new TalonFXConfiguration();
+    // leftConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    // rightConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    // leftMotor.setInverted(true);
+    // leftConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    // rightConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
+    // leftMotor.getConfigurator().apply(leftConfig);
+    // rightMotor.getConfigurator().apply(rightConfig);
+    // leftMotor2.getConfigurator().apply(leftConfig);
+    // rightMotor2.getConfigurator().apply(rightConfig);
+    // leftMotor.setContr
+    // leftMotor2.setControl(new Follower(DriveConstants.leftMotorID, MotorAlignmentValue.Aligned));
+    // rightMotor2.setControl(new Follower(DriveConstants.rightMotorID, MotorAlignmentValue.Aligned));
 
 
     // this might not be necessary
@@ -79,48 +82,38 @@ public class TankDrive extends SubsystemBase {
     gyro.reset();
 
 
-    poseEstimator = new DifferentialDrivePoseEstimator(
-      DriveConstants.driveKinematics,
-      getHeading(),
-      getLeftDistanceMeters(),
-      getRightDistanceMeters(),
-      initialPos,
-      // Odometry Standard Deviations, x y & z
-      VecBuilder.fill(0.003, 0.003, 0.001),
-      // Vision measurement std deviations
-      VecBuilder.fill(0.025, 0.025, 0.035)
-    );
+    // poseEsti
 
 
-    try{
-      config = RobotConfig.fromGUISettings();
-    } catch (Exception e) {
-      // Handle exception as needed
-      e.printStackTrace();
-    }
+    // try{
+    //   config = RobotConfig.fromGUISettings();
+    // } catch (Exception e) {
+    //   // Handle exception as needed
+    //   e.printStackTrace();
+    // }
 
 
-    AutoBuilder.configure(
-      this::getPose, // Robot pose supplier
-      this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
-      this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-      (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
-      new PPLTVController(0.00), // PPLTVController is the built in path following controller for differential drive trains
-      config, // The robot configuration
-      () -> {
-      // Boolean supplier that controls when the path will be mirrored for the red alliance
-      // This will flip the path being followed to the red side of the field.
-      // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+    // AutoBuilder.configure(
+    //   this::getPose, // Robot pose supplier
+    //   this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+    //   this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+    //   (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+    //   new PPLTVController(0.00), // PPLTVController is the built in path following controller for differential drive trains
+    //   config, // The robot configuration
+    //   () -> {
+    //   // Boolean supplier that controls when the path will be mirrored for the red alliance
+    //   // This will flip the path being followed to the red side of the field.
+    //   // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
 
-      var alliance = DriverStation.getAlliance();
-      if (alliance.isPresent()) {
-      return alliance.get() == DriverStation.Alliance.Red;
-      }
-      return false;
-      },
-      this // Reference to this subsystem to set requirements
-    );
+    //   var alliance = DriverStation.getAlliance();
+    //   if (alliance.isPresent()) {
+    //   return alliance.get() == DriverStation.Alliance.Red;
+    //   }
+    //   return false;
+    //   },
+    //   this // Reference to this subsystem to set requirements
+    // );
   }
 
 
@@ -143,18 +136,19 @@ public class TankDrive extends SubsystemBase {
 
   // drives the robot using a percentage ChassisSpeed
   public void drive(ChassisSpeeds speeds) {
+    speeds.omegaRadiansPerSecond = speeds.omegaRadiansPerSecond * DriveConstants.zNecessaryOffset;
+
     DifferentialDriveWheelSpeeds wheelSpeeds = DriveConstants.driveKinematics.toWheelSpeeds(speeds);
 
-    wheelSpeeds.desaturate(DriveConstants.maxAttainableSpeed);
+    wheelSpeeds.desaturate(1);
 
-    double leftPercent = clip(wheelSpeeds.leftMetersPerSecond / DriveConstants.maxAttainableSpeed, -1.0, 1.0);
-    double rightPercent = clip(wheelSpeeds.rightMetersPerSecond / DriveConstants.maxAttainableSpeed, -1.0, 1.0);
+    leftMotor.set(-wheelSpeeds.leftMetersPerSecond);
+    rightMotor.set(wheelSpeeds.rightMetersPerSecond);
+    leftMotor2.set(-wheelSpeeds.leftMetersPerSecond);
+    rightMotor2.set(wheelSpeeds.rightMetersPerSecond);
 
-    leftMotor.set(leftPercent);
-    rightMotor.set(rightPercent);
-
-    SmartDashboard.putNumber("leftPercentCmd", leftPercent);
-    SmartDashboard.putNumber("rightPercentCmd", rightPercent);
+    SmartDashboard.putNumber("leftPercentCmd", wheelSpeeds.leftMetersPerSecond);
+    SmartDashboard.putNumber("rightPercentCmd", wheelSpeeds.rightMetersPerSecond);
   }
 
   private double clip(double v, double lo, double hi) {
@@ -162,9 +156,9 @@ public class TankDrive extends SubsystemBase {
   }
 
 
-  public Pose2d getPose(){
-    return poseEstimator.getEstimatedPosition();
-  }
+  // public Pose2d getPose(){
+  //   return poseEstimator.getEstimatedPosition();
+  // }
 
 
   public void resetPose(Pose2d pos){
@@ -173,12 +167,12 @@ public class TankDrive extends SubsystemBase {
     rightMotor.setPosition(0);
 
 
-    poseEstimator.resetPosition(
-      getHeading(),
-      getLeftDistanceMeters(),
-      getRightDistanceMeters(),
-      new Pose2d()
-    );
+    // poseEstimator.resetPosition(
+    //   getHeading(),
+    //   getLeftDistanceMeters(),
+    //   getRightDistanceMeters(),
+    //   new Pose2d()
+    // );
   }
 
 
@@ -193,13 +187,13 @@ public class TankDrive extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (red)
-      poseEstimator.update(getHeading().times(-1), -getLeftDistanceMeters(), -getRightDistanceMeters());
-    else
-      poseEstimator.update(getHeading(), getLeftDistanceMeters(), getRightDistanceMeters());
+    // if (red)
+    //   poseEstimator.update(getHeading().times(-1), -getLeftDistanceMeters(), -getRightDistanceMeters());
+    // else
+    //   poseEstimator.update(getHeading(), getLeftDistanceMeters(), getRightDistanceMeters());
 
 
-    field.setRobotPose(poseEstimator.getEstimatedPosition());
+    // field.setRobotPose(poseEstimator.getEstimatedPosition());
 
 
     SmartDashboard.putNumber("leftSideSpeed", leftMotor.get());
