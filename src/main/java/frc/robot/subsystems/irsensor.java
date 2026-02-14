@@ -91,7 +91,7 @@ public class irsensor extends SubsystemBase implements AutoCloseable{
   }
   
   public boolean fuelExists() {
-    fuel = getRawVoltage() < Constants.SensorConstants.kVoltagePeak;
+    fuel = objectExists() &&getRawVoltage() > Constants.SensorConstants.kVoltagePeak;
     return fuel;
   }
   /*
@@ -108,6 +108,10 @@ public class irsensor extends SubsystemBase implements AutoCloseable{
     else if(!available && !fuelExists()) {
       available = true;
     }
+  }
+
+  public int getCount() {
+    return counter;
   }
 
 
