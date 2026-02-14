@@ -20,7 +20,8 @@ public class ManualShooterControl extends Command {
 
   @Override
   public void execute() {
-
+    // Reverse - Counter-CW
+    // Forward (Green) - CW
     if (controller.getHID().getAButton()){
       m_shooter.setShooterMotor(-0.5);
     }

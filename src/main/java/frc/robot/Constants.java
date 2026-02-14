@@ -8,6 +8,7 @@ public final class Constants {
 
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
+    public static final int kGunnerControllerPort = 1;
 
     // in meters
     public static final double blueHubXPos = 4.625594;
@@ -15,9 +16,9 @@ public final class Constants {
     public static final double redHubXPos = 11.915394;
   }
     public static class ShooterConstants{
-    public static final int shooterMotorID = 2;
-    public static final int turretMotorID = 17;
-    public static final int tiltMotorID = 8;
+    public static final int shooterMotorID = 5;
+    public static final int turretMotorID = 4;
+    public static final int tiltMotorID = 2;
     public static final int cancoderID = 1; // this is a guess verify before running
 
     public static final String shooterCameraName = "PC_Camera";
@@ -51,10 +52,10 @@ public final class Constants {
 
   
   public static class DriveConstants {
-    public static final int leftMotorID = 1; // this is a guess
-    public static final int rightMotorID = 3; // this is a guess
-    public static final int leftMotor2ID = 2; // this is a guess
-    public static final int rightMotor2ID = 4; // this is a guess
+    public static final int leftMotorID = 0; // this is a guess
+    public static final int rightMotorID = 5; // this is a guess
+    public static final int leftMotor2ID = 8; // this is a guess
+    public static final int rightMotor2ID = 1; // this is a guess
 
     public static final int gyroID = 0;
 

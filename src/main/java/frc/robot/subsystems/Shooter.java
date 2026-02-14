@@ -29,8 +29,8 @@ public class Shooter extends SubsystemBase {
   private PIDController turretPID = new PIDController(ShooterConstants.turretKp, ShooterConstants.turretKi, ShooterConstants.turretKd);
   private PIDController tiltPID = new PIDController(ShooterConstants.tiltKp,ShooterConstants.tiltKi,ShooterConstants.tiltKd);
 
-  private DigitalInput rightLimit = new DigitalInput(ShooterConstants.rightLimitDIO);
-  private DigitalInput leftLimit = new DigitalInput(ShooterConstants.leftLimitDIO);
+  // private DigitalInput rightLimit = new DigitalInput(ShooterConstants.rightLimitDIO);
+  // private DigitalInput leftLimit = new DigitalInput(ShooterConstants.leftLimitDIO);
 
   public Shooter() {
     turretPID.setIZone(0.1);
@@ -50,15 +50,18 @@ public class Shooter extends SubsystemBase {
     shooterMotor.set(speed);
   }
   public void setTurretMotor(double speed){
-    if(leftLimitPressed() && speed<0) {
-      speed=0;
-    }
-    if(rightLimitPressed() && speed>0) {
-      speed=0;
-    }
+    // if(leftLimitPressed() && speed<0) {
+    //   speed=0;
+    // }
+    // if(rightLimitPressed() && speed>0) {
+    //   speed=0;
+    // }
     turretMotor.set(speed);
   }
 
+
+  //FORWARD IS DOWN!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // USE FORWARD LIMIT SWITCH TO STOP DOWNWARD MOTION
   public void setTiltMotor(double speed){
     tiltMotor.set(speed);
   }
@@ -67,22 +70,29 @@ public class Shooter extends SubsystemBase {
   public void setTurretPos(double pos){
     SmartDashboard.putNumber("anotherTurretPos",turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians);
     // smallest < pos <largest
-    boolean deadzone = pos < ShooterConstants.largestTurretAngle && pos > ShooterConstants.smallestTurretAngle;
-    if(deadzone){
-      boolean gotolargest = Math.abs( ShooterConstants.largestTurretAngle - turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians) < Math.abs(ShooterConstants.smallestTurretAngle -turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians) ; 
-      if(gotolargest){
-        turretMotor.set(-turretPID.calculate(turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians, ShooterConstants.largestTurretAngle));
+    // boolean deadzone = pos < ShooterConstants.largestTurretAngle && pos > ShooterConstants.smallestTurretAngle;
+    // if(deadzone){
+    //   boolean gotolargest = Math.abs( ShooterConstants.largestTurretAngle - turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians) < Math.abs(ShooterConstants.smallestTurretAngle -turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians) ; 
+    //   if(gotolargest){
+    //     turretMotor.set(-turretPID.calculate(turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians, ShooterConstants.largestTurretAngle));
 
 
-      }
-      else{
-        turretMotor.set(-turretPID.calculate(turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians, ShooterConstants.smallestTurretAngle));
-      }
-      }
+    //   }
+    //   else{
+    //     turretMotor.set(-turretPID.calculate(turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians, ShooterConstants.smallestTurretAngle));
+    //   }
+    //   }
     
-    else{
-      turretMotor.set(-turretPID.calculate(turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians, pos));
-    }
+    // else{
+    //   turretMotor.set(-turretPID.calculate(turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians, pos));
+    // }
+
+    if (pos > ShooterConstants.largestTurretAngle) 
+      pos = ShooterConstants.largestTurretAngle;
+    if (pos < ShooterConstants.smallestTurretAngle) 
+      pos = ShooterConstants.smallestTurretAngle;
+
+    turretMotor.set(-turretPID.calculate(turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians, pos));
   }
   
   public void setTurretEncoderPos(double encoderPos){
@@ -114,16 +124,18 @@ public class Shooter extends SubsystemBase {
   }
 
     public boolean rightLimitPressed() {
-    if(!rightLimit.get()) {
-      setTurretEncoderPos(ShooterConstants.rightLimit);
-    }
-    return !rightLimit.get(); 
+      return false;
+    // if(!rightLimit.get()) {
+    //   setTurretEncoderPos(ShooterConstants.rightLimit);
+    // }
+    // return !rightLimit.get(); 
   }
   public boolean leftLimitPressed() {
-    if(!leftLimit.get()) {
-      setTurretEncoderPos(ShooterConstants.leftLimit);
-    }
-    return !leftLimit.get(); 
+    return false;
+    // if(!leftLimit.get()) {
+    //   setTurretEncoderPos(ShooterConstants.leftLimit);
+    // }
+    // return !leftLimit.get(); 
   }
 
 
@@ -208,6 +220,10 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
+
+    SmartDashboard.putBoolean("turretForLim",turretMotor.getForwardLimitSwitch().isPressed());
+    SmartDashboard.putBoolean("turretRevLim",turretMotor.getReverseLimitSwitch().isPressed());
+
     SmartDashboard.putNumber("turretPos",turretMotor.getEncoder().getPosition());
   }
 }
