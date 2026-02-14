@@ -3,15 +3,16 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.irsensor;
+import frc.robot.subsystems.linetracker; 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class irsensorcom extends Command {
-  /** Creates a new irsensorcom. */
-  private final irsensor irsensor;
-  public irsensorcom(irsensor irsensor) {
-    this.irsensor = irsensor;
-    addRequirements(irsensor);
+public class lineTrackerCom extends Command {
+  /** Creates a new lineTrackerCom. */
+  private final linetracker linetracker;
+  public lineTrackerCom(linetracker linetracker) {
+    this.linetracker = linetracker;
   }
 
   // Called when the command is initially scheduled.
@@ -20,11 +21,7 @@ public class irsensorcom extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    // System.out.printf("%b - %.15f\n", irsensor.objectExists(), irsensor.getDistanceMeters());
-    // System.out.printf("%.15f\n", irsensor.getRawVoltage());
-    System.out.printf("%d\n", irsensor.countBalls());
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override

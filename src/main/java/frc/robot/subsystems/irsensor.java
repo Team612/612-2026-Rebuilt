@@ -17,7 +17,7 @@ public class irsensor extends SubsystemBase implements AutoCloseable{
   private boolean fuel = false;
   
   /**
-  * @author: Achyut Dipukumar
+  * @author: Achyut Dipukumard
   * @team: 612<br><br>
   * This code is derived from edu.wpi.first.wpilibj.SharpIR class.<br><br>
   * This code will not work with Simulation, only physical objects will work.<br><br>
@@ -26,7 +26,7 @@ public class irsensor extends SubsystemBase implements AutoCloseable{
   * The code should also be faster than the SharpIR library as the voltage usage here is faster than the default WPILIB voltage calculations.<br><br>
   */
   public static irsensor M2Y0A02(int channel) {
-    return new irsensor(channel, 0.5922, -1.08, 20, 150.0);
+    return new irsensor(channel, 0.5922, -1.08, 0.20, 1.500);
   }
 
   public static irsensor M2Y0A21(int channel) {
@@ -64,7 +64,7 @@ public class irsensor extends SubsystemBase implements AutoCloseable{
   }
 
   public double getDistanceMeters() {
-    var v = Math.max(m_sensor.getVoltage(), 0.00001);
+    var v = Math.max(getRawVoltage(), 0.00001);
     double distance = a*Math.pow(v, b);
     if (distance > max) {
       in_range = false;
@@ -94,6 +94,11 @@ public class irsensor extends SubsystemBase implements AutoCloseable{
   public int countBalls() {
     if (!fuel && fuelExists()) counter++;
     return counter;
+  }
+
+
+  public boolean newFuelExists() {
+    return true;
   }
   @Override
   public void initSendable(SendableBuilder b) {
