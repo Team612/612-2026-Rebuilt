@@ -56,8 +56,8 @@ public class TankDrive extends SubsystemBase {
     TalonFXConfiguration rightConfig = new TalonFXConfiguration();
     leftConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     rightConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    leftConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    rightConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    leftConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    rightConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     leftMotor.getConfigurator().apply(leftConfig);
     rightMotor.getConfigurator().apply(rightConfig);
  
