@@ -16,8 +16,8 @@ public final class Constants {
     public static final double redHubXPos = 11.915394;
   }
     public static class ShooterConstants{
-    public static final int shooterMotorID = 5;
-    public static final int turretMotorID = 4;
+    public static final int shooterMotorID = 3;
+    public static final int turretMotorID = 1;
     public static final int tiltMotorID = 2;
     public static final int cancoderID = 1; // this is a guess verify before running
 

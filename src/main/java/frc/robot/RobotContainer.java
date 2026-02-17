@@ -5,12 +5,14 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.AutoTurretAim;
 import frc.robot.commands.ContinuousAuto;
+import frc.robot.commands.ManualHopper;
 import frc.robot.commands.ManualShooterControl;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ZeroTurret;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.TankDrive;
 // import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.Transfer;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -27,11 +29,12 @@ public class RobotContainer {
 
   private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final CommandXboxController m_gunnerController = new CommandXboxController(OperatorConstants.kGunnerControllerPort);
-
+  private final CommandXboxController m_hopperController = new CommandXboxController(2);
   // private final Vision m_vision = new Vision();
   private final TankDrive m_tankDrive = new TankDrive(new Pose2d());
   private final Shooter m_shooter = new Shooter();
-
+  private final Transfer m_transfer = new Transfer();
+  
   public RobotContainer() {
     configureBindings();
   }
@@ -41,6 +44,7 @@ public class RobotContainer {
     m_shooter.setDefaultCommand(new ManualShooterControl(m_shooter, m_gunnerController));
     m_gunnerController.x().whileTrue(new Shoot(m_shooter));
     m_gunnerController.rightBumper().onTrue(new ZeroTurret(m_shooter));
+    m_transfer.setDefaultCommand(new ManualHopper(m_transfer,m_hopperController));
   }
 
   public Command getAutonomousCommand() {

@@ -47,7 +47,7 @@ public class Shooter extends SubsystemBase {
 
 
   public void setShooterMotor(double speed){
-    shooterMotor.set(speed);
+    shooterMotor.set(-speed);
   }
   public void setTurretMotor(double speed){
     // if(leftLimitPressed() && speed<0) {
@@ -123,20 +123,20 @@ public class Shooter extends SubsystemBase {
     return -0.00639338*distance*distance+0.10147*distance+0.401483;
   }
 
-    public boolean rightLimitPressed() {
-      return false;
-    // if(!rightLimit.get()) {
-    //   setTurretEncoderPos(ShooterConstants.rightLimit);
-    // }
-    // return !rightLimit.get(); 
-  }
-  public boolean leftLimitPressed() {
-    return false;
-    // if(!leftLimit.get()) {
-    //   setTurretEncoderPos(ShooterConstants.leftLimit);
-    // }
-    // return !leftLimit.get(); 
-  }
+  //   public boolean rightLimitPressed() {
+  //     return false;
+  //   // if(!rightLimit.get()) {
+  //   //   setTurretEncoderPos(ShooterConstants.rightLimit);
+  //   // }
+  //   // return !rightLimit.get(); 
+  // }
+  // public boolean leftLimitPressed() {
+  //   return false;
+  //   // if(!leftLimit.get()) {
+  //   //   setTurretEncoderPos(ShooterConstants.leftLimit);
+  //   // }
+  //   // return !leftLimit.get(); 
+  // }
 
 
   public boolean hasTag(){
