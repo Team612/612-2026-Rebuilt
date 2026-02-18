@@ -63,26 +63,12 @@ public class Shooter extends SubsystemBase {
     tiltMotor.set(speed);
   }
   
-  
   public void setTurretPos(double pos){
-    SmartDashboard.putNumber("anotherTurretPos",turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians);
-    // smallest < pos <largest
-    boolean deadzone = pos < ShooterConstants.largestTurretAngle && pos > ShooterConstants.smallestTurretAngle;
-    if(deadzone){
-      boolean gotolargest = Math.abs( ShooterConstants.largestTurretAngle - turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians) < Math.abs(ShooterConstants.smallestTurretAngle -turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians) ; 
-      if(gotolargest){
-        turretMotor.set(-turretPID.calculate(turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians, ShooterConstants.largestTurretAngle));
-
-
-      }
-      else{
-        turretMotor.set(-turretPID.calculate(turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians, ShooterConstants.smallestTurretAngle));
-      }
-      }
-    
-    else{
-      turretMotor.set(-turretPID.calculate(turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians, pos));
-    }
+    if (pos > ShooterConstants.largestTurretAngle)
+      pos = ShooterConstants.largestTurretAngle;
+    if (pos < ShooterConstants.smallestTurretAngle)
+      pos = ShooterConstants.smallestTurretAngle;
+    turretMotor.set(-turretPID.calculate(turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians, pos));
   }
   
   public void setTurretEncoderPos(double encoderPos){
