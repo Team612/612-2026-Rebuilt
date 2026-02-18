@@ -76,6 +76,7 @@ public final class Constants {
     public static final double radiansPerSecondToPercent = 1/maxRadiansPerSecond;
 
     public static final double zNecessaryOffset = 1/(trackWidth/2);
+    public static final double rpsScale = 512.0;
   }
 
   public static class IntakeConstants{
