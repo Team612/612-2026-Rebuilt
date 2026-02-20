@@ -8,6 +8,8 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 
 import edu.wpi.first.math.geometry.Translation3d;
@@ -121,75 +123,64 @@ public class Shooter extends SubsystemBase {
     if (!result.hasTargets()) {
       return new double[]{-1, -1};
     }
-    PhotonTrackedTarget target = shooterCamera.getLatestResult().getBestTarget();
+    PhotonTrackedTarget target = result.getBestTarget();
 
     int tagID = target.getFiducialId();
-
-    double hubOffsetX = 0.0;
-    double hubOffsetY = 0.0;
-    double hubOffsetZ = 0.0;
+    Transform3d tagToHub = new Transform3d();
 
     switch (tagID) {
-      case 10:  // Red Hub - center
-        hubOffsetX = 0.6034024;
-        hubOffsetY = 0.0;
-        hubOffsetZ = 0.309650003;
+      // blue hub tags counterclockwise order
+      case 21:
+        tagToHub = new Transform3d(new Translation3d(-0.6034024,0,0.309650003), new Rotation3d(0,0,0));
         break;
-      case 9:   // Red Hub - offset (left side)
-        hubOffsetX = 0.6034024;
-        hubOffsetY = -0.3556;
-        hubOffsetZ = 0.309650003; 
+      case 24:
+        tagToHub = new Transform3d(new Translation3d(-0.6034024,-0.3556,0.309650003), new Rotation3d(0,0,0));
         break;
-      case 11:  // Red Hub - offset (right side)
-        hubOffsetX = 0.6034024;
-        hubOffsetY = 0.3556;
-        hubOffsetZ = 0.309650003;
+      case 25:
+        tagToHub = new Transform3d(new Translation3d(-0.6034024,0.3556,0.309650003), new Rotation3d(0,0,0));
         break;
-      case 26:  // Blue Hub - center
-        hubOffsetX = 0.6034024;
-        hubOffsetY = 0.0;
-        hubOffsetZ = 0.309650003;
+      case 26:
+        tagToHub = new Transform3d(new Translation3d(-0.6034024,0,0.309650003), new Rotation3d(0,0,0));
         break;
-      case 25:  // Blue Hub - offset (left side)
-        hubOffsetX = 0.6034024;
-        hubOffsetY = -0.3556;
-        hubOffsetZ = 0.309650003;
+      case 27:
+        tagToHub = new Transform3d(new Translation3d(-0.6034024,0.3556,0.309650003), new Rotation3d(0,0,0));
         break;
-      case 27:  // Blue Hub - offset (right side)
-        hubOffsetX = 0.6034024;
-        hubOffsetY = 0.3556;
-        hubOffsetZ = 0.309650003;
+      case 18:
+        tagToHub = new Transform3d(new Translation3d(-0.6034024,0,0.309650003), new Rotation3d(0,0,0));
         break;
+
+      // red hub tags counterclockwise order
+      case 5:
+        tagToHub = new Transform3d(new Translation3d(-0.6034024,0,0.309650003), new Rotation3d(0,0,0));
+        break;
+      case 8:
+        tagToHub = new Transform3d(new Translation3d(-0.6034024,-0.3556,0.309650003), new Rotation3d(0,0,0));
+        break;
+      case 9:
+        tagToHub = new Transform3d(new Translation3d(-0.6034024,0.3556,0.309650003), new Rotation3d(0,0,0));
+        break;
+      case 10:
+        tagToHub = new Transform3d(new Translation3d(-0.6034024,0,0.309650003), new Rotation3d(0,0,0));
+        break;
+      case 11:
+        tagToHub = new Transform3d(new Translation3d(-0.6034024,0.3556,0.309650003), new Rotation3d(0,0,0));
+        break;
+      case 2:
+        tagToHub = new Transform3d(new Translation3d(-0.6034024,0,0.309650003), new Rotation3d(0,0,0));
+        break;
+
+      default:
+        return new double[]{-1, -1};
     }
-    if (hubOffsetZ == 0)
-      return new double[]{-1, -1};
 
-    Transform3d camToAprilTag = target.getBestCameraToTarget();
+    Transform3d cameraToTag = target.getBestCameraToTarget();
 
-    Transform3d shooterToAprilTag = camToAprilTag.plus(Constants.VisionConstants.shooterCameraTransform);
+    Transform3d shooterToHub = VisionConstants.shooterToCamera.plus(cameraToTag).plus(tagToHub);
 
-    // potentially more elegant way to program it
-    // Transform3d shooterToAprilTag = VisionConstants.shooterCameraTransform.plus(camToAprilTag);
+    double angleError = -(Math.atan2(shooterToHub.getX(),shooterToHub.getY())-(Math.PI/2));
+    double distance = Math.sqrt(shooterToHub.getX()*shooterToHub.getX()+shooterToHub.getY()*shooterToHub.getY()+shooterToHub.getZ()*shooterToHub.getZ());
 
-    // Transform3d tagToHub =
-    // new Transform3d(
-    //   new Translation3d(hubOffsetX, hubOffsetY, hubOffsetZ),
-    //   new Rotation3d()
-    // );
-
-    // Transform3d shooterToHub = shooterToAprilTag.plus(tagToHub);
-
-    // double shooterToHubX = shooterToHub.getX();
-    // double shooterToHubY = shooterToHub.getY();
-    // double shooterToHubZ = shooterToHub.getZ();
-
-    double shooterToHubX = shooterToAprilTag.getX() + Math.cos(target.getYaw())*hubOffsetX + Math.sin(target.getYaw())*hubOffsetY;
-    double shooterToHubY = shooterToAprilTag.getY() + Math.sin(target.getYaw())*hubOffsetX - Math.cos(target.getYaw())*hubOffsetY;
-    // double shooterToHubZ = shooterToAprilTag.getZ() + hubOffsetZ;
-
-    double angleError = -(Math.atan2(shooterToHubX,shooterToHubY)-(Math.PI/2));
-
-    return new double[]{angleError, Math.sqrt(shooterToHubX*shooterToHubX+shooterToHubY*shooterToHubY)};
+    return new double[]{angleError, distance};
   }
 
   @Override

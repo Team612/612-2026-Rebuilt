@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 
 public final class Constants {
@@ -88,7 +89,8 @@ public final class Constants {
   public static class VisionConstants{
     public static final String frontCameraName = "FrontCamera";
     public static final String shooterCamera = "PC_Camera";
-    public static final Transform3d shooterCameraTransform = new Transform3d(-0.15,0,-0.2, new Rotation3d(0,0,0));
+    public static final Transform3d shooterToCamera = new Transform3d(new Translation3d(0.15, 0.0, -0.2), new Rotation3d());
+
  
     public static final Transform3d frontCameraTransform = 
     new Transform3d(
