@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import org.photonvision.targeting.PhotonPipelineResult;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -19,10 +20,14 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.units.AngularVelocityUnit;
+import edu.wpi.first.units.VoltageUnit;
+import edu.wpi.first.units.measure.Per;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 
 public class TankDrive extends SubsystemBase {
@@ -31,6 +36,8 @@ public class TankDrive extends SubsystemBase {
   private final TalonFX rightMotor  =new TalonFX(DriveConstants.rightMotorID);
   private final TalonFX leftMotor2 = new TalonFX(DriveConstants.leftMotor2ID);
   private final TalonFX rightMotor2 = new TalonFX(DriveConstants.rightMotor2ID);
+  private StatusSignal<Per<AngularVelocityUnit, VoltageUnit>> lKV;
+  private StatusSignal<Per<AngularVelocityUnit, VoltageUnit>> rKV;
 
   private boolean red;
 
@@ -46,7 +53,6 @@ public class TankDrive extends SubsystemBase {
 
   public TankDrive(Pose2d initialPos, Vision m_vision) {
     SmartDashboard.putData("Field", field);
-
     if (DriverStation.getAlliance().isPresent()) {
       if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
         red = true;
@@ -60,7 +66,8 @@ public class TankDrive extends SubsystemBase {
     rightConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     leftMotor.getConfigurator().apply(leftConfig);
     rightMotor.getConfigurator().apply(rightConfig);
- 
+    lKV = leftMotor.getMotorKV();
+    rKV = rightMotor.getMotorKV();
     leftMotor2.setControl(new Follower(DriveConstants.leftMotorID, MotorAlignmentValue.Aligned));
     rightMotor2.setControl(new Follower(DriveConstants.rightMotorID, MotorAlignmentValue.Aligned));
 
@@ -136,10 +143,14 @@ public class TankDrive extends SubsystemBase {
     DifferentialDriveWheelSpeeds wheelSpeeds = DriveConstants.driveKinematics.toWheelSpeeds(speeds);
 
     wheelSpeeds.desaturate(1);
-
-    leftMotor.set(wheelSpeeds.leftMetersPerSecond);
-    rightMotor.set(wheelSpeeds.rightMetersPerSecond);
-
+    double leftRadsPerSecond = wheelSpeeds.leftMetersPerSecond*Constants.DriveConstants.rpsScale;
+    double rightRadsPerSecond = wheelSpeeds.rightMetersPerSecond*Constants.DriveConstants.rpsScale;
+    lKV.refresh();
+    rKV.refresh();
+    double lkv = lKV.getValueAsDouble();
+    double rkv = rKV.getValueAsDouble();
+    leftMotor.setVoltage(lkv*leftRadsPerSecond);
+    rightMotor.setVoltage(rkv*rightRadsPerSecond);
     SmartDashboard.putNumber("leftPercentCmd", wheelSpeeds.leftMetersPerSecond);
     SmartDashboard.putNumber("rightPercentCmd", wheelSpeeds.rightMetersPerSecond);
   }
