@@ -166,6 +166,8 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putBoolean("turretForLim",turretMotor.getForwardLimitSwitch().isPressed());
     SmartDashboard.putBoolean("turretRevLim",turretMotor.getReverseLimitSwitch().isPressed());
+    SmartDashboard.putBoolean("tiltForLim",tiltMotor.getForwardLimitSwitch().isPressed());
+    SmartDashboard.putBoolean("tiltRevLim",tiltMotor.getReverseLimitSwitch().isPressed());
 
     SmartDashboard.putNumber("turretPos",turretMotor.getEncoder().getPosition());
     SmartDashboard.putNumber("tiltPos",tiltMotor.getEncoder().getPosition());
