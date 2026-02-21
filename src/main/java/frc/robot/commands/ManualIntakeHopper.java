@@ -13,12 +13,10 @@ import frc.robot.subsystems.Transfer;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ManualIntakeHopper extends Command {
   /** Creates a new ManualIntakeHopper. */
-  private final CommandXboxController m_controller;
   private final Intake m_intake;
   private final Transfer m_transfer;
   private final double SPEED = 0.2;
-  public ManualIntakeHopper(CommandXboxController controller, Intake intake, Transfer transfer) {
-    this.m_controller = controller;
+  public ManualIntakeHopper(Intake intake, Transfer transfer) {
     this.m_intake = intake;
     this.m_transfer = transfer;
     addRequirements(intake, transfer);
@@ -31,13 +29,9 @@ public class ManualIntakeHopper extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    boolean a = m_controller.getHID().getRawButton(XboxController.Button.kA.value);
-
-    while (a) {
-      m_intake.setMotor(0.5);
-      m_transfer.setHopperTop(SPEED);
-      m_transfer.setHopperBottom(-SPEED);
-    }
+    m_intake.setMotor(0.5);
+    m_transfer.setHopperTop(SPEED);
+    m_transfer.setHopperBottom(-SPEED);
   }
 
   // Called once the command ends or is interrupted.

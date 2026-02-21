@@ -6,7 +6,9 @@ import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.ArcadeIntake;
 import frc.robot.commands.AutoTurretAim;
 import frc.robot.commands.ContinuousAuto;
+import frc.robot.commands.FeedAndShoot;
 import frc.robot.commands.ManualHopper;
+import frc.robot.commands.ManualIntakeHopper;
 import frc.robot.commands.ManualShooterControl;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ZeroTurret;
@@ -43,10 +45,12 @@ public class RobotContainer {
   private void configureBindings() {
     m_tankDrive.setDefaultCommand(new ArcadeDrive(m_tankDrive, m_driverController));
     m_shooter.setDefaultCommand(new ManualShooterControl(m_shooter, m_gunnerController));
+
     m_gunnerController.x().whileTrue(new Shoot(m_shooter));
     m_gunnerController.rightBumper().onTrue(new ZeroTurret(m_shooter));
-    m_transfer.setDefaultCommand(new ManualHopper(m_transfer,m_gunnerController));
-    m_intake.setDefaultCommand(new ArcadeIntake(m_intake, m_gunnerController));
+
+    m_gunnerController.b().whileTrue(new ManualIntakeHopper(m_intake, m_transfer));
+    m_gunnerController.a().whileTrue(new FeedAndShoot(m_transfer, m_shooter));
   }
 
   public Command getAutonomousCommand() {
