@@ -68,6 +68,9 @@ public final class Constants {
     public static final double kWheelDiameterMeter = 0.192;
     public static final double encoderToMeters = ((Math.PI * kWheelDiameterMeter) / kCountsPerRevolution);
 
+    public static final double kS = 0.22;
+    public static final double kV = 2.1;  
+    public static final double kA = 0.3;  
     public static final double trackWidth = 0.508;
     public static final DifferentialDriveKinematics driveKinematics = new DifferentialDriveKinematics(trackWidth);
 

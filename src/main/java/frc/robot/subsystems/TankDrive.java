@@ -13,7 +13,11 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPLTVController;
-
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -26,6 +30,7 @@ import edu.wpi.first.units.measure.Per;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
@@ -36,14 +41,23 @@ public class TankDrive extends SubsystemBase {
   private final TalonFX rightMotor  =new TalonFX(DriveConstants.rightMotorID);
   private final TalonFX leftMotor2 = new TalonFX(DriveConstants.leftMotor2ID);
   private final TalonFX rightMotor2 = new TalonFX(DriveConstants.rightMotor2ID);
-  private StatusSignal<Per<AngularVelocityUnit, VoltageUnit>> lKV;
-  private StatusSignal<Per<AngularVelocityUnit, VoltageUnit>> rKV;
+  private final SimpleMotorFeedforward feedforward =
+      new SimpleMotorFeedforward(
+          DriveConstants.kS,
+          DriveConstants.kV,
+          DriveConstants.kA
+      );
 
+  private final DifferentialDrive diffDrive =
+      new DifferentialDrive(
+          (output) -> leftMotor.set(output),
+          (output) -> rightMotor.set(output)
+      );
   private boolean red;
 
   private final Pigeon2 gyro = new Pigeon2(DriveConstants.gyroID);
 
-  private DifferentialDrivePoseEstimator poseEstimator;
+  // private DifferentialDrivePoseEstimator poseEstimator;
 
   private RobotConfig config;
 
@@ -57,7 +71,7 @@ public class TankDrive extends SubsystemBase {
       if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
         red = true;
     }
-
+    diffDrive.setSafetyEnabled(false);
     TalonFXConfiguration leftConfig = new TalonFXConfiguration();
     TalonFXConfiguration rightConfig = new TalonFXConfiguration();
     leftConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -66,8 +80,6 @@ public class TankDrive extends SubsystemBase {
     rightConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     leftMotor.getConfigurator().apply(leftConfig);
     rightMotor.getConfigurator().apply(rightConfig);
-    lKV = leftMotor.getMotorKV();
-    rKV = rightMotor.getMotorKV();
     leftMotor2.setControl(new Follower(DriveConstants.leftMotorID, MotorAlignmentValue.Aligned));
     rightMotor2.setControl(new Follower(DriveConstants.rightMotorID, MotorAlignmentValue.Aligned));
 
@@ -76,49 +88,49 @@ public class TankDrive extends SubsystemBase {
     rightMotor.setPosition(0);
     gyro.reset();
 
-    poseEstimator = new DifferentialDrivePoseEstimator(
-      DriveConstants.driveKinematics,
-      getHeading(),
-      getLeftDistanceMeters(),
-      getRightDistanceMeters(),
-      initialPos,
-      // Odometry Standard Deviations, x y & z
-      VecBuilder.fill(0.003, 0.003, 0.001),
-      // Vision measurement std deviations
-      VecBuilder.fill(0.025, 0.025, 0.035)
-    );
+    // poseEstimator = new DifferentialDrivePoseEstimator(
+    //   DriveConstants.driveKinematics,
+    //   getHeading(),
+    //   getLeftDistanceMeters(),
+    //   getRightDistanceMeters(),
+    //   initialPos,
+    //   // Odometry Standard Deviations, x y & z
+    //   VecBuilder.fill(0.003, 0.003, 0.001),
+    //   // Vision measurement std deviations
+    //   VecBuilder.fill(0.025, 0.025, 0.035)
+    // );
 
     this.m_vision = m_vision;
 
-    try{
-      config = RobotConfig.fromGUISettings();
-    } catch (Exception e) {
-      // Handle exception as needed
-      e.printStackTrace();
-    }
+    // try{
+    //   config = RobotConfig.fromGUISettings();
+    // } catch (Exception e) {
+    //   // Handle exception as needed
+    //   e.printStackTrace();
+    // }
 
 
-    AutoBuilder.configure(
-      this::getPose, // Robot pose supplier
-      this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
-      this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-      (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
-      new PPLTVController(0.00), // PPLTVController is the built in path following controller for differential drive trains
-      config, // The robot configuration
-      () -> {
-      // Boolean supplier that controls when the path will be mirrored for the red alliance
-      // This will flip the path being followed to the red side of the field.
-      // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+    // AutoBuilder.configure(
+    //   this::getPose, // Robot pose supplier
+    //   this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+    //   this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+    //   (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+    //   new PPLTVController(0.00), // PPLTVController is the built in path following controller for differential drive trains
+    //   config, // The robot configuration
+    //   () -> {
+    //   // Boolean supplier that controls when the path will be mirrored for the red alliance
+    //   // This will flip the path being followed to the red side of the field.
+    //   // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
 
-      var alliance = DriverStation.getAlliance();
-      if (alliance.isPresent()) {
-      return alliance.get() == DriverStation.Alliance.Red;
-      }
-      return false;
-      },
-      this // Reference to this subsystem to set requirements
-    );
+    //   var alliance = DriverStation.getAlliance();
+    //   if (alliance.isPresent()) {
+    //   return alliance.get() == DriverStation.Alliance.Red;
+    //   }
+    //   return false;
+    //   },
+    //   this // Reference to this subsystem to set requirements
+    // );
   }
 
   public double getLeftDistanceMeters(){
@@ -131,45 +143,55 @@ public class TankDrive extends SubsystemBase {
     return Rotation2d.fromDegrees(Math.IEEEremainder(gyro.getYaw().getValueAsDouble(), 360));
   }
 
-  // drives the robot using a m/s ChassisSpeed
-  public void driveRobotRelative(ChassisSpeeds speeds) {
-    drive(new ChassisSpeeds(speeds.vxMetersPerSecond*DriveConstants.metersPerSecondToPercent, 0, speeds.omegaRadiansPerSecond*DriveConstants.radiansPerSecondToPercent));
-  }
+  private final SysIdRoutine sysIdRoutine =
+    new SysIdRoutine(
+        new Config(
+            null,        // default ramp rate
+            null,        // default step voltage
+            null,        // default timeout
+            (state) -> SmartDashboard.putString("SysIdState", state.toString())
+        ),
+        new Mechanism(
+            (voltage) -> {
+                leftMotor.setVoltage(voltage.in(edu.wpi.first.units.Units.Volts));
+                rightMotor.setVoltage(voltage.in(edu.wpi.first.units.Units.Volts));
+            },
+            null,
+            this
+        )
+    );
+  
+    public Command sysIdQuasistaticForward() {
+      return sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward);
+    }
 
-  // drives the robot using a percentage ChassisSpeed
-  public void drive(ChassisSpeeds speeds) {
-    speeds.omegaRadiansPerSecond = speeds.omegaRadiansPerSecond * DriveConstants.zNecessaryOffset;
+    public Command sysIdQuasistaticReverse() {
+        return sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse);
+    }
 
-    DifferentialDriveWheelSpeeds wheelSpeeds = DriveConstants.driveKinematics.toWheelSpeeds(speeds);
+    public Command sysIdDynamicForward() {
+        return sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward);
+    }
 
-    wheelSpeeds.desaturate(1);
-    double leftRadsPerSecond = wheelSpeeds.leftMetersPerSecond*Constants.DriveConstants.rpsScale;
-    double rightRadsPerSecond = wheelSpeeds.rightMetersPerSecond*Constants.DriveConstants.rpsScale;
-    lKV.refresh();
-    rKV.refresh();
-    double lkv = lKV.getValueAsDouble();
-    double rkv = rKV.getValueAsDouble();
-    leftMotor.setVoltage(lkv*leftRadsPerSecond);
-    rightMotor.setVoltage(rkv*rightRadsPerSecond);
-    SmartDashboard.putNumber("leftPercentCmd", wheelSpeeds.leftMetersPerSecond);
-    SmartDashboard.putNumber("rightPercentCmd", wheelSpeeds.rightMetersPerSecond);
-  }
+    public Command sysIdDynamicReverse() {
+        return sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse);
+    }
 
-  public Pose2d getPose(){
-    return poseEstimator.getEstimatedPosition();
-  }
+  // public Pose2d getPose(){
+  //   return poseEstimator.getEstimatedPosition();
+  // }
 
   public void resetPose(Pose2d pos){
     gyro.reset();
     leftMotor.setPosition(0);
     rightMotor.setPosition(0);
 
-    poseEstimator.resetPosition(
-      getHeading(),
-      getLeftDistanceMeters(),
-      getRightDistanceMeters(),
-      new Pose2d()
-    );
+    // poseEstimator.resetPosition(
+    //   getHeading(),
+    //   getLeftDistanceMeters(),
+    //   getRightDistanceMeters(),
+    //   new Pose2d()
+    // );
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds(){
@@ -179,25 +201,55 @@ public class TankDrive extends SubsystemBase {
     return new ChassisSpeeds(vx,0,omega);
   }
 
+    public void driveRobotRelative(ChassisSpeeds speeds) {
+
+      DifferentialDriveWheelSpeeds wheelSpeeds =
+          DriveConstants.driveKinematics.toWheelSpeeds(speeds);
+
+      setWheelSpeeds(wheelSpeeds);
+  }
+
+  public void setWheelSpeeds(DifferentialDriveWheelSpeeds speeds) {
+
+      speeds.desaturate(DriveConstants.maxAttainableSpeed);
+
+      double leftVelocity = speeds.leftMetersPerSecond;
+      double rightVelocity = speeds.rightMetersPerSecond;
+
+      double leftFeedforward = feedforward.calculate(leftVelocity);
+      double rightFeedforward = feedforward.calculate(rightVelocity);
+
+      leftMotor.setVoltage(leftFeedforward);
+      rightMotor.setVoltage(rightFeedforward);
+  }
+
+  public void arcadeDrive(double forward, double rotation) {
+      diffDrive.arcadeDrive(forward, rotation);
+  }
+
+  public void tankDrive(double left, double right) {
+      diffDrive.tankDrive(left, right);
+  }
+
   @Override
   public void periodic() {
-    if (red)
-      poseEstimator.update(getHeading().times(-1), -getLeftDistanceMeters(), -getRightDistanceMeters());
-    else
-      poseEstimator.update(getHeading(), getLeftDistanceMeters(), getRightDistanceMeters());
+    // if (red)
+    //   poseEstimator.update(getHeading().times(-1), -getLeftDistanceMeters(), -getRightDistanceMeters());
+    // else
+    //   poseEstimator.update(getHeading(), getLeftDistanceMeters(), getRightDistanceMeters());
 
-    PhotonPipelineResult result = m_vision.returnLatestCameraResult();
-    if (result.hasTargets()) {
-      if (result.getBestTarget().getPoseAmbiguity() < 0.3){ // test if this is necessary
-        var estimatedPoseOptional = m_vision.returnPhotonPos(result);
-        if (estimatedPoseOptional.isPresent()) {
-          var estimatedPose = estimatedPoseOptional.get().estimatedPose;
-          poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), result.getTimestampSeconds());
-        }
-      }
-    }
+    // PhotonPipelineResult result = m_vision.returnLatestCameraResult();
+    // if (result.hasTargets()) {
+    //   if (result.getBestTarget().getPoseAmbiguity() < 0.3){ // test if this is necessary
+    //     var estimatedPoseOptional = m_vision.returnPhotonPos(result);
+    //     if (estimatedPoseOptional.isPresent()) {
+    //       var estimatedPose = estimatedPoseOptional.get().estimatedPose;
+    //       poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), result.getTimestampSeconds());
+    //     }
+    //   }
+    // }
 
-    field.setRobotPose(poseEstimator.getEstimatedPosition());
+    // field.setRobotPose(poseEstimator.getEstimatedPosition());
 
     SmartDashboard.putNumber("leftSideSpeed", leftMotor.get());
     SmartDashboard.putNumber("rightSideSpeed",rightMotor.get());

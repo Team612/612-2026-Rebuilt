@@ -40,6 +40,11 @@ public class RobotContainer {
     m_driverController.x().whileTrue(new Shoot(m_shooter));
     m_driverController.rightBumper().onTrue(new ZeroTurret(m_shooter)); 
 
+    m_driverController.a().whileTrue(m_tankDrive.sysIdQuasistaticForward());
+    m_driverController.b().whileTrue(m_tankDrive.sysIdQuasistaticReverse());
+    m_driverController.x().whileTrue(m_tankDrive.sysIdDynamicForward());
+    m_driverController.y().whileTrue(m_tankDrive.sysIdDynamicReverse());
+
   }
 
   public Command getAutonomousCommand() {

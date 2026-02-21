@@ -22,16 +22,10 @@ public class ArcadeDrive extends Command {
 
   @Override
   public void execute() {
-    double speed = -controller.getLeftY();
-    double turn = -controller.getRightX();
-
-    if (Math.abs(speed) < DriveConstants.DEADBAND) speed = 0;
-    if (Math.abs(turn) < DriveConstants.DEADBAND) turn = 0;
-
-    speed *= DriveConstants.xPercent;
-    turn *= DriveConstants.zPercent;
-
-    m_tankDrive.drive(new ChassisSpeeds(speed,0,turn));
+    m_tankDrive.arcadeDrive(
+    -controller.getLeftY(),
+    controller.getRightX()
+    );
   }
 
   @Override
