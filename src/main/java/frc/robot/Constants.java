@@ -16,9 +16,9 @@ public final class Constants {
     public static final double redHubXPos = 11.915394;
   }
     public static class ShooterConstants{
-    public static final int shooterMotorID = 3;
-    public static final int turretMotorID = 1;
-    public static final int tiltMotorID = 2;
+    public static final int shooterMotorID = 6;
+    public static final int turretMotorID = 7;
+    public static final int tiltMotorID = 5;
     public static final int cancoderID = 1; // this is a guess verify before running
 
     public static final String shooterCameraName = "PC_Camera";
@@ -80,7 +80,7 @@ public final class Constants {
   }
 
   public static class IntakeConstants{
-    public static final int INTAKE_MOTOR_ID = 10; // this is a guess
+    public static final int INTAKE_MOTOR_ID = 1; // this is a guess
 
     public static final double INTAKE_SPEED = 0.85;  // this is a guess
     public static final double OUTTAKE_SPEED = -0.65;  // this is a guess
