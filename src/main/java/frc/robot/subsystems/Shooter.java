@@ -36,7 +36,7 @@ public class Shooter extends SubsystemBase {
 
   public Shooter() {
     turretPID.setIZone(0.1);
-    tiltPID.setIZone(0.02);
+    tiltPID.setIZone(0.02); 
   }
 
   public boolean GetLeftTurretLimits() {
