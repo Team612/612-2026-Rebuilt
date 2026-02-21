@@ -218,6 +218,65 @@ public class Shooter extends SubsystemBase {
     return new double[]{angleError, Math.sqrt(shooterToHubX*shooterToHubX+shooterToHubY*shooterToHubY)};
   }
 
+  public double getDistance() {
+    PhotonPipelineResult result = shooterCamera.getLatestResult();
+    if (!result.hasTargets()) {
+      return -1;
+    }
+    PhotonTrackedTarget target = shooterCamera.getLatestResult().getBestTarget();
+
+    int tagID = target.getFiducialId();
+
+    double hubOffsetX = 0.0;
+    double hubOffsetY = 0.0;
+    double hubOffsetZ = 0.0;
+
+    switch (tagID) {
+      case 10:  // Red Hub - center
+        hubOffsetX = 0.6034024;
+        hubOffsetY = 0.0;
+        hubOffsetZ = 0.309650003;
+        break;
+      case 9:   // Red Hub - offset (left side)
+        hubOffsetX = 0.6034024;
+        hubOffsetY = -0.3556;
+        hubOffsetZ = 0.309650003; 
+        break;
+      case 11:  // Red Hub - offset (right side)
+        hubOffsetX = 0.6034024;
+        hubOffsetY = 0.3556;
+        hubOffsetZ = 0.309650003;
+        break;
+      case 26:  // Blue Hub - center
+        hubOffsetX = 0.6034024;
+        hubOffsetY = 0.0;
+        hubOffsetZ = 0.309650003;
+        break;
+      case 25:  // Blue Hub - offset (left side)
+        hubOffsetX = 0.6034024;
+        hubOffsetY = -0.3556;
+        hubOffsetZ = 0.309650003;
+        break;
+      case 27:  // Blue Hub - offset (right side)
+        hubOffsetX = 0.6034024;
+        hubOffsetY = 0.3556;
+        hubOffsetZ = 0.309650003;
+        break;
+    }
+    if (hubOffsetZ == 0)
+      return -1;
+
+    Transform3d camToAprilTag = target.getBestCameraToTarget();
+
+    Transform3d shooterToAprilTag = camToAprilTag.plus(Constants.VisionConstants.shooterCameraTransform);
+
+    double shooterToHubX = shooterToAprilTag.getX() + Math.cos(target.getYaw())*hubOffsetX + Math.sin(target.getYaw())*hubOffsetY;
+    double shooterToHubY = shooterToAprilTag.getY() + Math.sin(target.getYaw())*hubOffsetX - Math.cos(target.getYaw())*hubOffsetY;
+    double shooterToHubZ = shooterToAprilTag.getZ() + hubOffsetZ;
+
+    return Math.sqrt(shooterToHubX*shooterToHubX+shooterToHubY*shooterToHubY);
+  }
+
   @Override
   public void periodic() {
 
