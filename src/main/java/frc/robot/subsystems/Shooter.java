@@ -8,13 +8,12 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.VisionConstants;
 
@@ -29,8 +28,7 @@ public class Shooter extends SubsystemBase {
   private PIDController turretPID = new PIDController(ShooterConstants.turretKp, ShooterConstants.turretKi, ShooterConstants.turretKd);
   private PIDController tiltPID = new PIDController(ShooterConstants.tiltKp,ShooterConstants.tiltKi,ShooterConstants.tiltKd);
 
-  // private DigitalInput rightLimit = new DigitalInput(ShooterConstants.rightLimitDIO);
-  // private DigitalInput leftLimit = new DigitalInput(ShooterConstants.leftLimitDIO);
+  private PowerDistribution pdh = new PowerDistribution();
 
   public Shooter() {
     turretPID.setIZone(0.1);
@@ -47,21 +45,11 @@ public class Shooter extends SubsystemBase {
 
 
   public void setShooterMotor(double speed){
-    shooterMotor.set(-speed);
+    shooterMotor.set(speed);
   }
   public void setTurretMotor(double speed){
-    // if(leftLimitPressed() && speed<0) {
-    //   speed=0;
-    // }
-    // if(rightLimitPressed() && speed>0) {
-    //   speed=0;
-    // }
     turretMotor.set(speed);
   }
-
-
-  //FORWARD IS DOWN!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // USE FORWARD LIMIT SWITCH TO STOP DOWNWARD MOTION
   public void setTiltMotor(double speed){
     tiltMotor.set(speed);
   }
@@ -69,23 +57,6 @@ public class Shooter extends SubsystemBase {
   
   public void setTurretPos(double pos){
     SmartDashboard.putNumber("anotherTurretPos",turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians);
-    // smallest < pos <largest
-    // boolean deadzone = pos < ShooterConstants.largestTurretAngle && pos > ShooterConstants.smallestTurretAngle;
-    // if(deadzone){
-    //   boolean gotolargest = Math.abs( ShooterConstants.largestTurretAngle - turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians) < Math.abs(ShooterConstants.smallestTurretAngle -turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians) ; 
-    //   if(gotolargest){
-    //     turretMotor.set(-turretPID.calculate(turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians, ShooterConstants.largestTurretAngle));
-
-
-    //   }
-    //   else{
-    //     turretMotor.set(-turretPID.calculate(turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians, ShooterConstants.smallestTurretAngle));
-    //   }
-    //   }
-    
-    // else{
-    //   turretMotor.set(-turretPID.calculate(turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians, pos));
-    // }
 
     if (pos > ShooterConstants.largestTurretAngle) 
       pos = ShooterConstants.largestTurretAngle;
@@ -123,22 +94,6 @@ public class Shooter extends SubsystemBase {
     return -0.00639338*distance*distance+0.10147*distance+0.401483;
   }
 
-  //   public boolean rightLimitPressed() {
-  //     return false;
-  //   // if(!rightLimit.get()) {
-  //   //   setTurretEncoderPos(ShooterConstants.rightLimit);
-  //   // }
-  //   // return !rightLimit.get(); 
-  // }
-  // public boolean leftLimitPressed() {
-  //   return false;
-  //   // if(!leftLimit.get()) {
-  //   //   setTurretEncoderPos(ShooterConstants.leftLimit);
-  //   // }
-  //   // return !leftLimit.get(); 
-  // }
-
-
   public boolean hasTag(){
     return shooterCamera.getLatestResult().hasTargets();
   }
@@ -147,142 +102,78 @@ public class Shooter extends SubsystemBase {
     if (!result.hasTargets()) {
       return new double[]{-1, -1};
     }
-    PhotonTrackedTarget target = shooterCamera.getLatestResult().getBestTarget();
+    PhotonTrackedTarget target = result.getBestTarget();
 
     int tagID = target.getFiducialId();
-
-    double hubOffsetX = 0.0;
-    double hubOffsetY = 0.0;
-    double hubOffsetZ = 0.0;
+    Transform3d tagToHub = new Transform3d();
 
     switch (tagID) {
-      case 10:  // Red Hub - center
-        hubOffsetX = 0.6034024;
-        hubOffsetY = 0.0;
-        hubOffsetZ = 0.309650003;
+      // blue hub tags counterclockwise order
+      case 21:
+        tagToHub = new Transform3d(new Translation3d(-0.6034024,0,0.309650003), new Rotation3d(0,0,0));
         break;
-      case 9:   // Red Hub - offset (left side)
-        hubOffsetX = 0.6034024;
-        hubOffsetY = -0.3556;
-        hubOffsetZ = 0.309650003; 
+      case 24:
+        tagToHub = new Transform3d(new Translation3d(-0.6034024,-0.3556,0.309650003), new Rotation3d(0,0,0));
         break;
-      case 11:  // Red Hub - offset (right side)
-        hubOffsetX = 0.6034024;
-        hubOffsetY = 0.3556;
-        hubOffsetZ = 0.309650003;
+      case 25:
+        tagToHub = new Transform3d(new Translation3d(-0.6034024,0.3556,0.309650003), new Rotation3d(0,0,0));
         break;
-      case 26:  // Blue Hub - center
-        hubOffsetX = 0.6034024;
-        hubOffsetY = 0.0;
-        hubOffsetZ = 0.309650003;
+      case 26:
+        tagToHub = new Transform3d(new Translation3d(-0.6034024,0,0.309650003), new Rotation3d(0,0,0));
         break;
-      case 25:  // Blue Hub - offset (left side)
-        hubOffsetX = 0.6034024;
-        hubOffsetY = -0.3556;
-        hubOffsetZ = 0.309650003;
+      case 27:
+        tagToHub = new Transform3d(new Translation3d(-0.6034024,0.3556,0.309650003), new Rotation3d(0,0,0));
         break;
-      case 27:  // Blue Hub - offset (right side)
-        hubOffsetX = 0.6034024;
-        hubOffsetY = 0.3556;
-        hubOffsetZ = 0.309650003;
+      case 18:
+        tagToHub = new Transform3d(new Translation3d(-0.6034024,0,0.309650003), new Rotation3d(0,0,0));
         break;
+
+      // red hub tags counterclockwise order
+      case 5:
+        tagToHub = new Transform3d(new Translation3d(-0.6034024,0,0.309650003), new Rotation3d(0,0,0));
+        break;
+      case 8:
+        tagToHub = new Transform3d(new Translation3d(-0.6034024,-0.3556,0.309650003), new Rotation3d(0,0,0));
+        break;
+      case 9:
+        tagToHub = new Transform3d(new Translation3d(-0.6034024,0.3556,0.309650003), new Rotation3d(0,0,0));
+        break;
+      case 10:
+        tagToHub = new Transform3d(new Translation3d(-0.6034024,0,0.309650003), new Rotation3d(0,0,0));
+        break;
+      case 11:
+        tagToHub = new Transform3d(new Translation3d(-0.6034024,0.3556,0.309650003), new Rotation3d(0,0,0));
+        break;
+      case 2:
+        tagToHub = new Transform3d(new Translation3d(-0.6034024,0,0.309650003), new Rotation3d(0,0,0));
+        break;
+
+      default:
+        return new double[]{-1, -1};
     }
-    if (hubOffsetZ == 0)
-      return new double[]{-1, -1};
 
-    Transform3d camToAprilTag = target.getBestCameraToTarget();
+    Transform3d cameraToTag = target.getBestCameraToTarget();
 
-    Transform3d shooterToAprilTag = camToAprilTag.plus(Constants.VisionConstants.shooterCameraTransform);
+    Transform3d shooterToHub = VisionConstants.shooterToCamera.plus(cameraToTag).plus(tagToHub);
 
-    // potentially more elegant way to program it
-    // Transform3d shooterToAprilTag = VisionConstants.shooterCameraTransform.plus(camToAprilTag);
+    double angleError = -(Math.atan2(shooterToHub.getX(),shooterToHub.getY())-(Math.PI/2));
+    double distance = Math.sqrt(shooterToHub.getX()*shooterToHub.getX()+shooterToHub.getY()*shooterToHub.getY()+shooterToHub.getZ()*shooterToHub.getZ());
 
-    // Transform3d tagToHub =
-    // new Transform3d(
-    //   new Translation3d(hubOffsetX, hubOffsetY, hubOffsetZ),
-    //   new Rotation3d()
-    // );
-
-    // Transform3d shooterToHub = shooterToAprilTag.plus(tagToHub);
-
-    // double shooterToHubX = shooterToHub.getX();
-    // double shooterToHubY = shooterToHub.getY();
-    // double shooterToHubZ = shooterToHub.getZ();
-
-    double shooterToHubX = shooterToAprilTag.getX() + Math.cos(target.getYaw())*hubOffsetX + Math.sin(target.getYaw())*hubOffsetY;
-    double shooterToHubY = shooterToAprilTag.getY() + Math.sin(target.getYaw())*hubOffsetX - Math.cos(target.getYaw())*hubOffsetY;
-    // double shooterToHubZ = shooterToAprilTag.getZ() + hubOffsetZ;
-
-    double angleError = -(Math.atan2(shooterToHubX,shooterToHubY)-(Math.PI/2));
-
-    return new double[]{angleError, Math.sqrt(shooterToHubX*shooterToHubX+shooterToHubY*shooterToHubY)};
-  }
-
-  public double getDistance() {
-    PhotonPipelineResult result = shooterCamera.getLatestResult();
-    if (!result.hasTargets()) {
-      return -1;
-    }
-    PhotonTrackedTarget target = shooterCamera.getLatestResult().getBestTarget();
-
-    int tagID = target.getFiducialId();
-
-    double hubOffsetX = 0.0;
-    double hubOffsetY = 0.0;
-    double hubOffsetZ = 0.0;
-
-    switch (tagID) {
-      case 10:  // Red Hub - center
-        hubOffsetX = 0.6034024;
-        hubOffsetY = 0.0;
-        hubOffsetZ = 0.309650003;
-        break;
-      case 9:   // Red Hub - offset (left side)
-        hubOffsetX = 0.6034024;
-        hubOffsetY = -0.3556;
-        hubOffsetZ = 0.309650003; 
-        break;
-      case 11:  // Red Hub - offset (right side)
-        hubOffsetX = 0.6034024;
-        hubOffsetY = 0.3556;
-        hubOffsetZ = 0.309650003;
-        break;
-      case 26:  // Blue Hub - center
-        hubOffsetX = 0.6034024;
-        hubOffsetY = 0.0;
-        hubOffsetZ = 0.309650003;
-        break;
-      case 25:  // Blue Hub - offset (left side)
-        hubOffsetX = 0.6034024;
-        hubOffsetY = -0.3556;
-        hubOffsetZ = 0.309650003;
-        break;
-      case 27:  // Blue Hub - offset (right side)
-        hubOffsetX = 0.6034024;
-        hubOffsetY = 0.3556;
-        hubOffsetZ = 0.309650003;
-        break;
-    }
-    if (hubOffsetZ == 0)
-      return -1;
-
-    Transform3d camToAprilTag = target.getBestCameraToTarget();
-
-    Transform3d shooterToAprilTag = camToAprilTag.plus(Constants.VisionConstants.shooterCameraTransform);
-
-    double shooterToHubX = shooterToAprilTag.getX() + Math.cos(target.getYaw())*hubOffsetX + Math.sin(target.getYaw())*hubOffsetY;
-    double shooterToHubY = shooterToAprilTag.getY() + Math.sin(target.getYaw())*hubOffsetX - Math.cos(target.getYaw())*hubOffsetY;
-    double shooterToHubZ = shooterToAprilTag.getZ() + hubOffsetZ;
-
-    return Math.sqrt(shooterToHubX*shooterToHubX+shooterToHubY*shooterToHubY);
+    return new double[]{angleError, distance};
   }
 
   @Override
   public void periodic() {
-
     SmartDashboard.putBoolean("turretForLim",turretMotor.getForwardLimitSwitch().isPressed());
     SmartDashboard.putBoolean("turretRevLim",turretMotor.getReverseLimitSwitch().isPressed());
 
     SmartDashboard.putNumber("turretPos",turretMotor.getEncoder().getPosition());
+    SmartDashboard.putNumber("tiltPos",tiltMotor.getEncoder().getPosition());
+    SmartDashboard.putNumber("shooterVelocity",shooterMotor.getEncoder().getVelocity());
+    SmartDashboard.putNumber("currentDraw",pdh.getTotalCurrent());
+
+    SmartDashboard.putNumber("turretSpeed",turretMotor.get());
+    SmartDashboard.putNumber("shooterSpeed",shooterMotor.get());
+    SmartDashboard.putNumber("tiltSpeed",tiltMotor.get());
   }
 }

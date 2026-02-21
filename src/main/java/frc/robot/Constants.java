@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 
 public final class Constants {
@@ -15,11 +16,11 @@ public final class Constants {
     public static final double hubYPos = 4.034536;
     public static final double redHubXPos = 11.915394;
   }
+
     public static class ShooterConstants{
-    public static final int shooterMotorID = 3;
-    public static final int turretMotorID = 1;
-    public static final int tiltMotorID = 2;
-    public static final int cancoderID = 1; // this is a guess verify before running
+    public static final int shooterMotorID = 2;
+    public static final int turretMotorID = 17;
+    public static final int tiltMotorID = 11;
 
     public static final String shooterCameraName = "PC_Camera";
 
@@ -27,9 +28,7 @@ public final class Constants {
 
     public static final double maxTurretSpeed = 0.1;
 
-    public static final double kShooterHeightMeters = 0.0;
-
-    public static final double turretCANcoderOffset = 0.0; // this is a guess
+    public static final double defaultShootSpeed = 0.5;
 
     public static final double largestTurretAngle = Math.PI/2;
     public static final double smallestTurretAngle = -Math.PI/2;
@@ -49,13 +48,12 @@ public final class Constants {
     public static final double rightLimit = -Math.PI/3;
     public static final double leftLimit = Math.PI/3;
   }
-
   
   public static class DriveConstants {
-    public static final int leftMotorID = 0; // this is a guess
-    public static final int rightMotorID = 5; // this is a guess
-    public static final int leftMotor2ID = 8; // this is a guess
-    public static final int rightMotor2ID = 1; // this is a guess
+    public static final int leftMotorID = 0;
+    public static final int rightMotorID = 5;
+    public static final int leftMotor2ID = 8;
+    public static final int rightMotor2ID = 1;
 
     public static final int gyroID = 0;
 
@@ -63,10 +61,6 @@ public final class Constants {
     public static final double zPercent = 1;
 
     public static final double DEADBAND = 0.05;
-
-    public static final double kCountsPerRevolution = 1440.0;
-    public static final double kWheelDiameterMeter = 0.192;
-    public static final double encoderToMeters = ((Math.PI * kWheelDiameterMeter) / kCountsPerRevolution);
 
     public static final double trackWidth = 0.508;
     public static final DifferentialDriveKinematics driveKinematics = new DifferentialDriveKinematics(trackWidth);
@@ -86,10 +80,22 @@ public final class Constants {
     public static final double OUTTAKE_SPEED = -0.65;  // this is a guess
   }
 
+  public static class TransferConstants{
+    public static final int hopperTopID = 4;
+    public static final int hopperBottomID = 9;
+    public static final int feedID = 6;
+
+    public static final double hopperTopSpeed = 0.5;
+    public static final double hopperBottomSpeed = -0.5;
+    public static final double feedSpeed = 0.5;
+
+    public static final int pauseTime = 50;
+  }
+
   public static class VisionConstants{
     public static final String frontCameraName = "FrontCamera";
     public static final String shooterCamera = "PC_Camera";
-    public static final Transform3d shooterCameraTransform = new Transform3d(-0.15,0,-0.2, new Rotation3d(0,0,0));
+    public static final Transform3d shooterToCamera = new Transform3d(new Translation3d(0.15, 0.0, -0.2), new Rotation3d());
  
     public static final Transform3d frontCameraTransform = 
     new Transform3d(
