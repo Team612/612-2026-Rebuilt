@@ -22,7 +22,7 @@ public class FeedAndShoot extends Command {
   @Override
   public void initialize() {
     m_transfer.setFeed(TransferConstants.feedSpeed);
-    m_shooter.setShooterMotor(ShooterConstants.defaultShootSpeed);
+    m_shooter.setShooterVelocity(ShooterConstants.defaultShootSpeed);
     timer = 0;
   }
 
@@ -37,7 +37,7 @@ public class FeedAndShoot extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    m_shooter.setShooterMotor(0);
+    m_shooter.setShooterVelocity(0);
     m_transfer.setFeed(0);
     m_transfer.setHopperTop(0);
     m_transfer.setHopperBottom(0);
