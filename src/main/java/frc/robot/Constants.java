@@ -87,6 +87,14 @@ public final class Constants {
     public static final double OUTTAKE_SPEED = -0.65;  // this is a guess
   }
 
+  public static class ClimbConstants {
+    public static final int climbMotorID = 3; // this is a guess
+    public static final double climbSpeed = 0.5; // this is a guess
+    public static final double l1Distance = 1000; // this is a guess
+    public static final double l2Distance = 2000; // this is a guess
+    public static final double l3Distance = 3000; // this is a guess
+  }
+
   public static class VisionConstants{
     public static final String frontCameraName = "FrontCamera";
     public static final String shooterCamera = "PC_Camera";
@@ -103,4 +111,5 @@ public final class Constants {
     );
   }
   
+
 }
