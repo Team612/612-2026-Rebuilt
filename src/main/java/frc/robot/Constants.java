@@ -9,6 +9,7 @@ public final class Constants {
 
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
+    public static final int kGunnerControllerPort = 1;
 
     // in meters
     public static final double blueHubXPos = 4.625594;
@@ -26,6 +27,8 @@ public final class Constants {
     public static final double DEADBAND = 0.03;
 
     public static final double maxTurretSpeed = 0.1;
+
+    public static final double defaultShootSpeed = 0.5;
 
     public static final double kShooterHeightMeters = 0.0;
 
@@ -110,6 +113,18 @@ public final class Constants {
       new edu.wpi.first.math.geometry.Rotation3d()
     );
   }
-  
 
+  public static class TransferConstants{
+    public static final int hopperTopID = 3;
+    public static final int hopperBottomID = 2;
+    public static final int feedID = 4;
+
+
+    public static final double hopperTopSpeed = 0.5;
+    public static final double hopperBottomSpeed = -0.5;
+    public static final double feedSpeed = 0.5;
+
+
+    public static final int pauseTime = 50;
+  }
 }
