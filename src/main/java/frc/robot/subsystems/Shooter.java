@@ -13,7 +13,6 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
@@ -29,9 +28,6 @@ public class Shooter extends SubsystemBase {
 
   private PIDController turretPID = new PIDController(ShooterConstants.turretKp, ShooterConstants.turretKi, ShooterConstants.turretKd);
   private PIDController tiltPID = new PIDController(ShooterConstants.tiltKp,ShooterConstants.tiltKi,ShooterConstants.tiltKd);
-
-  private DigitalInput rightLimit = new DigitalInput(ShooterConstants.rightLimitDIO);
-  private DigitalInput leftLimit = new DigitalInput(ShooterConstants.leftLimitDIO);
 
   public Shooter() {
     turretPID.setIZone(0.1);
@@ -51,12 +47,6 @@ public class Shooter extends SubsystemBase {
     shooterMotor.set(speed);
   }
   public void setTurretMotor(double speed){
-    if(leftLimitPressed() && speed<0) {
-      speed=0;
-    }
-    if(rightLimitPressed() && speed>0) {
-      speed=0;
-    }
     turretMotor.set(speed);
   }
 
@@ -99,20 +89,6 @@ public class Shooter extends SubsystemBase {
   public double getRegressionModelDutyCycle(double distance){
     return -0.00639338*distance*distance+0.10147*distance+0.401483;
   }
-
-    public boolean rightLimitPressed() {
-    if(!rightLimit.get()) {
-      setTurretEncoderPos(ShooterConstants.rightLimit);
-    }
-    return !rightLimit.get(); 
-  }
-  public boolean leftLimitPressed() {
-    if(!leftLimit.get()) {
-      setTurretEncoderPos(ShooterConstants.leftLimit);
-    }
-    return !leftLimit.get(); 
-  }
-
 
   public boolean hasTag(){
     return shooterCamera.getLatestResult().hasTargets();

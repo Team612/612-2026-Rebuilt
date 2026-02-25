@@ -17,10 +17,9 @@ public final class Constants {
     public static final double redHubXPos = 11.915394;
   }
     public static class ShooterConstants{
-    public static final int shooterMotorID = 2;
-    public static final int turretMotorID = 17;
-    public static final int tiltMotorID = 8;
-    public static final int cancoderID = 1; // this is a guess verify before running
+    public static final int shooterMotorID = 7;
+    public static final int turretMotorID = 6;
+    public static final int tiltMotorID = 5;
 
     public static final String shooterCameraName = "PC_Camera";
 
@@ -31,8 +30,6 @@ public final class Constants {
     public static final double defaultShootSpeed = 0.5;
 
     public static final double kShooterHeightMeters = 0.0;
-
-    public static final double turretCANcoderOffset = 0.0; // this is a guess
 
     public static final double largestTurretAngle = Math.PI/2;
     public static final double smallestTurretAngle = -Math.PI/2;
@@ -47,18 +44,16 @@ public final class Constants {
 
     public static final double turretEncoderToRadians = -0.628152;
 
-    public static final int rightLimitDIO = 0;
-    public static final int leftLimitDIO = 0;
     public static final double rightLimit = -Math.PI/3;
     public static final double leftLimit = Math.PI/3;
   }
 
   
   public static class DriveConstants {
-    public static final int leftMotorID = 1; // this is a guess
-    public static final int rightMotorID = 3; // this is a guess
-    public static final int leftMotor2ID = 2; // this is a guess
-    public static final int rightMotor2ID = 4; // this is a guess
+    public static final int leftMotorID = 0;
+    public static final int rightMotorID = 5;
+    public static final int leftMotor2ID = 8;
+    public static final int rightMotor2ID = 1;
 
     public static final int gyroID = 0;
 
@@ -67,9 +62,8 @@ public final class Constants {
 
     public static final double DEADBAND = 0.05;
 
-    public static final double kCountsPerRevolution = 1440.0;
     public static final double kWheelDiameterMeter = 0.192;
-    public static final double encoderToMeters = ((Math.PI * kWheelDiameterMeter) / kCountsPerRevolution);
+    public static final double encoderToMeters = 1; // this is a guess
 
     public static final double trackWidth = 0.508;
     public static final DifferentialDriveKinematics driveKinematics = new DifferentialDriveKinematics(trackWidth);
@@ -84,10 +78,21 @@ public final class Constants {
   }
 
   public static class IntakeConstants{
-    public static final int INTAKE_MOTOR_ID = 10; // this is a guess
+    public static final int INTAKE_MOTOR_ID = 1;
 
-    public static final double INTAKE_SPEED = 0.85;  // this is a guess
-    public static final double OUTTAKE_SPEED = -0.65;  // this is a guess
+    public static final double INTAKE_SPEED = 0.85;
+  }
+
+  public static class TransferConstants{
+    public static final int hopperTopID = 3;
+    public static final int hopperBottomID = 2;
+    public static final int feedID = 4;
+
+    public static final double hopperTopSpeed = 0.5;
+    public static final double hopperBottomSpeed = -0.5;
+    public static final double feedSpeed = 0.5;
+
+    public static final int pauseTime = 50;
   }
 
   public static class ClimbConstants {
@@ -103,28 +108,10 @@ public final class Constants {
     public static final String shooterCamera = "PC_Camera";
     public static final Transform3d shooterToCamera = new Transform3d(new Translation3d(0.15, 0.0, -0.2), new Rotation3d());
 
- 
     public static final Transform3d frontCameraTransform = 
     new Transform3d(
-      new edu.wpi.first.math.geometry.Translation3d(
-        edu.wpi.first.math.util.Units.inchesToMeters(0), // this is a guess
-        edu.wpi.first.math.util.Units.inchesToMeters(0), // this is a guess
-        edu.wpi.first.math.util.Units.inchesToMeters(0)),// this is a guess
+      new edu.wpi.first.math.geometry.Translation3d(0,0,0), // this is a guess
       new edu.wpi.first.math.geometry.Rotation3d()
     );
-  }
-
-  public static class TransferConstants{
-    public static final int hopperTopID = 3;
-    public static final int hopperBottomID = 2;
-    public static final int feedID = 4;
-
-
-    public static final double hopperTopSpeed = 0.5;
-    public static final double hopperBottomSpeed = -0.5;
-    public static final double feedSpeed = 0.5;
-
-
-    public static final int pauseTime = 50;
   }
 }
