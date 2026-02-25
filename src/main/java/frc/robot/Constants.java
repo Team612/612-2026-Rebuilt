@@ -18,9 +18,9 @@ public final class Constants {
   }
 
     public static class ShooterConstants{
-    public static final int shooterMotorID = 2;
-    public static final int turretMotorID = 17;
-    public static final int tiltMotorID = 11;
+    public static final int shooterMotorID = 7;
+    public static final int turretMotorID = 6;
+    public static final int tiltMotorID = 5;
 
     public static final String shooterCameraName = "PC_Camera";
 
@@ -74,16 +74,16 @@ public final class Constants {
   }
 
   public static class IntakeConstants{
-    public static final int INTAKE_MOTOR_ID = 10; // this is a guess
+    public static final int INTAKE_MOTOR_ID = 1; 
 
     public static final double INTAKE_SPEED = 0.85;  // this is a guess
     public static final double OUTTAKE_SPEED = -0.65;  // this is a guess
   }
 
   public static class TransferConstants{
-    public static final int hopperTopID = 4;
-    public static final int hopperBottomID = 9;
-    public static final int feedID = 6;
+    public static final int hopperTopID = 3;
+    public static final int hopperBottomID = 2;
+    public static final int feedID = 4;
 
     public static final double hopperTopSpeed = 0.5;
     public static final double hopperBottomSpeed = -0.5;
