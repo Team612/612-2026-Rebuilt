@@ -4,14 +4,27 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.FeedbackSensor;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.PowerDistribution;
+
+
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.RelativeEncoder;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
@@ -23,6 +36,9 @@ public class Shooter extends SubsystemBase {
   private SparkMax tiltMotor = new SparkMax(ShooterConstants.tiltMotorID, MotorType.kBrushed);
   private SparkMax turretMotor = new SparkMax(ShooterConstants.turretMotorID, MotorType.kBrushless);
   
+  private SparkClosedLoopController shooterPID;
+  private RelativeEncoder shooterEncoder;
+
   private PhotonCamera shooterCamera = new PhotonCamera(ShooterConstants.shooterCameraName);
 
   private PIDController turretPID = new PIDController(ShooterConstants.turretKp, ShooterConstants.turretKi, ShooterConstants.turretKd);
@@ -31,6 +47,21 @@ public class Shooter extends SubsystemBase {
   private PowerDistribution pdh = new PowerDistribution();
 
   public Shooter() {
+    shooterEncoder = shooterMotor.getEncoder();
+        shooterPID = shooterMotor.getClosedLoopController();
+
+        SparkMaxConfig shooterConfig = new SparkMaxConfig();
+        shooterConfig.closedLoop
+            .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+            .p(0.0002)
+            .i(0)
+            .d(0)
+            .velocityFF(0.00017)
+            .outputRange(-1, 1);
+        shooterConfig.voltageCompensation(12.0);
+
+    shooterMotor.configure(shooterConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+ 
     turretPID.setIZone(0.1);
     tiltPID.setIZone(0.02);
   }
@@ -43,10 +74,18 @@ public class Shooter extends SubsystemBase {
     return turretMotor.getReverseLimitSwitch().isPressed();
   }
 
-
-  public void setShooterMotor(double speed){
-    shooterMotor.set(speed);
+  public void setShooterVelocity(double rpm) {
+      shooterPID.setReference(rpm, ControlType.kVelocity);
   }
+
+  public boolean atSpeed(double targetRPM) {
+      return Math.abs(shooterEncoder.getVelocity() - targetRPM) < 100;
+  }
+
+  public double getRegressionModelRPM(double distance){
+    return (-0.00639338*distance*distance+0.10147*distance+0.401483) * 5700;
+  }
+
   public void setTurretMotor(double speed){
     turretMotor.set(speed);
   }
@@ -171,7 +210,7 @@ public class Shooter extends SubsystemBase {
 
     SmartDashboard.putNumber("turretPos",turretMotor.getEncoder().getPosition());
     SmartDashboard.putNumber("tiltPos",tiltMotor.getEncoder().getPosition());
-    SmartDashboard.putNumber("shooterVelocity",shooterMotor.getEncoder().getVelocity());
+    SmartDashboard.putNumber("Shooter RPM",shooterMotor.getEncoder().getVelocity());
     SmartDashboard.putNumber("currentDraw",pdh.getTotalCurrent());
 
     SmartDashboard.putNumber("turretSpeed",turretMotor.get());

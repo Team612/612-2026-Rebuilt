@@ -28,7 +28,7 @@ public final class Constants {
 
     public static final double maxTurretSpeed = 0.1;
 
-    public static final double defaultShootSpeed = 0.5;
+    public static final double defaultShootSpeed = 40000;
 
     public static final double largestTurretAngle = Math.PI/2;
     public static final double smallestTurretAngle = -Math.PI/2;
