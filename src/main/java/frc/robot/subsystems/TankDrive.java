@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import org.photonvision.targeting.PhotonPipelineResult;
-
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -49,10 +47,7 @@ public class TankDrive extends SubsystemBase {
 
   private final Field2d field = new Field2d();
 
-  private final Vision m_vision;
-  private final Shooter m_shooter;
-
-  public TankDrive(Pose2d initialPos, Vision m_vision, Shooter m_shooter) {
+  public TankDrive(Pose2d initialPos) {
     SmartDashboard.putData("Field", field);
     if (DriverStation.getAlliance().isPresent()) {
       if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
@@ -88,9 +83,6 @@ public class TankDrive extends SubsystemBase {
       // Vision measurement std deviations
       VecBuilder.fill(999, 999, 999) // doesn't matter because it gets overwritten
     );
-
-    this.m_vision = m_vision;
-    this.m_shooter = m_shooter;
 
     try{
       config = RobotConfig.fromGUISettings();
@@ -187,27 +179,6 @@ public class TankDrive extends SubsystemBase {
       poseEstimator.update(getHeading().times(-1), -getLeftDistanceMeters(), -getRightDistanceMeters());
     else
       poseEstimator.update(getHeading(), getLeftDistanceMeters(), getRightDistanceMeters());
-
-    PhotonPipelineResult result = m_vision.returnLatestCameraResult();
-    if (result.hasTargets()) {
-      if (result.getBestTarget().getPoseAmbiguity() < 0.3){ // test if this is necessary
-        var estimatedPoseOptional = m_vision.returnPhotonPos(result);
-        if (estimatedPoseOptional.isPresent()) {
-          var estimatedPose = estimatedPoseOptional.get().estimatedPose;
-          poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), result.getTimestampSeconds(),VecBuilder.fill(0.025, 0.025, 0.035));
-        }
-      }
-    }
-    PhotonPipelineResult shooterResult = m_shooter.returnLatestCameraResult();
-    if (shooterResult.hasTargets()) {
-      if (shooterResult.getBestTarget().getPoseAmbiguity() < 0.3){ // test if this is necessary
-        var estimatedPoseOptional = m_shooter.returnPhotonPos(shooterResult);
-        if (estimatedPoseOptional.isPresent()) {
-          var estimatedPose = estimatedPoseOptional.get().estimatedPose;
-          poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), shooterResult.getTimestampSeconds(),VecBuilder.fill(0.1, 0.1, 0.14));
-        }
-      }
-    }
 
     field.setRobotPose(poseEstimator.getEstimatedPosition());
 
