@@ -63,6 +63,9 @@ public final class Constants {
 
     public static final double rightLimit = -Math.PI/3;
     public static final double leftLimit = Math.PI/3;
+
+    public static final Transform3d robotToTurret = new Transform3d(new Translation3d(-0.21, 0, 0.51), new Rotation3d());
+    public static final double radiusTurretToCamera = 0.15;
   }
 
   

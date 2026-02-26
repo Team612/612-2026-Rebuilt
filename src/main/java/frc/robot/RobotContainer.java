@@ -25,8 +25,8 @@ public class RobotContainer {
   private final CommandXboxController m_gunnerController = new CommandXboxController(OperatorConstants.kGunnerControllerPort);
 
   private final Vision m_vision = new Vision();
-  private final TankDrive m_tankDrive = new TankDrive(OperatorConstants.BlueHubPointAway, m_vision);
   private final Shooter m_shooter = new Shooter();
+  private final TankDrive m_tankDrive = new TankDrive(OperatorConstants.BlueHubPointAway, m_vision, m_shooter);
   private final Transfer m_transfer = new Transfer();
   private final Intake m_intake = new Intake();
 

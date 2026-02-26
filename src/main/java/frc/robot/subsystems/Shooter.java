@@ -1,17 +1,23 @@
 package frc.robot.subsystems;
 
+import java.util.Optional;
+
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -24,7 +30,15 @@ public class Shooter extends SubsystemBase {
   private SparkMax tiltMotor = new SparkMax(ShooterConstants.tiltMotorID, MotorType.kBrushed);
   private SparkMax turretMotor = new SparkMax(ShooterConstants.turretMotorID, MotorType.kBrushless);
   
+  private static AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+
   private PhotonCamera shooterCamera = new PhotonCamera(ShooterConstants.shooterCameraName);
+
+  private PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(
+    aprilTagFieldLayout,
+    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+    new Transform3d() // placeholder, will be updated dynamically
+  );
 
   private PIDController turretPID = new PIDController(ShooterConstants.turretKp, ShooterConstants.turretKi, ShooterConstants.turretKd);
   private PIDController tiltPID = new PIDController(ShooterConstants.tiltKp,ShooterConstants.tiltKi,ShooterConstants.tiltKd);
@@ -41,7 +55,6 @@ public class Shooter extends SubsystemBase {
   public boolean GetRightTurretLimits() {
     return turretMotor.getReverseLimitSwitch().isPressed();
   }
-
 
   public void setShooterMotor(double speed){
     shooterMotor.set(speed);
@@ -157,6 +170,20 @@ public class Shooter extends SubsystemBase {
 
     return new double[]{angleError, distance};
   }
+
+  public Transform3d getRobotToCamera() {
+    Transform3d turretToCamera = new Transform3d(new Translation3d(ShooterConstants.radiusTurretToCamera, 0, 0).rotateBy(new Rotation3d(0,0,getCurrentTurretAngle())), new Rotation3d(0,0,getCurrentTurretAngle()));
+    return ShooterConstants.robotToTurret.plus(turretToCamera);
+  }
+
+  public PhotonPipelineResult returnLatestCameraResult() {
+    return shooterCamera.getLatestResult();
+  }
+
+  public Optional<EstimatedRobotPose> returnPhotonPos(PhotonPipelineResult result) {
+    photonPoseEstimator.setRobotToCameraTransform(getRobotToCamera());
+    return photonPoseEstimator.update(result);
+}
 
   @Override
   public void periodic() {

@@ -50,8 +50,9 @@ public class TankDrive extends SubsystemBase {
   private final Field2d field = new Field2d();
 
   private final Vision m_vision;
+  private final Shooter m_shooter;
 
-  public TankDrive(Pose2d initialPos, Vision m_vision) {
+  public TankDrive(Pose2d initialPos, Vision m_vision, Shooter m_shooter) {
     SmartDashboard.putData("Field", field);
     if (DriverStation.getAlliance().isPresent()) {
       if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
@@ -83,12 +84,13 @@ public class TankDrive extends SubsystemBase {
       getRightDistanceMeters(),
       initialPos,
       // Odometry Standard Deviations, x y & z
-      VecBuilder.fill(0.003, 0.003, 0.001),
+      VecBuilder.fill(0.006, 0.006, 0.002),
       // Vision measurement std deviations
-      VecBuilder.fill(0.025, 0.025, 0.035)
+      VecBuilder.fill(999, 999, 999) // doesn't matter because it gets overwritten
     );
 
     this.m_vision = m_vision;
+    this.m_shooter = m_shooter;
 
     try{
       config = RobotConfig.fromGUISettings();
@@ -192,7 +194,17 @@ public class TankDrive extends SubsystemBase {
         var estimatedPoseOptional = m_vision.returnPhotonPos(result);
         if (estimatedPoseOptional.isPresent()) {
           var estimatedPose = estimatedPoseOptional.get().estimatedPose;
-          poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), result.getTimestampSeconds());
+          poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), result.getTimestampSeconds(),VecBuilder.fill(0.025, 0.025, 0.035));
+        }
+      }
+    }
+    PhotonPipelineResult shooterResult = m_shooter.returnLatestCameraResult();
+    if (shooterResult.hasTargets()) {
+      if (shooterResult.getBestTarget().getPoseAmbiguity() < 0.3){ // test if this is necessary
+        var estimatedPoseOptional = m_shooter.returnPhotonPos(shooterResult);
+        if (estimatedPoseOptional.isPresent()) {
+          var estimatedPose = estimatedPoseOptional.get().estimatedPose;
+          poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), shooterResult.getTimestampSeconds(),VecBuilder.fill(0.1, 0.1, 0.14));
         }
       }
     }
