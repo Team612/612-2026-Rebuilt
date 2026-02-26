@@ -21,7 +21,7 @@ public class ManualShooterControl extends Command {
   @Override
   public void execute() {
 
-    if (controller.getHID().getAButton()){
+    if (controller.getHID().getBButton()){
       m_shooter.setShooterMotor(-0.5);
     }
     else

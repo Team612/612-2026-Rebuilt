@@ -153,7 +153,7 @@ public class Shooter extends SubsystemBase {
     Transform3d shooterToHub = VisionConstants.shooterToCamera.plus(cameraToTag).plus(tagToHub);
 
     double angleError = -(Math.atan2(shooterToHub.getX(),shooterToHub.getY())-(Math.PI/2));
-    double distance = Math.sqrt(shooterToHub.getX()*shooterToHub.getX()+shooterToHub.getY()*shooterToHub.getY()+shooterToHub.getZ()*shooterToHub.getZ());
+    double distance = Math.sqrt(shooterToHub.getX()*shooterToHub.getX()+shooterToHub.getY()*shooterToHub.getY());
 
     return new double[]{angleError, distance};
   }
