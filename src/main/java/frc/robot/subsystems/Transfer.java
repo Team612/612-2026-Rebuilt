@@ -1,10 +1,11 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.TransferConstants;
 
 public class Transfer extends SubsystemBase{
     // SparkMax motor1 is 550 motor, SparkFlex motors are vortex motors
@@ -26,9 +27,10 @@ public class Transfer extends SubsystemBase{
         feed.set(speed);
     }
     
-
     @Override
     public void periodic() {
-
+        SmartDashboard.putNumber("hopperTopSpeed",hopperTop.get());
+        SmartDashboard.putNumber("hopperBottomSpeed",hopperBottom.get());
+        SmartDashboard.putNumber("feedSpeed",feed.get());
     }
 }

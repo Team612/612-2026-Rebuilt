@@ -4,19 +4,25 @@
 
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.RPM;
+
+import com.fasterxml.jackson.databind.module.SimpleSerializers;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.Shooter;
-
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class Shoot extends Command {
+public class ShootUntilEmpty extends Command {
 
   private Shooter m_shooter;
 
   private boolean red;
+  Timer timerA = new Timer();
+  
   private double hubXpos;
 
     // this is a stand in for the drivetrain replace when done
@@ -24,8 +30,9 @@ public class Shoot extends Command {
     return new Pose2d(0,4.034536,new Rotation2d());
   } 
 
-  public Shoot(Shooter m_shooter) {
+  public ShootUntilEmpty(Shooter m_shooter) {
     this.m_shooter = m_shooter;
+    timerA.start();
   }
 
   @Override
@@ -47,21 +54,27 @@ public class Shoot extends Command {
   
       double xdiff = hubXpos - robotPos.getX();
       double ydiff = OperatorConstants.hubYPos - robotPos.getY();
-      
-      m_shooter.setShooterMotor(m_shooter.getRegressionModelDutyCycle(Math.sqrt(xdiff*xdiff+ydiff*ydiff)));
+
+      double distance = Math.sqrt(xdiff*xdiff+ydiff*ydiff);
+      m_shooter.setShooterVelocity(m_shooter.getRegressionModelRPM(distance));
+
+
+      if (m_shooter.getRegressionModelRPM(distance)-80 > m_shooter.getRPM()) {
+        timerA.reset();
+      }
     }
     else{
-      m_shooter.setShooterMotor(m_shooter.getRegressionModelDutyCycle(m_shooter.calculateShootingAnglesWithOfficialOffset()[1]));
+      m_shooter.setShooterVelocity(m_shooter.getRegressionModelRPM(m_shooter.calculateShootingAnglesWithOfficialOffset()[1]));
     }
   }
 
   @Override
   public void end(boolean interrupted) {
-    m_shooter.setShooterMotor(0);
+    m_shooter.setShooterVelocity(0);
   }
 
   @Override
   public boolean isFinished() {
-    return false;
+    return timerA.get() > 5.0;
   }
 }
