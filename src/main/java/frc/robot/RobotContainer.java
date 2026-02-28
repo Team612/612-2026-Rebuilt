@@ -17,6 +17,7 @@ import frc.robot.commands.ZeroTurret;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.TankDrive;
+import frc.robot.subsystems.Telemetry;
 import frc.robot.subsystems.Transfer;
 import frc.robot.subsystems.Vision;
 
@@ -29,10 +30,12 @@ public class RobotContainer {
   private final TankDrive m_tankDrive = new TankDrive(OperatorConstants.rightBlueBumpPointAway, m_vision, m_shooter);
   private final Transfer m_transfer = new Transfer();
   private final Intake m_intake = new Intake();
+  private final Telemetry m_telemetry = new Telemetry(m_shooter,m_intake, m_vision);
 
   public static boolean manualMode = false;
 
   public RobotContainer() {
+    m_telemetry.updateData();
     configureBindings();
   }
 
