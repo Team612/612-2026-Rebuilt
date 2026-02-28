@@ -6,7 +6,9 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArcadeDrive;
+import frc.robot.commands.AutoTurretAimAuto;
 import frc.robot.commands.AutoTurretAim;
+
 import frc.robot.commands.AutonomousRoutine;
 import frc.robot.commands.Feed;
 import frc.robot.commands.IntakeBall;
@@ -29,7 +31,7 @@ public class RobotContainer {
   private final Transfer m_transfer = new Transfer();
   private final Intake m_intake = new Intake();
 
-  private boolean manualMode = false;
+  public static boolean manualMode = false;
 
   public RobotContainer() {
     configureBindings();
@@ -60,7 +62,9 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return new SequentialCommandGroup(
       new ZeroTurret(m_shooter),
-      new AutonomousRoutine(m_tankDrive)
+      new AutonomousRoutine(m_tankDrive),
+      new AutoTurretAimAuto(m_shooter, m_tankDrive),
+      new Shoot(m_shooter, m_tankDrive)
     );
   }
 }

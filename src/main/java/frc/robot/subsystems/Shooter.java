@@ -96,6 +96,15 @@ public class Shooter extends SubsystemBase {
     return turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians;
   }
 
+
+  public double getTurretAngleDriver() {
+    return turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians * 180/Math.PI;
+  }
+
+  public double getShooterVelocity() {
+    return shooterMotor.getEncoder().getVelocity();
+  }
+
   public double getRegressionModelTilt(double distance){
     double tilt = 0.05333333 * distance - 1.34066666;
     if (tilt > 0)
