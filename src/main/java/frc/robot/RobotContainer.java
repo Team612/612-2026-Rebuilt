@@ -6,6 +6,7 @@ import frc.robot.commands.AutoTurretAim;
 import frc.robot.commands.FeedAndShoot;
 import frc.robot.commands.ManualIntakeHopper;
 import frc.robot.commands.ManualShooterControl;
+import frc.robot.commands.ShootUntilEmpty;
 import frc.robot.commands.ZeroTurret;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.TankDrive;
@@ -38,6 +39,8 @@ public class RobotContainer {
     m_gunnerController.rightBumper().onTrue(new ZeroTurret(m_shooter));
     m_gunnerController.x().whileTrue(new ManualIntakeHopper(m_intake, m_transfer));
     m_gunnerController.b().whileTrue(new FeedAndShoot(m_transfer, m_shooter));
+    m_gunnerController.leftBumper().whileTrue(new ShootUntilEmpty(m_shooter));
+
   }
 
   public Command getAutonomousCommand() {

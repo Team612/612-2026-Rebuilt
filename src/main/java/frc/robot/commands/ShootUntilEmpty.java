@@ -62,7 +62,6 @@ public class ShootUntilEmpty extends Command {
       if (m_shooter.getRegressionModelRPM(distance)-80 > m_shooter.getRPM()) {
         timerA.reset();
       }
-
     }
     else{
       m_shooter.setShooterVelocity(m_shooter.getRegressionModelRPM(m_shooter.calculateShootingAnglesWithOfficialOffset()[1]));
@@ -76,6 +75,6 @@ public class ShootUntilEmpty extends Command {
 
   @Override
   public boolean isFinished() {
-    return timerA.get() > 5;
+    return timerA.get() > 5.0;
   }
 }
