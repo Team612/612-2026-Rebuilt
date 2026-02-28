@@ -16,7 +16,7 @@ public class Intake extends SubsystemBase {
   @SuppressWarnings("removal")
   public Intake() {
     SparkMaxConfig motorConfig = new SparkMaxConfig();
-
+    motor.setVoltage(1000);
     motorConfig
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(40)

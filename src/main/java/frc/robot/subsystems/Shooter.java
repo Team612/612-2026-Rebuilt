@@ -70,6 +70,12 @@ public class Shooter extends SubsystemBase {
     return turretMotor.getForwardLimitSwitch().isPressed();
   }
 
+
+  public double getRPM() {
+    return shooterMotor.getEncoder().getVelocity();
+  }
+
+
   public boolean GetRightTurretLimits() {
     return turretMotor.getReverseLimitSwitch().isPressed();
   }
