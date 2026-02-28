@@ -59,6 +59,14 @@ public class Telemetry {
         SmartDashboard.putNumber("Shooter Velocity", m_shooter.getShooterVelocity());
         SmartDashboard.putNumber("Turret Position", m_shooter.getTurretAngleDriver());
         SmartDashboard.putBoolean("Ready to Fire!!!!", true);
+
+        SmartDashboard.putNumber("Ramp Up Time", 50); 
+        Constants.TransferConstants.rampUpTime = (int) SmartDashboard.getNumber("Constant of Time", 50);
+        SmartDashboard.putNumber("Shoot Time",202); 
+        Constants.TransferConstants.shootTime = (int) SmartDashboard.getNumber("Shoot Time", 20);
+        SmartDashboard.putNumber("Recovery Time", 10); 
+        Constants.TransferConstants.recoveryTime = (int) SmartDashboard.getNumber("Recovery Time", 10);
+
         // SmartDashboard.putBoolean("Distance To Tag", m_shooter.dist());
         // SmartDashboard.putBoolean("Manual Mode", m_shooter.has);
         // Turret Position (Degrees)

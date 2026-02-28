@@ -120,9 +120,9 @@ public final class Constants {
     public static final double hopperBottomSpeed = -0.5;
     public static final double feedSpeed = 0.5;
 
-    public static final int rampUpTime = 50;
-    public static final int shootTime = 20;
-    public static final int recoveryTime = 10;
+    public static int rampUpTime = 50;
+    public static int shootTime = 20;
+    public static int recoveryTime = 10;
   }
 
   public static class ClimbConstants {
