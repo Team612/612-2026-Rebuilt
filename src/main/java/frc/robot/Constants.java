@@ -85,6 +85,9 @@ public final class Constants {
     public static final double xPercent = 1;
     public static final double zPercent = 1;
 
+    public static final double kS = 0.22;
+    public static final double kV = 2.1;  
+    public static final double kA = 0.3;  
     public static final double DEADBAND = 0.05;
 
     public static final double kWheelDiameterMeter = 0.192;

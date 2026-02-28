@@ -15,7 +15,7 @@ public class AutonomousRoutine extends Command {
 
   @Override
   public void initialize() {
-    m_tankDrive.drive(new ChassisSpeeds(0.1,0,0));
+    m_tankDrive.driveRobotRelative(new ChassisSpeeds(0.1,0,0));
   }
 
   @Override
@@ -23,7 +23,7 @@ public class AutonomousRoutine extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    m_tankDrive.drive(new ChassisSpeeds());
+    m_tankDrive.driveRobotRelative(new ChassisSpeeds());
   }
 
   @Override
