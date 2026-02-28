@@ -7,6 +7,7 @@ import frc.robot.commands.ArcadeIntake;
 import frc.robot.commands.AutoTurretAim;
 import frc.robot.commands.ContinuousAuto;
 import frc.robot.commands.FeedAndShoot;
+import frc.robot.commands.IntakeA;
 import frc.robot.commands.ManualHopper;
 import frc.robot.commands.ManualIntakeHopper;
 import frc.robot.commands.ManualShooterControl;
@@ -51,6 +52,9 @@ public class RobotContainer {
 
     m_gunnerController.b().whileTrue(new ManualIntakeHopper(m_intake, m_transfer));
     m_gunnerController.a().whileTrue(new FeedAndShoot(m_transfer, m_shooter));
+    
+    m_gunnerController.y().whileTrue(new IntakeA(m_intake));
+
   }
 
   public Command getAutonomousCommand() {

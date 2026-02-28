@@ -32,16 +32,17 @@ public class FeedAndShoot extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(m_timer.hasElapsed(0.5)) {
-      m_shooter.setShooterMotor(0.5);
-    }
+    // if(m_timer.hasElapsed(0.5)) {
+    m_transfer.setFeed(0.6);
+      m_shooter.setShooterMotor(-0.5);
+    // }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_shooter.setShooterMotor(0);
-    m_transfer.setFeed(0);
+    // m_shooter.setShooterMotor(0);
+    // m_transfer.setFeed(0);
   }
 
   // Returns true when the command should end.
