@@ -9,6 +9,8 @@ public class Feed extends Command {
   private final Transfer m_transfer;
   private int timer;
 
+  private int totalTime = TransferConstants.shootTime + TransferConstants.recoveryTime;
+
   public Feed(Transfer m_transfer) {
     this.m_transfer = m_transfer;
     addRequirements(m_transfer);
@@ -23,9 +25,13 @@ public class Feed extends Command {
   @Override
   public void execute() {
     timer++;
-    if(timer >= TransferConstants.pauseTime) {
+    if ((timer >= TransferConstants.rampUpTime) && ((timer - TransferConstants.rampUpTime) % totalTime) < TransferConstants.shootTime)  {
       m_transfer.setHopperTop(TransferConstants.hopperTopSpeed);
       m_transfer.setHopperBottom(TransferConstants.hopperBottomSpeed);
+    }
+    else{
+      m_transfer.setHopperTop(0);
+      m_transfer.setHopperBottom(0);
     }
   }
 
