@@ -15,6 +15,7 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPLTVController;
 
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -24,6 +25,7 @@ import edu.wpi.first.units.AngularVelocityUnit;
 import edu.wpi.first.units.VoltageUnit;
 import edu.wpi.first.units.measure.Per;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -39,6 +41,21 @@ public class TankDrive extends SubsystemBase {
   private StatusSignal<Per<AngularVelocityUnit, VoltageUnit>> lKV;
   private StatusSignal<Per<AngularVelocityUnit, VoltageUnit>> rKV;
 
+
+
+    private final SimpleMotorFeedforward feedforward =
+      new SimpleMotorFeedforward(
+          DriveConstants.kS,
+          DriveConstants.kV,
+          DriveConstants.kA
+      );
+
+  private final DifferentialDrive diffDrive =
+      new DifferentialDrive(
+          (output) -> leftMotor.set(output),
+          (output) -> rightMotor.set(output)
+      );
+      
   private boolean red;
 
   private final Pigeon2 gyro = new Pigeon2(DriveConstants.gyroID);
@@ -130,36 +147,46 @@ public class TankDrive extends SubsystemBase {
     return rightMotor.getPosition().getValueAsDouble() * DriveConstants.encoderToMeters;
   }
   public Rotation2d getHeading(){
-    return Rotation2d.fromDegrees(Math.IEEEremainder(gyro.getYaw().getValueAsDouble(), 360));
+    return Rotation2d.fromDegrees(Math.IEEEremainder(-gyro.getYaw().getValueAsDouble(), 360));
   }
 
   // drives the robot using a m/s ChassisSpeed
-  public void driveRobotRelative(ChassisSpeeds speeds) {
-    drive(new ChassisSpeeds(speeds.vxMetersPerSecond*DriveConstants.metersPerSecondToPercent, 0, speeds.omegaRadiansPerSecond*DriveConstants.radiansPerSecondToPercent));
-  }
 
-  // drives the robot using a percentage ChassisSpeed
-  public void drive(ChassisSpeeds speeds) {
-    speeds.omegaRadiansPerSecond = speeds.omegaRadiansPerSecond * DriveConstants.zNecessaryOffset;
 
-    DifferentialDriveWheelSpeeds wheelSpeeds = DriveConstants.driveKinematics.toWheelSpeeds(speeds);
+    public void driveRobotRelative(ChassisSpeeds speeds) {
 
-    wheelSpeeds.desaturate(1);
-    double leftRadsPerSecond = wheelSpeeds.leftMetersPerSecond*Constants.DriveConstants.rpsScale;
-    double rightRadsPerSecond = wheelSpeeds.rightMetersPerSecond*Constants.DriveConstants.rpsScale;
-    lKV.refresh();
-    rKV.refresh();
-    double lkv = lKV.getValueAsDouble();
-    double rkv = rKV.getValueAsDouble();
-    leftMotor.setVoltage(lkv*leftRadsPerSecond);
-    rightMotor.setVoltage(rkv*rightRadsPerSecond);
-    SmartDashboard.putNumber("leftPercentCmd", wheelSpeeds.leftMetersPerSecond);
-    SmartDashboard.putNumber("rightPercentCmd", wheelSpeeds.rightMetersPerSecond);
-  }
+      DifferentialDriveWheelSpeeds wheelSpeeds =
+          DriveConstants.driveKinematics.toWheelSpeeds(speeds);
 
-  public Pose2d getPose(){
-    return poseEstimator.getEstimatedPosition();
-  }
+      setWheelSpeeds(wheelSpeeds);
+    }
+
+    public void setWheelSpeeds(DifferentialDriveWheelSpeeds speeds) {
+
+        speeds.desaturate(DriveConstants.maxAttainableSpeed);
+
+        double leftVelocity = speeds.leftMetersPerSecond;
+        double rightVelocity = speeds.rightMetersPerSecond;
+
+        double leftFeedforward = feedforward.calculate(leftVelocity);
+        double rightFeedforward = feedforward.calculate(rightVelocity);
+
+        leftMotor.setVoltage(leftFeedforward);
+        rightMotor.setVoltage(rightFeedforward);
+    }
+
+    public void arcadeDrive(double forward, double rotation) {
+        diffDrive.arcadeDrive(forward, rotation);
+    }
+
+    public void tankDrive(double left, double right) {
+        diffDrive.tankDrive(left, right);
+    }
+
+
+    public Pose2d getPose(){
+      return poseEstimator.getEstimatedPosition();
+    }
 
   public void resetPose(Pose2d pos){
     gyro.reset();
@@ -176,7 +203,7 @@ public class TankDrive extends SubsystemBase {
 
   public ChassisSpeeds getRobotRelativeSpeeds(){
     double vx = (leftMotor.getVelocity().getValueAsDouble()*DriveConstants.encoderToMeters + rightMotor.getVelocity().getValueAsDouble()*DriveConstants.encoderToMeters) / 2.0;
-    double omega = gyro.getAngularVelocityZDevice().getValueAsDouble();
+    double omega = -gyro.getAngularVelocityZDevice().getValueAsDouble();
 
     return new ChassisSpeeds(vx,0,omega);
   }
@@ -214,6 +241,6 @@ public class TankDrive extends SubsystemBase {
     SmartDashboard.putNumber("leftSideSpeed", leftMotor.get());
     SmartDashboard.putNumber("rightSideSpeed",rightMotor.get());
 
-    SmartDashboard.putNumber("gyro velocity", gyro.getAngularVelocityZDevice().getValueAsDouble()); // check if this is in rad/sec or degrees/sec
+    SmartDashboard.putNumber("gyro velocity", -gyro.getAngularVelocityZDevice().getValueAsDouble()); // check if this is in rad/sec or degrees/sec
   }
 }

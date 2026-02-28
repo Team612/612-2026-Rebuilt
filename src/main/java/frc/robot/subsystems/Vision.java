@@ -31,6 +31,10 @@ public class Vision extends SubsystemBase {
     return frontCamera.getLatestResult();
   }
 
+  public boolean hasTag(){
+    return frontCamera.getLatestResult().hasTargets();
+  }
+
   public Optional<EstimatedRobotPose> returnPhotonPos(PhotonPipelineResult result){
     return photonPoseEstimator.update(result);
   }
