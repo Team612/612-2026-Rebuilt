@@ -27,6 +27,7 @@ public class Intake extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("intakeSpeed",motor.get());
+    SmartDashboard.putNumber("intakeSpeed1",motor1.get());
+    SmartDashboard.putNumber("intakeSpeed2",motor2.get());
   }
 }

@@ -22,11 +22,11 @@ public class ManualShooterControl extends Command {
   @Override
   public void execute() {
 
-    if (controller.getHID().getAButton()){
-      m_shooter.setShooterMotor(0.5);
-    }
-    else
-      m_shooter.setShooterMotor(0);
+    // if (controller.getHID().getAButton()){
+    //   m_shooter.setShooterMotor(0.5);
+    // }
+    // else
+    //   m_shooter.setShooterMotor(0);
 
     m_shooter.setTurretMotor(controller.getRightX()*ShooterConstants.maxTurretSpeed);
     m_shooter.setTiltMotor(controller.getLeftY());
