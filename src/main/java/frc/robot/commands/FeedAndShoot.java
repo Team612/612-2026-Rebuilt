@@ -1,11 +1,9 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Transfer;
-import frc.robot.Constants.ShooterConstants;
-import frc.robot.Constants.TransferConstants;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Transfer;
+import frc.robot.Constants.TransferConstants;
 
 public class FeedAndShoot extends Command {
 
@@ -13,31 +11,36 @@ public class FeedAndShoot extends Command {
   private final Shooter m_shooter;
   private int timer;
 
-  public FeedAndShoot(Transfer transfer, Shooter shooter) {
-    m_transfer = transfer;
-    m_shooter = shooter;
-    addRequirements(m_shooter);
+  private int totalTime = TransferConstants.shootTime + TransferConstants.recoveryTime;
+
+  public FeedAndShoot(Transfer m_transfer, Shooter m_shooter) {
+    this.m_transfer = m_transfer;
+    this.m_shooter = m_shooter;
+    addRequirements(m_transfer);
   }
 
   @Override
   public void initialize() {
+    m_shooter.setShooterMotor(0.5);
     m_transfer.setFeed(TransferConstants.feedSpeed);
-    m_shooter.setShooterVelocity(ShooterConstants.defaultShootSpeed);
     timer = 0;
   }
 
   @Override
   public void execute() {
     timer++;
-    if(timer >= TransferConstants.pauseTime) {
+    if ((timer >= TransferConstants.rampUpTime) && ((timer - TransferConstants.rampUpTime) % totalTime) < TransferConstants.shootTime)  {
       m_transfer.setHopperTop(TransferConstants.hopperTopSpeed);
       m_transfer.setHopperBottom(TransferConstants.hopperBottomSpeed);
+    }
+    else{
+      m_transfer.setHopperTop(0);
+      m_transfer.setHopperBottom(0);
     }
   }
 
   @Override
   public void end(boolean interrupted) {
-    m_shooter.setShooterVelocity(0);
     m_transfer.setFeed(0);
     m_transfer.setHopperTop(0);
     m_transfer.setHopperBottom(0);

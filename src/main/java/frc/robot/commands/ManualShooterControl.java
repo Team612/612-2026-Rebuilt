@@ -23,10 +23,10 @@ public class ManualShooterControl extends Command {
   public void execute() {
 
     if (controller.getHID().getAButton()){
-      m_shooter.setShooterVelocity((ShooterConstants.defaultShootSpeed));
+      m_shooter.setShooterMotor(0.5);
     }
     else
-      m_shooter.setShooterVelocity(4000);
+      m_shooter.setShooterMotor(0);
 
     m_shooter.setTurretMotor(controller.getRightX()*ShooterConstants.maxTurretSpeed);
     m_shooter.setTiltMotor(controller.getLeftY());
