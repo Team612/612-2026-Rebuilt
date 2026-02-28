@@ -147,7 +147,7 @@ public class TankDrive extends SubsystemBase {
     return rightMotor.getPosition().getValueAsDouble() * DriveConstants.encoderToMeters;
   }
   public Rotation2d getHeading(){
-    return Rotation2d.fromDegrees(Math.IEEEremainder(gyro.getYaw().getValueAsDouble(), 360));
+    return Rotation2d.fromDegrees(Math.IEEEremainder(-gyro.getYaw().getValueAsDouble(), 360));
   }
 
   // drives the robot using a m/s ChassisSpeed
@@ -203,7 +203,7 @@ public class TankDrive extends SubsystemBase {
 
   public ChassisSpeeds getRobotRelativeSpeeds(){
     double vx = (leftMotor.getVelocity().getValueAsDouble()*DriveConstants.encoderToMeters + rightMotor.getVelocity().getValueAsDouble()*DriveConstants.encoderToMeters) / 2.0;
-    double omega = gyro.getAngularVelocityZDevice().getValueAsDouble();
+    double omega = -gyro.getAngularVelocityZDevice().getValueAsDouble();
 
     return new ChassisSpeeds(vx,0,omega);
   }
@@ -241,6 +241,6 @@ public class TankDrive extends SubsystemBase {
     SmartDashboard.putNumber("leftSideSpeed", leftMotor.get());
     SmartDashboard.putNumber("rightSideSpeed",rightMotor.get());
 
-    SmartDashboard.putNumber("gyro velocity", gyro.getAngularVelocityZDevice().getValueAsDouble()); // check if this is in rad/sec or degrees/sec
+    SmartDashboard.putNumber("gyro velocity", -gyro.getAngularVelocityZDevice().getValueAsDouble()); // check if this is in rad/sec or degrees/sec
   }
 }
