@@ -90,6 +90,15 @@ public class Shooter extends SubsystemBase {
     return turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians;
   }
 
+  public double getTurretAngleDriver() {
+    return turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians * 180/Math.PI;
+  }
+
+  public double getShooterVelocity() {
+    return shooterMotor.get();
+  }
+
+
   public double getRegressionModelTilt(double distance){
     double tilt = 0.05333333 * distance - 1.34066666;
     if (tilt > 0)
@@ -179,6 +188,12 @@ public class Shooter extends SubsystemBase {
   public PhotonPipelineResult returnLatestCameraResult() {
     return shooterCamera.getLatestResult();
   }
+
+  // public double distanceToTag() {
+  //    if (hasTag()) {
+  //     m_shooter.getUn
+  //    }
+  // }
 
   public Optional<EstimatedRobotPose> returnPhotonPos(PhotonPipelineResult result) {
     photonPoseEstimator.setRobotToCameraTransform(getRobotToCamera());

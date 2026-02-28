@@ -17,7 +17,7 @@ public class Vision extends SubsystemBase {
 
   public Vision() {}
 
-  private static AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+  private static AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2022RapidReact);
 
   private PhotonCamera frontCamera = new PhotonCamera(VisionConstants.frontCameraName);
 
@@ -29,6 +29,10 @@ public class Vision extends SubsystemBase {
 
   public PhotonPipelineResult returnLatestCameraResult(){
     return frontCamera.getLatestResult();
+  }
+
+  public boolean hasTag(){
+    return frontCamera.getLatestResult().hasTargets();
   }
 
   public Optional<EstimatedRobotPose> returnPhotonPos(PhotonPipelineResult result){
