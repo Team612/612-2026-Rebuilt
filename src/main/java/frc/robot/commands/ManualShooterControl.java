@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Shooter;
 
 public class ManualShooterControl extends Command {
@@ -21,11 +22,10 @@ public class ManualShooterControl extends Command {
   @Override
   public void execute() {
 
-    if (controller.getHID().getBButton()){
-      m_shooter.setShooterMotor(-0.5);
-    }
+    if (controller.getHID().getBButton())
+      m_shooter.setShooterVoltage(ShooterConstants.defaultShootVolt);
     else
-      m_shooter.setShooterMotor(0.0);
+      m_shooter.setShooterVoltage(0.0);
 
     m_shooter.setTurretMotor(controller.getRightX()*0.1);
     m_shooter.setTiltMotor(controller.getLeftY());

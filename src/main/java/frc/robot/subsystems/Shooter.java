@@ -9,7 +9,6 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
@@ -26,7 +25,7 @@ import frc.robot.Constants.VisionConstants;
 
 public class Shooter extends SubsystemBase {
 
-  private TalonFX shooterMotor = new TalonFX(ShooterConstants.shooterMotorID);
+  private SparkMax shooterMotor = new SparkMax(ShooterConstants.shooterMotorID, MotorType.kBrushless);
   private SparkMax tiltMotor = new SparkMax(ShooterConstants.tiltMotorID, MotorType.kBrushed);
   private SparkMax turretMotor = new SparkMax(ShooterConstants.turretMotorID, MotorType.kBrushless);
   
@@ -56,13 +55,20 @@ public class Shooter extends SubsystemBase {
     return turretMotor.getReverseLimitSwitch().isPressed();
   }
 
-  public void setShooterMotor(double speed){
-    shooterMotor.set(speed);
+  public void setShooterVoltage(double volts){
+    shooterMotor.setVoltage(volts);
+    shooterMotor.set(volts/11.0); // ONLY FOR DEBUGGING PURPOSES REMOVE FOR FINAL CODE
   }
+  public void setShooterRPM(double RPM){
+    double outputVolts = RPM * ShooterConstants.shooterkV;
+    outputVolts += ShooterConstants.shooterKp * (RPM - shooterMotor.getEncoder().getVelocity());
+    shooterMotor.setVoltage(outputVolts);
+    shooterMotor.set(outputVolts/11.0); // ONLY FOR DEBUGGING PURPOSES REMOVE FOR FINAL CODE
+  }
+
   public void setTurretMotor(double speed){
     turretMotor.set(speed);
   }
-
   public void setTiltMotor(double speed){
     tiltMotor.set(speed);
   }
@@ -99,8 +105,8 @@ public class Shooter extends SubsystemBase {
     return tilt;
   }
 
-  public double getRegressionModelDutyCycle(double distance){
-    return -0.00639338*distance*distance+0.10147*distance+0.401483;
+  public double getRegressionModelRPM(double distance){
+    return -36.28882488*distance*distance+575.94372*distance+2278.817508;
   }
 
   public boolean hasTag(){
@@ -171,6 +177,7 @@ public class Shooter extends SubsystemBase {
     return new double[]{angleError, distance};
   }
 
+
   public Transform3d getRobotToCamera() {
     Transform3d turretToCamera = new Transform3d(new Translation3d(ShooterConstants.radiusTurretToCamera, 0, 0).rotateBy(new Rotation3d(0,0,getCurrentTurretAngle())), new Rotation3d(0,0,getCurrentTurretAngle()));
     return ShooterConstants.robotToTurret.plus(turretToCamera);
@@ -187,6 +194,8 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("turretPos",turretMotor.getEncoder().getPosition());
+    SmartDashboard.putNumber("shooterGet",shooterMotor.get());
+    SmartDashboard.putNumber("turretGet",turretMotor.get());
+    SmartDashboard.putNumber("tiltGet",tiltMotor.get());
   }
 }

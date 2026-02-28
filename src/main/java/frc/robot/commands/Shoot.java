@@ -40,16 +40,16 @@ public class Shoot extends Command {
       double xdiff = hubXpos - robotPos.getX();
       double ydiff = OperatorConstants.hubYPos - robotPos.getY();
       
-      m_shooter.setShooterMotor(m_shooter.getRegressionModelDutyCycle(Math.sqrt(xdiff*xdiff+ydiff*ydiff)));
+      m_shooter.setShooterRPM(m_shooter.getRegressionModelRPM(Math.sqrt(xdiff*xdiff+ydiff*ydiff)));
     }
     else{
-      m_shooter.setShooterMotor(m_shooter.getRegressionModelDutyCycle(m_shooter.calculateShootingAnglesWithOfficialOffset()[1]));
+      m_shooter.setShooterRPM(m_shooter.getRegressionModelRPM(m_shooter.calculateShootingAnglesWithOfficialOffset()[1]));
     }
   }
 
   @Override
   public void end(boolean interrupted) {
-    m_shooter.setShooterMotor(0);
+    m_shooter.setShooterVoltage(0);
   }
 
   @Override

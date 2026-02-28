@@ -17,7 +17,7 @@ public class Vision extends SubsystemBase {
 
   public Vision() {}
 
-  private static AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+  private static AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
 
   private PhotonCamera frontCamera = new PhotonCamera(VisionConstants.frontCameraName);
 

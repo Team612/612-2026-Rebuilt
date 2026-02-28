@@ -21,17 +21,21 @@ public final class Constants {
     // starting pose of robot
     public static final Pose2d leftBlueTrench = new Pose2d(3.56,7.35,new Rotation2d(Math.PI));
     public static final Pose2d leftBlueBump = new Pose2d(3.56,5.55,new Rotation2d(Math.PI));
-    public static final Pose2d BlueHub = new Pose2d(3.56,4,new Rotation2d(Math.PI));
-    public static final Pose2d BlueHubPointAway = new Pose2d(3.56,4,new Rotation2d());
-    public static final Pose2d RightBlueBump = new Pose2d(3.56,2.5,new Rotation2d(Math.PI));
-    public static final Pose2d RightBlueTrench = new Pose2d(3.56,0.66,new Rotation2d(Math.PI));
+    public static final Pose2d leftBlueBumpPointAway = new Pose2d(3.56,5.55,new Rotation2d());
+    public static final Pose2d blueHub = new Pose2d(3.56,4,new Rotation2d(Math.PI));
+    public static final Pose2d blueHubPointAway = new Pose2d(3.56,4,new Rotation2d());
+    public static final Pose2d rightBlueBump = new Pose2d(3.56,2.5,new Rotation2d(Math.PI));
+    public static final Pose2d rightBlueBumpPointAway = new Pose2d(3.56,2.5,new Rotation2d());
+    public static final Pose2d rightBlueTrench = new Pose2d(3.56,0.66,new Rotation2d(Math.PI));
 
-    public static final Pose2d leftRedTrench = new Pose2d(16.5410515-3.56,7.35,new Rotation2d());
-    public static final Pose2d leftRedBump = new Pose2d(16.5410515-3.56,5.55,new Rotation2d());
-    public static final Pose2d RedHub = new Pose2d(16.5410515-3.56,4,new Rotation2d());
-    public static final Pose2d RedHubPointAway = new Pose2d(16.5410515-3.56,4,new Rotation2d(Math.PI));
-    public static final Pose2d RightRedBump = new Pose2d(16.5410515-3.56,2.5,new Rotation2d());
-    public static final Pose2d RightRedTrench = new Pose2d(16.5410515-3.56,0.66,new Rotation2d());
+    public static final Pose2d leftRedTrench = new Pose2d(16.5410515-3.56,0.66,new Rotation2d());
+    public static final Pose2d leftRedBump = new Pose2d(16.5410515-3.56,2.5,new Rotation2d());
+    public static final Pose2d leftRedBumpPointAway = new Pose2d(16.5410515-3.56,2.5,new Rotation2d(Math.PI));
+    public static final Pose2d redHub = new Pose2d(16.5410515-3.56,4,new Rotation2d());
+    public static final Pose2d redHubPointAway = new Pose2d(16.5410515-3.56,4,new Rotation2d(Math.PI));
+    public static final Pose2d rightRedBump = new Pose2d(16.5410515-3.56,5.55,new Rotation2d());
+    public static final Pose2d rightRedBumpPointAway = new Pose2d(16.5410515-3.56,5.55,new Rotation2d(Math.PI));
+    public static final Pose2d rightRedTrench = new Pose2d(16.5410515-3.56,7.35,new Rotation2d());
   }
     public static class ShooterConstants{
     public static final int shooterMotorID = 7;
@@ -44,9 +48,10 @@ public final class Constants {
 
     public static final double maxTurretSpeed = 0.1;
 
-    public static final double defaultShootSpeed = 0.5;
+    public static final double defaultShootVolt = 6;
 
-    public static final double kShooterHeightMeters = 0.0;
+    public static final double shooterkV = 11.0/6000; // this is a guess
+    public static final double shooterKp = 0.0; // this is a guess
 
     public static final double largestTurretAngle = Math.PI/2;
     public static final double smallestTurretAngle = -Math.PI/2;
