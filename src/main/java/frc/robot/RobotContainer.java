@@ -13,6 +13,7 @@ import frc.robot.commands.Feed;
 import frc.robot.commands.IntakeBall;
 import frc.robot.commands.ManualShooterControl;
 import frc.robot.commands.Shoot;
+import frc.robot.commands.UpdateData;
 import frc.robot.commands.ZeroTurret;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -37,11 +38,11 @@ public class RobotContainer {
   public RobotContainer() {
     m_telemetry.updateData();
     configureBindings();
-  }
+  }//newmethod, motors, 
 
   private void configureBindings() {
     m_tankDrive.setDefaultCommand(new ArcadeDrive(m_tankDrive, m_driverController));
-
+    m_telemetry.setDefaultCommand(new UpdateData(m_telemetry));
     m_shooter.setDefaultCommand(
       new AutoTurretAim(m_shooter, m_tankDrive)
     );
