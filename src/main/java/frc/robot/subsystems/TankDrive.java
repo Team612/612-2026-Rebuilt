@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 
 public class TankDrive extends SubsystemBase {
@@ -40,8 +39,6 @@ public class TankDrive extends SubsystemBase {
   private final TalonFX rightMotor2 = new TalonFX(DriveConstants.rightMotor2ID);
   private StatusSignal<Per<AngularVelocityUnit, VoltageUnit>> lKV;
   private StatusSignal<Per<AngularVelocityUnit, VoltageUnit>> rKV;
-
-
 
     private final SimpleMotorFeedforward feedforward =
       new SimpleMotorFeedforward(
@@ -55,9 +52,7 @@ public class TankDrive extends SubsystemBase {
           (output) -> leftMotor.set(output),
           (output) -> rightMotor.set(output)
       );
-      
-  private boolean red;
-
+  
   private final Pigeon2 gyro = new Pigeon2(DriveConstants.gyroID);
 
   private DifferentialDrivePoseEstimator poseEstimator;
@@ -71,10 +66,6 @@ public class TankDrive extends SubsystemBase {
 
   public TankDrive(Pose2d initialPos, Vision m_vision, Shooter m_shooter) {
     SmartDashboard.putData("Field", field);
-    if (DriverStation.getAlliance().isPresent()) {
-      if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
-        red = true;
-    }
 
     TalonFXConfiguration leftConfig = new TalonFXConfiguration();
     TalonFXConfiguration rightConfig = new TalonFXConfiguration();
@@ -150,9 +141,7 @@ public class TankDrive extends SubsystemBase {
     return Rotation2d.fromDegrees(Math.IEEEremainder(-gyro.getYaw().getValueAsDouble(), 360));
   }
 
-  // drives the robot using a m/s ChassisSpeed
-
-
+    // drives the robot using a m/s ChassisSpeed
     public void driveRobotRelative(ChassisSpeeds speeds) {
 
       DifferentialDriveWheelSpeeds wheelSpeeds =
@@ -197,23 +186,25 @@ public class TankDrive extends SubsystemBase {
       getHeading(),
       getLeftDistanceMeters(),
       getRightDistanceMeters(),
-      new Pose2d()
+      pos
     );
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds(){
     double vx = (leftMotor.getVelocity().getValueAsDouble()*DriveConstants.encoderToMeters + rightMotor.getVelocity().getValueAsDouble()*DriveConstants.encoderToMeters) / 2.0;
-    double omega = -gyro.getAngularVelocityZDevice().getValueAsDouble();
+    double omega = -Math.toRadians(gyro.getAngularVelocityZDevice().getValueAsDouble());
 
     return new ChassisSpeeds(vx,0,omega);
   }
 
   @Override
   public void periodic() {
-    if (red)
-      poseEstimator.update(getHeading().times(-1), -getLeftDistanceMeters(), -getRightDistanceMeters());
-    else
-      poseEstimator.update(getHeading(), getLeftDistanceMeters(), getRightDistanceMeters());
+    poseEstimator.update(getHeading(), getLeftDistanceMeters(), getRightDistanceMeters());
+
+
+    // use this code to test out vision, this can create fake photon results also make sure to copy and paste Timer.getFPGATimestamp()
+    // Transform3d fakeAprilTagTransform = new Transform3d(new Translation3d(1, 0.0, 0.0),new Rotation3d(0, 0, Math.PI));
+    // PhotonPipelineResult fakeResult = new PhotonPipelineResult(0, 0, 0, 0, List.of(new PhotonTrackedTarget(0.0,0.0,50.0,0.0,1/*<-- fiducial ID*/,0, 0, fakeAprilTagTransform,fakeAprilTagTransform,0.05,List.of(new TargetCorner(0, 0),new TargetCorner(1, 0),new TargetCorner(1, 1),new TargetCorner(0, 1)),List.of(new TargetCorner(0, 0),new TargetCorner(1, 0),new TargetCorner(1, 1),new TargetCorner(0, 1)))));
 
     PhotonPipelineResult result = m_vision.returnLatestCameraResult();
     if (result.hasTargets()) {
@@ -241,6 +232,6 @@ public class TankDrive extends SubsystemBase {
     SmartDashboard.putNumber("leftSideSpeed", leftMotor.get());
     SmartDashboard.putNumber("rightSideSpeed",rightMotor.get());
 
-    SmartDashboard.putNumber("gyro velocity", -gyro.getAngularVelocityZDevice().getValueAsDouble()); // check if this is in rad/sec or degrees/sec
+    SmartDashboard.putNumber("gyro velocity", -gyro.getAngularVelocityZDevice().getValueAsDouble()); // should be in degrees per second
   }
 }

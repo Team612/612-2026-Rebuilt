@@ -29,7 +29,7 @@ public class Shooter extends SubsystemBase {
   private SparkMax tiltMotor = new SparkMax(ShooterConstants.tiltMotorID, MotorType.kBrushed);
   private SparkMax turretMotor = new SparkMax(ShooterConstants.turretMotorID, MotorType.kBrushless);
   
-  private static AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+  private static AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
 
   private PhotonCamera shooterCamera = new PhotonCamera(ShooterConstants.shooterCameraName);
 
@@ -57,13 +57,13 @@ public class Shooter extends SubsystemBase {
 
   public void setShooterVoltage(double volts){
     shooterMotor.setVoltage(volts);
-    shooterMotor.set(volts/11.0); // ONLY FOR DEBUGGING PURPOSES REMOVE FOR FINAL CODE
+    // shooterMotor.set(volts/11.0); // ONLY FOR DEBUGGING PURPOSES REMOVE FOR FINAL CODE
   }
   public void setShooterRPM(double RPM){
     double outputVolts = RPM * ShooterConstants.shooterkV;
     outputVolts += ShooterConstants.shooterKp * (RPM - shooterMotor.getEncoder().getVelocity());
     shooterMotor.setVoltage(outputVolts);
-    shooterMotor.set(outputVolts/11.0); // ONLY FOR DEBUGGING PURPOSES REMOVE FOR FINAL CODE
+    // shooterMotor.set(outputVolts/11.0); // ONLY FOR DEBUGGING PURPOSES REMOVE FOR FINAL CODE
   }
 
   public void setTurretMotor(double speed){
@@ -74,11 +74,23 @@ public class Shooter extends SubsystemBase {
   }
   
   public void setTurretPos(double pos){
-    if (pos > ShooterConstants.largestTurretAngle)
-      pos = ShooterConstants.largestTurretAngle;
-    if (pos < ShooterConstants.smallestTurretAngle)
-      pos = ShooterConstants.smallestTurretAngle;
-    turretMotor.set(-turretPID.calculate(turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians, pos));
+    if (pos < 0)
+      pos += Math.PI;
+    else
+      pos -= Math.PI;
+
+    if (pos < ShooterConstants.positiveDeadZone-Math.PI)
+      pos = ShooterConstants.positiveDeadZone-Math.PI;
+    if (pos > ShooterConstants.negativeDeadZone+Math.PI)
+      pos = ShooterConstants.positiveDeadZone+Math.PI;
+
+    double currPos = Math.IEEEremainder(turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians, 2 * Math.PI);
+    if (currPos < 0)
+      currPos += Math.PI;
+    else
+      currPos -= Math.PI;
+
+    turretMotor.set(-turretPID.calculate(currPos, pos));
   }
   
   public void setTurretEncoderPos(double encoderPos){
@@ -94,11 +106,6 @@ public class Shooter extends SubsystemBase {
 
   public double getCurrentTurretAngle() {
     return turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians;
-  }
-
-
-  public double getTurretAngleDriver() {
-    return turretMotor.getEncoder().getPosition() * ShooterConstants.turretEncoderToRadians * 180/Math.PI;
   }
 
   public double getShooterVelocity() {
@@ -199,7 +206,7 @@ public class Shooter extends SubsystemBase {
   public Optional<EstimatedRobotPose> returnPhotonPos(PhotonPipelineResult result) {
     photonPoseEstimator.setRobotToCameraTransform(getRobotToCamera());
     return photonPoseEstimator.update(result);
-}
+  }
 
   @Override
   public void periodic() {

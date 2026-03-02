@@ -18,12 +18,12 @@ public class IntakeBall extends Command {
 
   @Override
   public void execute() {
-    m_intake.setMotor(IntakeConstants.INTAKE_SPEED);
+    m_intake.setIntakeSpeed(IntakeConstants.INTAKE_SPEED);
   }
 
   @Override
   public void end(boolean interrupted) {
-    m_intake.setMotor(0);
+    m_intake.setIntakeSpeed(0);
   }
 
   @Override

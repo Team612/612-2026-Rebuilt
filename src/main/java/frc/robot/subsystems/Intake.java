@@ -1,47 +1,40 @@
 package frc.robot.subsystems;
 
-
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
-
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
-
 public class Intake extends SubsystemBase {
 
+  private final SparkFlex upperIntake = new SparkFlex(IntakeConstants.upperIntakeID, MotorType.kBrushless);
+  private final SparkFlex lowerIntake = new SparkFlex(IntakeConstants.lowerIntakeID, MotorType.kBrushless);
 
-  private final SparkMax motor = new SparkMax(IntakeConstants.INTAKE_MOTOR_ID, MotorType.kBrushless);
-
-
-  @SuppressWarnings("removal")
   public Intake() {
-    SparkMaxConfig motorConfig = new SparkMaxConfig();
+    SparkBaseConfig upperConfig = new SparkFlexConfig();
+    SparkBaseConfig lowerConfig = new SparkFlexConfig();
 
+    upperConfig.idleMode(IdleMode.kBrake).inverted(true);
+    lowerConfig.idleMode(IdleMode.kBrake).inverted(false);
 
-    motorConfig
-        .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(40)
-        .voltageCompensation(12.0)
-        .inverted(false);
-
-
-    motor.configure(
-        motorConfig,
-        SparkMax.ResetMode.kResetSafeParameters,
-        SparkMax.PersistMode.kPersistParameters);
+    upperIntake.configure(upperConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    lowerIntake.configure(lowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  public void setMotor(double speed) {
-    motor.set(speed);
+  public void setIntakeSpeed(double speed) {
+    upperIntake.set(speed);
+    lowerIntake.set(speed);
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("intakeGet",motor.get());
+    SmartDashboard.putNumber("intakeGet",upperIntake.get());
   }
 }

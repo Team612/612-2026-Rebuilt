@@ -53,8 +53,8 @@ public final class Constants {
     public static final double shooterkV = 11.0/6000; // this is a guess
     public static final double shooterKp = 0.0; // this is a guess
 
-    public static final double largestTurretAngle = Math.PI/2;
-    public static final double smallestTurretAngle = -Math.PI/2;
+    public static final double negativeDeadZone = -Math.PI/3;
+    public static final double positiveDeadZone = Math.PI/3;
 
     public static final double turretKp = 0.15;
     public static final double turretKi = 0.13;
@@ -106,7 +106,8 @@ public final class Constants {
   }
 
   public static class IntakeConstants{
-    public static final int INTAKE_MOTOR_ID = 1;
+    public static final int upperIntakeID = 9;
+    public static final int lowerIntakeID = 10;
 
     public static double INTAKE_SPEED = 0.85;
   }
