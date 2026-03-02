@@ -41,12 +41,12 @@ public final class Constants {
     public static final int shooterMotorID = 7;
     public static final int turretMotorID = 6;
     public static final int tiltMotorID = 5;
-
+    
     public static final String shooterCameraName = "PC_Camera";
 
     public static final double DEADBAND = 0.03;
 
-    public static final double maxTurretSpeed = 0.1;
+    public static double maxTurretSpeed = 0.1;
 
     public static final double defaultShootVolt = 6;
 
@@ -91,7 +91,7 @@ public final class Constants {
     public static final double DEADBAND = 0.05;
 
     public static final double kWheelDiameterMeter = 0.192;
-    public static final double encoderToMeters = 1; // this is a guess
+    public static double encoderToMeters = 1; // this is a guess
 
     public static final double trackWidth = 0.508;
     public static final DifferentialDriveKinematics driveKinematics = new DifferentialDriveKinematics(trackWidth);
@@ -108,7 +108,7 @@ public final class Constants {
   public static class IntakeConstants{
     public static final int INTAKE_MOTOR_ID = 1;
 
-    public static final double INTAKE_SPEED = 0.85;
+    public static double INTAKE_SPEED = 0.85;
   }
 
   public static class TransferConstants{
@@ -116,9 +116,9 @@ public final class Constants {
     public static final int hopperBottomID = 2;
     public static final int feedID = 4;
 
-    public static final double hopperTopSpeed = 0.5;
-    public static final double hopperBottomSpeed = -0.5;
-    public static final double feedSpeed = 0.5;
+    public static double hopperTopSpeed = 0.5;
+    public static double hopperBottomSpeed = -0.5;
+    public static double feedSpeed = 0.5;
 
     public static int rampUpTime = 50;
     public static int shootTime = 20;

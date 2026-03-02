@@ -41,6 +41,17 @@ public class Telemetry extends SubsystemBase {
         m_shooter = shooter;
         m_vision = vision;
         m_intake = intake;
+        SmartDashboard.putNumber("Ramp Up Time", 50); 
+        SmartDashboard.putNumber("Shoot Time",20); 
+        SmartDashboard.putNumber("Recovery Time", 10);
+
+        SmartDashboard.putNumber("Encoder To Meters", 1); 
+
+        SmartDashboard.putNumber("Turret Speed",0.1); 
+        SmartDashboard.putNumber("Intake Speed", 0.85);
+        SmartDashboard.putNumber("HBOTTOM",-0.5); 
+        SmartDashboard.putNumber("HTOP", 0.5); 
+        SmartDashboard.putNumber("FSPEED",0.5); 
     }
 
     public void updateData(){
@@ -61,12 +72,19 @@ public class Telemetry extends SubsystemBase {
         SmartDashboard.putNumber("Turret Position", m_shooter.getTurretAngleDriver());
         SmartDashboard.putBoolean("Ready to Fire!!!!", true);
 
-        SmartDashboard.putNumber("Ramp Up Time", 50); 
-        Constants.TransferConstants.rampUpTime = (int) SmartDashboard.getNumber("Constant of Time", 50);
-        SmartDashboard.putNumber("Shoot Time",202); 
+        
+        Constants.TransferConstants.rampUpTime = (int) SmartDashboard.getNumber("Ramp Up Time", 50);
         Constants.TransferConstants.shootTime = (int) SmartDashboard.getNumber("Shoot Time", 20);
-        SmartDashboard.putNumber("Recovery Time", 10); 
         Constants.TransferConstants.recoveryTime = (int) SmartDashboard.getNumber("Recovery Time", 10);
+
+
+        Constants.DriveConstants.encoderToMeters = (double) SmartDashboard.getNumber("Encoder To Meters", 1);
+
+        Constants.ShooterConstants.maxTurretSpeed = (double) SmartDashboard.getNumber("Turret Speed",0.1);
+        Constants.IntakeConstants.INTAKE_SPEED = (int) SmartDashboard.getNumber("Intake Speed", 0.85);
+        Constants.TransferConstants.hopperBottomSpeed = (int) SmartDashboard.getNumber("HBOTTOM",-0.5);
+        Constants.TransferConstants.hopperTopSpeed = (int) SmartDashboard.getNumber("HTOP", 0.5);
+        Constants.TransferConstants.feedSpeed = (int) SmartDashboard.getNumber("FSPEED",0.5);
 
         // SmartDashboard.putBoolean("Distance To Tag", m_shooter.dist());
         // SmartDashboard.putBoolean("Manual Mode", m_shooter.has);
@@ -80,10 +98,14 @@ public class Telemetry extends SubsystemBase {
 
         
         // Output Values
-        SmartDashboard.putNumber("e", 2);
         // Color exampleColor = new Color(68, 238, 255);
         // SmartDashboard.putString("Example Color", exampleColor.toHexString());
 
         // Input values
+    }
+
+    @Override
+    public void periodic() {
+        updateData();
     }
 }
