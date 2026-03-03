@@ -1,9 +1,11 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.AutoTurretAim;
@@ -17,7 +19,6 @@ import frc.robot.commands.ZeroTurret;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.TankDrive;
-import frc.robot.subsystems.Telemetry;
 import frc.robot.subsystems.Transfer;
 import frc.robot.subsystems.Vision;
 
@@ -25,25 +26,40 @@ public class RobotContainer {
   private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final CommandXboxController m_gunnerController = new CommandXboxController(OperatorConstants.kGunnerControllerPort);
 
+  // private static Joystick m_variableGunner = new Joystick(OperatorConstants.kGubberPortVariable);
+  // private static Joystick m_buttontGunner = new Joystick(OperatorConstants.kGubberPortVariable);
+  // public static JoystickButton gunnerButton1 = new JoystickButton(m_buttontGunner, 0);
+  // public static JoystickButton gunnerButton2 = new JoystickButton(m_buttontGunner, 1);
+  // public static JoystickButton gunnerButton3 = new JoystickButton(m_buttontGunner, 2);
+  // public static JoystickButton gunnerButton4 = new JoystickButton(m_buttontGunner, 3);
+  // public static JoystickButton gunnerButton5 = new JoystickButton(m_buttontGunner, 4);
+
+  // public static JoystickButton gunnerButton6 = new JoystickButton(m_buttontGunner, 5);
+  // public static JoystickButton gunnerButton7 = new JoystickButton(m_buttontGunner, 6);
+  // public static JoystickButton gunnerButton8 = new JoystickButton(m_buttontGunner, 7);
+  // public static JoystickButton gunnerButton9 = new JoystickButton(m_buttontGunner, 8);
+  // public static JoystickButton gunnerButton10 = new JoystickButton(m_buttontGunner,9);
+  // public static JoystickButton gunnerButton11 = new JoystickButton(m_buttontGunner, 10);
+
   private final Vision m_vision = new Vision();
   private final Shooter m_shooter = new Shooter();
-  private final TankDrive m_tankDrive = new TankDrive(OperatorConstants.rightBlueBumpPointAway, m_vision, m_shooter);
+  private final TankDrive m_tankDrive = new TankDrive(OperatorConstants.blueHub, m_vision, m_shooter);
   private final Transfer m_transfer = new Transfer();
   private final Intake m_intake = new Intake();
-  private final Telemetry m_telemetry = new Telemetry(m_shooter,m_intake, m_vision);
 
   public static boolean manualMode = false;
 
   public RobotContainer() {
-    m_telemetry.updateData();
     configureBindings();
-  }//newmethod, motors, 
+  } 
 
   private void configureBindings() {
     m_tankDrive.setDefaultCommand(new ArcadeDrive(m_tankDrive, m_driverController));
-    m_shooter.setDefaultCommand(
-      new AutoTurretAim(m_shooter, m_tankDrive)
-    );
+
+    if (manualMode)
+      m_shooter.setDefaultCommand(new ManualShooterControl(m_shooter, m_gunnerController));
+    else
+      m_shooter.setDefaultCommand(new AutoTurretAim(m_shooter, m_tankDrive));
 
     m_gunnerController.leftBumper().onTrue(new InstantCommand(() -> {
       manualMode = !manualMode;

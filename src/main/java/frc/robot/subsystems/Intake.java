@@ -21,8 +21,8 @@ public class Intake extends SubsystemBase {
     SparkBaseConfig upperConfig = new SparkFlexConfig();
     SparkBaseConfig lowerConfig = new SparkFlexConfig();
 
-    upperConfig.idleMode(IdleMode.kBrake).inverted(true);
-    lowerConfig.idleMode(IdleMode.kBrake).inverted(false);
+    upperConfig.idleMode(IdleMode.kBrake).inverted(false);
+    lowerConfig.idleMode(IdleMode.kBrake).inverted(true);
 
     upperIntake.configure(upperConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     lowerIntake.configure(lowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -35,6 +35,7 @@ public class Intake extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("intakeGet",upperIntake.get());
+    SmartDashboard.putNumber("intakeBottomGet",lowerIntake.get());
+    SmartDashboard.putNumber("intakeUpperGet",upperIntake.get());
   }
 }

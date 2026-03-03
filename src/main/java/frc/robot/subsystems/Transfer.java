@@ -28,8 +28,8 @@ public class Transfer extends SubsystemBase{
   
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("hopperTopSpeed",hopperTop.get());
-    SmartDashboard.putNumber("hopperBottomSpeed",hopperBottom.get());
-    SmartDashboard.putNumber("feedSpeed",feed.get());
+    SmartDashboard.putNumber("hopperTopGet",hopperTop.get());
+    SmartDashboard.putNumber("hopperBottomGet",hopperBottom.get());
+    SmartDashboard.putNumber("feedGet",feed.get());
   }
 }

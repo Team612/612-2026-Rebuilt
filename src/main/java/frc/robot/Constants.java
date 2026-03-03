@@ -3,7 +3,9 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 
@@ -12,6 +14,9 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
     public static final int kGunnerControllerPort = 1;
+
+    public static final int kGunnerPortButtons = 1;
+    public static final int kGubberPortVariable = 2;
 
     // in meters
     public static final double blueHubXPos = 4.625594;
@@ -38,8 +43,8 @@ public final class Constants {
     public static final Pose2d rightRedTrench = new Pose2d(16.5410515-3.56,7.35,new Rotation2d());
   }
     public static class ShooterConstants{
-    public static final int shooterMotorID = 7;
-    public static final int turretMotorID = 6;
+    public static final int shooterMotorID = 6;
+    public static final int turretMotorID = 7;
     public static final int tiltMotorID = 5;
     
     public static final String shooterCameraName = "PC_Camera";
@@ -48,13 +53,10 @@ public final class Constants {
 
     public static double maxTurretSpeed = 0.1;
 
-    public static final double defaultShootVolt = 6;
+    public static final double defaultShootVolt = 7.5;
 
-    public static final double shooterkV = 11.0/6000; // this is a guess
-    public static final double shooterKp = 0.0; // this is a guess
-
-    public static final double negativeDeadZone = -Math.PI/3;
-    public static final double positiveDeadZone = Math.PI/3;
+    public static final double shooterkV = 0.00207923118348; // this is a guess
+    public static final double shooterKp = 0.002; // this is a guess
 
     public static final double turretKp = 0.15;
     public static final double turretKi = 0.13;
@@ -64,12 +66,13 @@ public final class Constants {
     public static final double tiltKi = 3.01;
     public static final double tiltKd = 0;
 
-    public static final double turretEncoderToRadians = -0.628152;
+    public static final double turretEncoderToRadians = 0.628152;
 
-    public static final double rightLimit = -Math.PI/3;
-    public static final double leftLimit = Math.PI/3;
+    public static final double forwardLimit = -Math.PI/3;
+    public static final double reverseLimit = Math.PI/3;
 
     public static final Transform3d robotToTurret = new Transform3d(new Translation3d(-0.21, 0, 0.51), new Rotation3d());
+    public static final Transform2d robotToTurret2d = new Transform2d(new Translation2d(-0.21,0), new Rotation2d());
     public static final double radiusTurretToCamera = 0.15;
   }
 
@@ -109,7 +112,7 @@ public final class Constants {
     public static final int upperIntakeID = 9;
     public static final int lowerIntakeID = 10;
 
-    public static double INTAKE_SPEED = 0.85;
+    public static final double INTAKE_SPEED = 0.35;
   }
 
   public static class TransferConstants{
@@ -121,9 +124,9 @@ public final class Constants {
     public static double hopperBottomSpeed = -0.5;
     public static double feedSpeed = 0.5;
 
-    public static int rampUpTime = 50;
-    public static int shootTime = 20;
-    public static int recoveryTime = 10;
+    public static int rampUpTime = 40;
+    public static int shootTime = 8;
+    public static int recoveryTime = 60;
   }
 
   public static class ClimbConstants {

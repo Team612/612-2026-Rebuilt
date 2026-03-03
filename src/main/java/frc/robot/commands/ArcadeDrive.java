@@ -1,9 +1,7 @@
 package frc.robot.commands;
 
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.TankDrive;
 
 public class ArcadeDrive extends Command {
@@ -24,7 +22,7 @@ public class ArcadeDrive extends Command {
   public void execute() {
     m_tankDrive.arcadeDrive(
     -controller.getLeftY(),
-    controller.getRightX()
+    -controller.getRightX()
     );
   }
 

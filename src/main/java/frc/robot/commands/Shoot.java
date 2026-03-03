@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.TankDrive;
 
@@ -35,10 +36,10 @@ public class Shoot extends Command {
   @Override
   public void execute() {
     if ((m_shooter.calculateShootingAnglesWithOfficialOffset()[0] == -1) && (m_shooter.calculateShootingAnglesWithOfficialOffset()[1] == -1)){
-      Pose2d robotPos = m_tankDrive.getPose();
+      Pose2d turretPose = m_tankDrive.getPose().plus(ShooterConstants.robotToTurret2d);
   
-      double xdiff = hubXpos - robotPos.getX();
-      double ydiff = OperatorConstants.hubYPos - robotPos.getY();
+      double xdiff = hubXpos - turretPose.getX();
+      double ydiff = OperatorConstants.hubYPos - turretPose.getY();
       
       m_shooter.setShooterRPM(m_shooter.getRegressionModelRPM(Math.sqrt(xdiff*xdiff+ydiff*ydiff)));
     }
