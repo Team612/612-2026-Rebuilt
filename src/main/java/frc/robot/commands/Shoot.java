@@ -50,7 +50,7 @@ public class Shoot extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    m_shooter.setShooterVoltage(0);
+    m_shooter.setShooterRPM(0);
   }
 
   @Override

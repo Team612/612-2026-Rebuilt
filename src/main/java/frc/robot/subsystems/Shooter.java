@@ -74,10 +74,11 @@ public class Shooter extends SubsystemBase {
     return turretMotor.getReverseLimitSwitch().isPressed();
   }
 
-  public void setShooterVoltage(double volts){
-    shooterMotor.setVoltage(volts);
-  }
   public void setShooterRPM(double RPM){
+    if (RPM == 0){
+      shooterMotor.setVoltage(0);
+      return;
+    }
     double outputVolts = RPM * ShooterConstants.shooterkV + ShooterConstants.shooterkS;
     outputVolts += ShooterConstants.shooterkP * (RPM - shooterMotor.getEncoder().getVelocity());
     shooterMotor.setVoltage(outputVolts);
@@ -227,6 +228,11 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     if (tiltMotor.getForwardLimitSwitch().isPressed())
       tiltMotor.getEncoder().setPosition(0);
+
+    if (turretMotor.getReverseLimitSwitch().isPressed())
+      setTurretEncoderPos(ShooterConstants.reverseLimit);
+    if (turretMotor.getForwardLimitSwitch().isPressed())
+      setTurretEncoderPos(ShooterConstants.forwardLimit);
 
     SmartDashboard.putBoolean("Shooter Has Tag", shooterCamera.getLatestResult().hasTargets());
     SmartDashboard.putNumber("shooterPos",shooterMotor.getEncoder().getPosition());

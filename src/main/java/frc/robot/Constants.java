@@ -53,7 +53,7 @@ public final class Constants {
 
     public static double maxTurretSpeed = 0.1;
 
-    public static final double defaultShootVolt = 6;
+    public static final double defaultShootRPM = 2781;
 
     public static final double shooterkV = 0.002085;
     public static final double shooterkP = 0.00037;
@@ -69,8 +69,8 @@ public final class Constants {
 
     public static final double turretEncoderToRadians = 0.628152;
 
-    public static final double forwardLimit = -Math.PI/3;
-    public static final double reverseLimit = Math.PI/3;
+    public static final double forwardLimit = -0.633974140633; // This is a guess it is mirrored from the reverse limit which was measured
+    public static final double reverseLimit = 0.633974140633; 
 
     public static final Transform3d robotToTurret = new Transform3d(new Translation3d(-0.21, 0, 0.51), new Rotation3d());
     public static final Transform2d robotToTurret2d = new Transform2d(new Translation2d(-0.21,0), new Rotation2d());

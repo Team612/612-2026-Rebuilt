@@ -149,47 +149,40 @@ public class TankDrive extends SubsystemBase {
     return Rotation2d.fromDegrees(Math.IEEEremainder(gyro.getYaw().getValueAsDouble(), 360));
   }
 
-    // drives the robot using a m/s ChassisSpeed
-    public void driveRobotRelative(ChassisSpeeds speeds) {
+  // drives the robot using a m/s ChassisSpeed
+  public void driveRobotRelative(ChassisSpeeds speeds) {
 
-      DifferentialDriveWheelSpeeds wheelSpeeds =
-          DriveConstants.driveKinematics.toWheelSpeeds(speeds);
+    DifferentialDriveWheelSpeeds wheelSpeeds = DriveConstants.driveKinematics.toWheelSpeeds(speeds);
 
-      setWheelSpeeds(wheelSpeeds);
-    }
+    setWheelSpeeds(wheelSpeeds);
+  }
 
-    public void setWheelSpeeds(DifferentialDriveWheelSpeeds speeds) {
+  public void setWheelSpeeds(DifferentialDriveWheelSpeeds speeds) {
+    speeds.desaturate(DriveConstants.maxAttainableSpeed);
 
-        speeds.desaturate(DriveConstants.maxAttainableSpeed);
+    double leftVelocity = speeds.leftMetersPerSecond;
+    double rightVelocity = speeds.rightMetersPerSecond;
 
-        double leftVelocity = speeds.leftMetersPerSecond;
-        double rightVelocity = speeds.rightMetersPerSecond;
+    double leftFeedforward = feedforward.calculate(leftVelocity);
+    double rightFeedforward = feedforward.calculate(rightVelocity);
 
-        double leftFeedforward = feedforward.calculate(leftVelocity);
-        double rightFeedforward = feedforward.calculate(rightVelocity);
+    leftMotor.setVoltage(leftFeedforward);
+    rightMotor.setVoltage(rightFeedforward);
+  }
 
-        leftMotor.setVoltage(leftFeedforward);
-        rightMotor.setVoltage(rightFeedforward);
-    }
+  public void arcadeDrive(double forward, double rotation) {
+    diffDrive.arcadeDrive(forward, rotation);
+  }
 
-    public void arcadeDrive(double forward, double rotation) {
-        diffDrive.arcadeDrive(forward, rotation);
-    }
+  public void tankDrive(double left, double right) {
+    diffDrive.tankDrive(left, right);
+  }
 
-    public void tankDrive(double left, double right) {
-        diffDrive.tankDrive(left, right);
-    }
-
-
-    public Pose2d getPose(){
-      return poseEstimator.getEstimatedPosition();
-    }
+  public Pose2d getPose(){
+    return poseEstimator.getEstimatedPosition();
+  }
 
   public void resetPose(Pose2d pos){
-    gyro.reset();
-    leftMotor.setPosition(0);
-    rightMotor.setPosition(0);
-
     poseEstimator.resetPosition(
       getHeading(),
       getLeftDistanceMeters(),
@@ -226,7 +219,6 @@ public class TankDrive extends SubsystemBase {
     }
     PhotonPipelineResult shooterResult = m_shooter.returnLatestCameraResult();
     if (shooterResult.hasTargets()) {
-      System.out.println("targets!");
       if (shooterResult.getBestTarget().getPoseAmbiguity() < 0.3){ // test if this is necessary
         var estimatedPoseOptional = m_shooter.returnPhotonPos(shooterResult);
         if (estimatedPoseOptional.isPresent()) {
@@ -244,6 +236,6 @@ public class TankDrive extends SubsystemBase {
     SmartDashboard.putNumber("leftSidePos",leftMotor.getPosition().getValueAsDouble());
     SmartDashboard.putNumber("rightSidePos",rightMotor.getPosition().getValueAsDouble());
 
-    SmartDashboard.putNumber("gyro velocity", gyro.getAngularVelocityZDevice().getValueAsDouble()); // should be in degrees per second
+    SmartDashboard.putNumber("gyro pos", gyro.getYaw().getValueAsDouble());
   }
 }

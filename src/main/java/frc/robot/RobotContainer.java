@@ -44,7 +44,6 @@ public class RobotContainer {
   } 
 
   private void configureBindings() {
-
     m_tankDrive.setDefaultCommand(new ArcadeDrive(m_tankDrive, m_driverController));
 
     if (manualMode)

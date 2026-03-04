@@ -25,9 +25,9 @@ public class ManualShooterControl extends Command {
   @Override
   public void execute() {
     if (machineGunButton.getAsBoolean())
-      m_shooter.setShooterVoltage(ShooterConstants.defaultShootVolt);
+      m_shooter.setShooterRPM(ShooterConstants.defaultShootRPM);
     else
-      m_shooter.setShooterVoltage(0.0);
+      m_shooter.setShooterRPM(0);
 
     m_shooter.setTurretMotor(-variable.getRawAxis(0)*0.05);
     m_shooter.setTiltMotor(variable.getRawAxis(1));
