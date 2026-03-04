@@ -24,22 +24,12 @@ import frc.robot.subsystems.Vision;
 
 public class RobotContainer {
   private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
-  private final CommandXboxController m_gunnerController = new CommandXboxController(OperatorConstants.kGunnerControllerPort);
 
-  // private static Joystick m_variableGunner = new Joystick(OperatorConstants.kGubberPortVariable);
-  // private static Joystick m_buttontGunner = new Joystick(OperatorConstants.kGubberPortVariable);
-  // public static JoystickButton gunnerButton1 = new JoystickButton(m_buttontGunner, 0);
-  // public static JoystickButton gunnerButton2 = new JoystickButton(m_buttontGunner, 1);
-  // public static JoystickButton gunnerButton3 = new JoystickButton(m_buttontGunner, 2);
-  // public static JoystickButton gunnerButton4 = new JoystickButton(m_buttontGunner, 3);
-  // public static JoystickButton gunnerButton5 = new JoystickButton(m_buttontGunner, 4);
-
-  // public static JoystickButton gunnerButton6 = new JoystickButton(m_buttontGunner, 5);
-  // public static JoystickButton gunnerButton7 = new JoystickButton(m_buttontGunner, 6);
-  // public static JoystickButton gunnerButton8 = new JoystickButton(m_buttontGunner, 7);
-  // public static JoystickButton gunnerButton9 = new JoystickButton(m_buttontGunner, 8);
-  // public static JoystickButton gunnerButton10 = new JoystickButton(m_buttontGunner,9);
-  // public static JoystickButton gunnerButton11 = new JoystickButton(m_buttontGunner, 10);
+  private static Joystick m_buttonGunner = new Joystick(OperatorConstants.kGunnerPortButtons);
+  private static Joystick m_variableGunner = new Joystick(OperatorConstants.kGunnerPortVariable);
+  public static JoystickButton machineGunButton = new JoystickButton(m_buttonGunner, 1);
+  public static JoystickButton intakeButton = new JoystickButton(m_buttonGunner, 2);
+  public static JoystickButton resetButton = new JoystickButton(m_buttonGunner, 3);
 
   private final Vision m_vision = new Vision();
   private final Shooter m_shooter = new Shooter();
@@ -54,26 +44,27 @@ public class RobotContainer {
   } 
 
   private void configureBindings() {
+
     m_tankDrive.setDefaultCommand(new ArcadeDrive(m_tankDrive, m_driverController));
 
     if (manualMode)
-      m_shooter.setDefaultCommand(new ManualShooterControl(m_shooter, m_gunnerController));
+      m_shooter.setDefaultCommand(new ManualShooterControl(m_shooter, m_variableGunner, machineGunButton));
     else
       m_shooter.setDefaultCommand(new AutoTurretAim(m_shooter, m_tankDrive));
 
-    m_gunnerController.leftBumper().onTrue(new InstantCommand(() -> {
+    resetButton.onTrue(new InstantCommand(() -> {
       manualMode = !manualMode;
       m_shooter.getCurrentCommand().cancel();
 
       if (manualMode)
-        m_shooter.setDefaultCommand(new ManualShooterControl(m_shooter, m_gunnerController));
+        m_shooter.setDefaultCommand(new ManualShooterControl(m_shooter, m_variableGunner, machineGunButton));
       else
         m_shooter.setDefaultCommand(new AutoTurretAim(m_shooter, m_tankDrive));
     }));
 
-    m_gunnerController.b().and(() -> !manualMode).whileTrue(new Shoot(m_shooter, m_tankDrive));
-    m_gunnerController.b().whileTrue(new Feed(m_transfer));
-    m_gunnerController.a().whileTrue(new IntakeBall(m_intake)); 
+    machineGunButton.and(() -> !manualMode).whileTrue(new Shoot(m_shooter, m_tankDrive));
+    machineGunButton.whileTrue(new Feed(m_transfer));
+    intakeButton.whileTrue(new IntakeBall(m_intake));
   }
 
   public Command getAutonomousCommand() {

@@ -16,7 +16,7 @@ public final class Constants {
     public static final int kGunnerControllerPort = 1;
 
     public static final int kGunnerPortButtons = 1;
-    public static final int kGubberPortVariable = 2;
+    public static final int kGunnerPortVariable = 2;
 
     // in meters
     public static final double blueHubXPos = 4.625594;
@@ -53,10 +53,11 @@ public final class Constants {
 
     public static double maxTurretSpeed = 0.1;
 
-    public static final double defaultShootVolt = 7.5;
+    public static final double defaultShootVolt = 6;
 
-    public static final double shooterkV = 0.00207923118348; // this is a guess
-    public static final double shooterKp = 0.002; // this is a guess
+    public static final double shooterkV = 0.002085;
+    public static final double shooterkP = 0.00037;
+    public static final double shooterkS = 0.2;
 
     public static final double turretKp = 0.15;
     public static final double turretKi = 0.13;
@@ -124,8 +125,8 @@ public final class Constants {
     public static double hopperBottomSpeed = -0.5;
     public static double feedSpeed = 0.5;
 
-    public static int rampUpTime = 40;
-    public static int shootTime = 8;
+    public static int rampUpTime = 100;
+    public static int shootTime = 10;
     public static int recoveryTime = 60;
   }
 

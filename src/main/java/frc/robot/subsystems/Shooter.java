@@ -13,10 +13,10 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -24,7 +24,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
@@ -37,10 +36,6 @@ public class Shooter extends SubsystemBase {
   private SparkMax turretMotor = new SparkMax(ShooterConstants.turretMotorID, MotorType.kBrushless);
   
   private static AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
-
-  private static DigitalInput encoder0 = new DigitalInput(0);
-  private static DigitalInput encoder1 = new DigitalInput(1);
-
 
   private PhotonCamera shooterCamera = new PhotonCamera(ShooterConstants.shooterCameraName);
 
@@ -77,15 +72,12 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setShooterVoltage(double volts){
-    // shooterMotor.setVoltage(11);
-    shooterMotor.set(volts/12);
-    // shooterMotor.set(volts/11.0); // ONLY FOR DEBUGGING PURPOSES REMOVE FOR FINAL CODE
+    shooterMotor.setVoltage(volts);
   }
   public void setShooterRPM(double RPM){
-    double outputVolts = RPM * ShooterConstants.shooterkV;
-    outputVolts += ShooterConstants.shooterKp * (RPM - shooterMotor.getEncoder().getVelocity());
+    double outputVolts = RPM * ShooterConstants.shooterkV + ShooterConstants.shooterkS;
+    outputVolts += ShooterConstants.shooterkP * (RPM - shooterMotor.getEncoder().getVelocity());
     shooterMotor.setVoltage(outputVolts);
-    // shooterMotor.set(outputVolts/11.0); // ONLY FOR DEBUGGING PURPOSES REMOVE FOR FINAL CODE
   }
 
   public void setTurretMotor(double speed){
@@ -133,17 +125,12 @@ public class Shooter extends SubsystemBase {
     return shooterMotor.getEncoder().getVelocity();
   }
 
-  public double getRegressionModelTilt(double distance){
-    double tilt = 0.05333333 * distance - 1.34066666;
-    if (tilt > 0)
-      tilt = 0;
-    if (tilt < -1.33)
-      tilt = -1.33;
-    return tilt;
+  public double getRegressionModelTilt(double distance){ // MUST BE TUNED BEFORE COMP
+    return 0; 
   }
 
   public double getRegressionModelRPM(double distance){
-    return -36.28882488*distance*distance+575.94372*distance+2278.817508;
+    return -3.40339*distance*distance+318.66126*distance+2219.32905;
   }
 
   public boolean hasTag(){
@@ -231,10 +218,6 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (tiltMotor.getForwardLimitSwitch().isPressed())
-      tiltMotor.getEncoder().setPosition(0);
-    if (tiltMotor.getForwardLimitSwitch().isPressed())
-      tiltMotor.getEncoder().setPosition(0);
     SmartDashboard.putNumber("shooterPos",shooterMotor.getEncoder().getPosition());
     SmartDashboard.putNumber("shooterVel",shooterMotor.getEncoder().getVelocity());
     SmartDashboard.putNumber("ShooterRad",getCurrentTurretAngle());

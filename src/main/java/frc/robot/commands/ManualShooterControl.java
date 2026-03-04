@@ -1,18 +1,21 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Shooter;
 
 public class ManualShooterControl extends Command {
 
   private Shooter m_shooter;
-  private CommandXboxController controller;
+  private JoystickButton machineGunButton;
+  private Joystick variable;
 
-  public ManualShooterControl(Shooter m_shooter, CommandXboxController controller) {
+  public ManualShooterControl(Shooter m_shooter, Joystick variable, JoystickButton machineGunButton) {
     this.m_shooter = m_shooter;
-    this.controller = controller;
+    this.variable = variable;
+    this.machineGunButton = machineGunButton;
     addRequirements(m_shooter);
   }
 
@@ -21,13 +24,13 @@ public class ManualShooterControl extends Command {
 
   @Override
   public void execute() {
-    if (controller.getHID().getBButton())
+    if (machineGunButton.getAsBoolean())
       m_shooter.setShooterVoltage(ShooterConstants.defaultShootVolt);
     else
       m_shooter.setShooterVoltage(0.0);
 
-    m_shooter.setTurretMotor(-controller.getRightX()*0.1);
-    m_shooter.setTiltMotor(controller.getLeftY());
+    m_shooter.setTurretMotor(-variable.getRawAxis(0)*0.1);
+    m_shooter.setTiltMotor(variable.getRawAxis(1));
   }
 
   @Override

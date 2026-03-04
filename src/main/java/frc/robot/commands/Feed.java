@@ -30,8 +30,8 @@ public class Feed extends Command {
       m_transfer.setHopperBottom(TransferConstants.hopperBottomSpeed);
     }
     else{
-      m_transfer.setHopperTop(-0.1);
-      m_transfer.setHopperBottom(0.1);
+      m_transfer.setHopperTop(0);
+      m_transfer.setHopperBottom(0);
     }
   }
 
