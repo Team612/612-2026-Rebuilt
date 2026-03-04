@@ -16,14 +16,14 @@ public class Shoot extends Command {
   private boolean red;
   private double hubXpos;
 
-  public Shoot(Shooter m_shooter, TankDrive m_tankDrive) {
+  public Shoot(Shooter m_shooter, TankDrive m_tankDrive){
     this.m_shooter = m_shooter;
     this.m_tankDrive = m_tankDrive;
   }
 
   @Override
   public void initialize() {
-    if (DriverStation.getAlliance().isPresent()) {
+    if (DriverStation.getAlliance().isPresent()){
       if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
         red = true;
     }
@@ -49,12 +49,12 @@ public class Shoot extends Command {
   }
 
   @Override
-  public void end(boolean interrupted) {
+  public void end(boolean interrupted){
     m_shooter.setShooterRPM(0);
   }
 
   @Override
-  public boolean isFinished() {
+  public boolean isFinished(){
     return false;
   }
 }

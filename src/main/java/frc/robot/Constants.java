@@ -51,7 +51,7 @@ public final class Constants {
 
     public static final double DEADBAND = 0.03;
 
-    public static double maxTurretSpeed = 0.1;
+    public static final double maxTurretSpeed = 0.05;
 
     public static final double defaultShootRPM = 2781;
 
@@ -146,7 +146,7 @@ public final class Constants {
     public static final Transform3d frontCameraTransform = 
     new Transform3d(
       new edu.wpi.first.math.geometry.Translation3d(0,0,0), // this is a guess
-      new edu.wpi.first.math.geometry.Rotation3d()
+      new edu.wpi.first.math.geometry.Rotation3d(0,0,0) // this is a guess
     );
   }
 }

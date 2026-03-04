@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.ShooterConstants;
@@ -12,11 +13,12 @@ public class ManualShooterControl extends Command {
   private JoystickButton machineGunButton;
   private Joystick variable;
 
-  public ManualShooterControl(Shooter m_shooter, Joystick variable, JoystickButton machineGunButton) {
+  public ManualShooterControl(Shooter m_shooter, Joystick variable, JoystickButton machineGunButton){
     this.m_shooter = m_shooter;
     this.variable = variable;
     this.machineGunButton = machineGunButton;
     addRequirements(m_shooter);
+    SmartDashboard.putNumber("Shooter RPM", 2781.0);
   }
 
   @Override
@@ -25,11 +27,11 @@ public class ManualShooterControl extends Command {
   @Override
   public void execute() {
     if (machineGunButton.getAsBoolean())
-      m_shooter.setShooterRPM(ShooterConstants.defaultShootRPM);
+      m_shooter.setShooterRPM(SmartDashboard.getNumber("Shooter RPM", 2781.0));
     else
       m_shooter.setShooterRPM(0);
 
-    m_shooter.setTurretMotor(-variable.getRawAxis(0)*0.05);
+    m_shooter.setTurretMotor(-variable.getRawAxis(0)*ShooterConstants.maxTurretSpeed);
     m_shooter.setTiltMotor(variable.getRawAxis(1));
   }
 

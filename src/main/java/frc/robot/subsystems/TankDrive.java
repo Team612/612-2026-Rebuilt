@@ -201,7 +201,6 @@ public class TankDrive extends SubsystemBase {
   @Override
   public void periodic() {
     poseEstimator.update(getHeading(), getLeftDistanceMeters(), getRightDistanceMeters());
-
     
     // use this code to test out vision, this can create fake photon results also make sure to copy and paste Timer.getFPGATimestamp()
     // Transform3d fakeAprilTagTransform = new Transform3d(new Translation3d(1, 0.0, 0.0),new Rotation3d(0, 0, Math.PI));

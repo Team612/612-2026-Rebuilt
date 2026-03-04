@@ -112,7 +112,6 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setTiltPos(double pos){
-    System.out.println(pos);
     tiltMotor.set(-tiltPID.calculate(tiltMotor.getEncoder().getPosition(), pos));
   }
   public void setEncoderTiltPos(double pos){
@@ -239,6 +238,8 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("shooterVel",shooterMotor.getEncoder().getVelocity());
     SmartDashboard.putNumber("ShooterRad",getCurrentTurretAngle());
     SmartDashboard.putNumber("rawEncoder",turretMotor.getEncoder().getPosition());
+    SmartDashboard.putNumber("turretPosRadians",getCurrentTurretAngle());
+
     SmartDashboard.putNumber("shooterGet",shooterMotor.get());
     SmartDashboard.putNumber("turretGet",turretMotor.get());
     SmartDashboard.putNumber("tiltGet",tiltMotor.get());

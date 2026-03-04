@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
@@ -51,6 +52,7 @@ public class AutoTurretAim extends Command {
 
       m_shooter.setTurretPos(desiredTheta);
       m_shooter.setTiltPos(m_shooter.getRegressionModelTilt(Math.sqrt(xdiff*xdiff+ydiff*ydiff)));
+      SmartDashboard.putNumber("HubDist",Math.sqrt(xdiff*xdiff+ydiff*ydiff));
     }
     else {
       double desiredTheta = m_shooter.getCurrentTurretAngle() + m_shooter.calculateShootingAnglesWithOfficialOffset()[0];
@@ -59,6 +61,8 @@ public class AutoTurretAim extends Command {
 
       m_shooter.setTurretPos(desiredTheta);
       m_shooter.setTiltPos(m_shooter.getRegressionModelTilt(m_shooter.calculateShootingAnglesWithOfficialOffset()[1]));
+
+      SmartDashboard.putNumber("HubDist",m_shooter.calculateShootingAnglesWithOfficialOffset()[1]);
     }
   }
 
