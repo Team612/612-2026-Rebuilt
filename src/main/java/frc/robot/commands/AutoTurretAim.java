@@ -50,7 +50,7 @@ public class AutoTurretAim extends Command {
       desiredTheta = Math.IEEEremainder(desiredTheta,2*Math.PI);
 
       m_shooter.setTurretPos(desiredTheta);
-      // m_shooter.setTiltPos(m_shooter.getRegressionModelTilt(Math.sqrt(xdiff*xdiff+ydiff*ydiff)));
+      m_shooter.setTiltPos(m_shooter.getRegressionModelTilt(Math.sqrt(xdiff*xdiff+ydiff*ydiff)));
     }
     else {
       double desiredTheta = m_shooter.getCurrentTurretAngle() + m_shooter.calculateShootingAnglesWithOfficialOffset()[0];
@@ -58,7 +58,7 @@ public class AutoTurretAim extends Command {
       desiredTheta = Math.IEEEremainder(desiredTheta,2*Math.PI);
 
       m_shooter.setTurretPos(desiredTheta);
-      // m_shooter.setTiltPos(m_shooter.getRegressionModelTilt(m_shooter.calculateShootingAnglesWithOfficialOffset()[1]));
+      m_shooter.setTiltPos(m_shooter.getRegressionModelTilt(m_shooter.calculateShootingAnglesWithOfficialOffset()[1]));
     }
   }
 

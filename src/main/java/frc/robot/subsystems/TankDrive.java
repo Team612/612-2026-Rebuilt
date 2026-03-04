@@ -100,7 +100,7 @@ public class TankDrive extends SubsystemBase {
       getRightDistanceMeters(),
       initialPos,
       // Odometry Standard Deviations, x y & z
-      VecBuilder.fill(0.006, 0.006, 0.002),
+      VecBuilder.fill(0.008, 0.008, 0.003),
       // Vision measurement std deviations
       VecBuilder.fill(999, 999, 999) // doesn't matter because it gets overwritten
     );
@@ -226,11 +226,12 @@ public class TankDrive extends SubsystemBase {
     }
     PhotonPipelineResult shooterResult = m_shooter.returnLatestCameraResult();
     if (shooterResult.hasTargets()) {
+      System.out.println("targets!");
       if (shooterResult.getBestTarget().getPoseAmbiguity() < 0.3){ // test if this is necessary
         var estimatedPoseOptional = m_shooter.returnPhotonPos(shooterResult);
         if (estimatedPoseOptional.isPresent()) {
           var estimatedPose = estimatedPoseOptional.get().estimatedPose;
-          poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), shooterResult.getTimestampSeconds(),VecBuilder.fill(0.1, 0.1, 0.14));
+          poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), shooterResult.getTimestampSeconds(),VecBuilder.fill(0.05, 0.05, 0.07));
         }
       }
     }

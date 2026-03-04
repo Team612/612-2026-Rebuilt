@@ -29,7 +29,7 @@ public class ManualShooterControl extends Command {
     else
       m_shooter.setShooterVoltage(0.0);
 
-    m_shooter.setTurretMotor(-variable.getRawAxis(0)*0.1);
+    m_shooter.setTurretMotor(-variable.getRawAxis(0)*0.05);
     m_shooter.setTiltMotor(variable.getRawAxis(1));
   }
 

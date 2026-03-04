@@ -51,12 +51,15 @@ public class Shooter extends SubsystemBase {
   public Shooter() {
     SparkBaseConfig turretConfig = new SparkMaxConfig();
     SparkBaseConfig shooterConfig = new SparkMaxConfig();
+    SparkBaseConfig tiltConfig = new SparkMaxConfig();
 
     turretConfig.idleMode(IdleMode.kBrake).inverted(true).limitSwitch.forwardLimitSwitchType(Type.kNormallyClosed).reverseLimitSwitchType(Type.kNormallyClosed);
     shooterConfig.idleMode(IdleMode.kBrake).inverted(false);
+    tiltConfig.idleMode(IdleMode.kBrake).inverted(false).limitSwitch.forwardLimitSwitchType(Type.kNormallyOpen).reverseLimitSwitchType(Type.kNormallyOpen);
 
     turretMotor.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     shooterMotor.configure(shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    tiltMotor.configure(tiltConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     turretPID.setIZone(0.1);
     tiltPID.setIZone(0.02);
@@ -108,6 +111,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setTiltPos(double pos){
+    System.out.println(pos);
     tiltMotor.set(-tiltPID.calculate(tiltMotor.getEncoder().getPosition(), pos));
   }
   public void setEncoderTiltPos(double pos){
@@ -125,8 +129,11 @@ public class Shooter extends SubsystemBase {
     return shooterMotor.getEncoder().getVelocity();
   }
 
-  public double getRegressionModelTilt(double distance){ // MUST BE TUNED BEFORE COMP
-    return 0; 
+  public double getRegressionModelTilt(double distance){
+    double setPosition = 0.169290621824 * distance - 0.297490939512;
+    if (setPosition < 0)
+      setPosition = 0;
+    return setPosition;
   }
 
   public double getRegressionModelRPM(double distance){
@@ -218,6 +225,10 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
+    if (tiltMotor.getForwardLimitSwitch().isPressed())
+      tiltMotor.getEncoder().setPosition(0);
+
+    SmartDashboard.putBoolean("Shooter Has Tag", shooterCamera.getLatestResult().hasTargets());
     SmartDashboard.putNumber("shooterPos",shooterMotor.getEncoder().getPosition());
     SmartDashboard.putNumber("shooterVel",shooterMotor.getEncoder().getVelocity());
     SmartDashboard.putNumber("ShooterRad",getCurrentTurretAngle());

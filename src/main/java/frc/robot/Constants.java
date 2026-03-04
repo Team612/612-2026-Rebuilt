@@ -95,7 +95,7 @@ public final class Constants {
     public static final double DEADBAND = 0.05;
 
     public static final double kWheelDiameterMeter = 0.192;
-    public static double encoderToMeters = 1; // this is a guess
+    public static double encoderToMeters = 0.0758490426312;
 
     public static final double trackWidth = 0.508;
     public static final DifferentialDriveKinematics driveKinematics = new DifferentialDriveKinematics(trackWidth);
