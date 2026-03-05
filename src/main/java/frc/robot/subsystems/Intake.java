@@ -28,8 +28,10 @@ public class Intake extends SubsystemBase {
     lowerIntake.configure(lowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  public void setIntakeSpeed(double speed) {
+  public void setUpperIntakeSpeed(double speed) {
     upperIntake.set(speed);
+  }
+  public void setLowerIntakeSpeed(double speed) {
     lowerIntake.set(speed);
   }
 

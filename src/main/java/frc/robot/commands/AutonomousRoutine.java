@@ -15,17 +15,18 @@ public class AutonomousRoutine extends Command {
 
   @Override
   public void initialize() {
-    m_tankDrive.arcadeDrive(0.1,0);
+    m_tankDrive.manualSetKrakenMotors(0.3);
   }
 
   @Override
   public void execute() {
+    m_tankDrive.manualSetKrakenMotors(0.3);
     timer += 1;
   }
 
   @Override
   public void end(boolean interrupted) {
-    m_tankDrive.arcadeDrive(0.1,0);
+    m_tankDrive.manualSetKrakenMotors(0);
   }
 
   @Override

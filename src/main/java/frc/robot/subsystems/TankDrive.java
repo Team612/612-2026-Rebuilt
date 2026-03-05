@@ -170,6 +170,13 @@ public class TankDrive extends SubsystemBase {
     rightMotor.setVoltage(rightFeedforward);
   }
 
+  // I have no idea why but arcade drive does not like being called during the autonomous routine
+  // This method can control the motors for poor mans auto. This it terrible code but it works. Will fix for comp 2
+  public void manualSetKrakenMotors(double speed){
+    leftMotor.set(speed);
+    rightMotor.set(speed);
+  }
+
   public void arcadeDrive(double forward, double rotation) {
     diffDrive.arcadeDrive(forward, rotation);
   }
@@ -232,8 +239,10 @@ public class TankDrive extends SubsystemBase {
     SmartDashboard.putNumber("leftSideGet", leftMotor.get());
     SmartDashboard.putNumber("rightSideGet",rightMotor.get());
 
-    SmartDashboard.putNumber("leftSidePos",leftMotor.getPosition().getValueAsDouble());
-    SmartDashboard.putNumber("rightSidePos",rightMotor.getPosition().getValueAsDouble());
+    SmartDashboard.putNumber("leftSidePos",leftMotor.getPosition().getValueAsDouble() * DriveConstants.encoderToMeters);
+    SmartDashboard.putNumber("rightSidePos",rightMotor.getPosition().getValueAsDouble() * DriveConstants.encoderToMeters);
+
+    SmartDashboard.putBoolean("Driver Camera Tag", result.hasTargets());
 
     SmartDashboard.putNumber("gyro pos", gyro.getYaw().getValueAsDouble());
   }

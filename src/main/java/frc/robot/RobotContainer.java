@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -27,17 +28,18 @@ public class RobotContainer {
 
   private static Joystick m_buttonGunner = new Joystick(OperatorConstants.kGunnerPortButtons);
   private static Joystick m_variableGunner = new Joystick(OperatorConstants.kGunnerPortVariable);
-  public static JoystickButton machineGunButton = new JoystickButton(m_buttonGunner, 1);
-  public static JoystickButton intakeButton = new JoystickButton(m_buttonGunner, 2);
-  public static JoystickButton resetButton = new JoystickButton(m_buttonGunner, 3);
+  private static JoystickButton machineGunButton = new JoystickButton(m_buttonGunner, 1);
+  private static JoystickButton intakeButton = new JoystickButton(m_buttonGunner, 2);
+  private static JoystickButton resetButton = new JoystickButton(m_buttonGunner, 3);
+  private static JoystickButton zeroCountButton = new JoystickButton(m_buttonGunner, 4);
 
   private final Vision m_vision = new Vision();
   private final Shooter m_shooter = new Shooter();
-  private final TankDrive m_tankDrive = new TankDrive(OperatorConstants.blueHub, m_vision, m_shooter);
+  private final TankDrive m_tankDrive = new TankDrive(OperatorConstants.blueHubPointAway, m_vision, m_shooter);
   private final Transfer m_transfer = new Transfer();
   private final Intake m_intake = new Intake();
 
-  public static boolean manualMode = true;
+  private static boolean manualMode = true;
 
   public RobotContainer() {
     configureBindings();
@@ -51,7 +53,7 @@ public class RobotContainer {
     else
       m_shooter.setDefaultCommand(new AutoTurretAim(m_shooter, m_tankDrive));
 
-    resetButton.onTrue(new InstantCommand(() -> {
+    zeroCountButton.onTrue(new InstantCommand(() -> {
       manualMode = !manualMode;
       m_shooter.getCurrentCommand().cancel();
 
@@ -62,15 +64,17 @@ public class RobotContainer {
     }));
 
     machineGunButton.and(() -> !manualMode).whileTrue(new Shoot(m_shooter, m_tankDrive));
-    machineGunButton.whileTrue(new Feed(m_transfer));
+    machineGunButton.or(resetButton).whileTrue(new Feed(m_transfer, resetButton));
     intakeButton.whileTrue(new IntakeBall(m_intake));
+
+    // m_driverController.leftBumper().or(m_driverController.rightBumper()).whileTrue(new Feed(m_transfer, () -> m_driverController.rightBumper().getAsBoolean()));
   }
 
   public Command getAutonomousCommand() {
     return new SequentialCommandGroup(
       new ZeroTurret(m_shooter),
       new AutonomousRoutine(m_tankDrive),
-      new Shoot(m_shooter, m_tankDrive)
+      new ParallelCommandGroup(new Shoot(m_shooter, m_tankDrive), new IntakeBall(m_intake), new Feed(m_transfer, intakeButton))
     );
   }
 }

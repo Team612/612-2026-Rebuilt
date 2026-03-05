@@ -42,6 +42,9 @@ public class Transfer extends SubsystemBase{
   public void setFeed(double speed){
     feed.set(speed);
   }
+  public void setFeedVoltage(double volts){
+    feed.setVoltage(volts);
+  }
   
   @Override
   public void periodic() {

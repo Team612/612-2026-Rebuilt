@@ -48,14 +48,18 @@ public class Shooter extends SubsystemBase {
   private PIDController turretPID = new PIDController(ShooterConstants.turretKp, ShooterConstants.turretKi, ShooterConstants.turretKd);
   private PIDController tiltPID = new PIDController(ShooterConstants.tiltKp,ShooterConstants.tiltKi,ShooterConstants.tiltKd);
 
+  private boolean withinShootingRPM = false;
+
   public Shooter() {
     SparkBaseConfig turretConfig = new SparkMaxConfig();
     SparkBaseConfig shooterConfig = new SparkMaxConfig();
     SparkBaseConfig tiltConfig = new SparkMaxConfig();
 
+    // turretConfig.idleMode(IdleMode.kBrake).inverted(true);
     turretConfig.idleMode(IdleMode.kBrake).inverted(true).limitSwitch.forwardLimitSwitchType(Type.kNormallyClosed).reverseLimitSwitchType(Type.kNormallyClosed);
     shooterConfig.idleMode(IdleMode.kBrake).inverted(false);
-    tiltConfig.idleMode(IdleMode.kBrake).inverted(false).limitSwitch.forwardLimitSwitchType(Type.kNormallyOpen).reverseLimitSwitchType(Type.kNormallyOpen);
+    // tiltConfig.idleMode(IdleMode.kBrake).inverted(false);
+    tiltConfig.idleMode(IdleMode.kBrake).inverted(false).limitSwitch.forwardLimitSwitchType(Type.kNormallyClosed).reverseLimitSwitchType(Type.kNormallyOpen);
 
     turretMotor.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     shooterMotor.configure(shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -64,6 +68,8 @@ public class Shooter extends SubsystemBase {
     turretPID.setIZone(0.1);
     tiltPID.setIZone(0.02);
     turretMotor.getEncoder().setPosition(Math.PI/ShooterConstants.turretEncoderToRadians);
+
+    SmartDashboard.putNumber("RPM window", 100);
   }
 
   public boolean GetForwardTurretLimit() {
@@ -75,6 +81,11 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setShooterRPM(double RPM){
+    if (Math.abs(RPM - shooterMotor.getEncoder().getVelocity()) < SmartDashboard.getNumber("RPM window", 100))
+      withinShootingRPM = true;
+    else
+      withinShootingRPM = false;
+
     if (RPM == 0){
       shooterMotor.setVoltage(0);
       return;
@@ -82,6 +93,10 @@ public class Shooter extends SubsystemBase {
     double outputVolts = RPM * ShooterConstants.shooterkV + ShooterConstants.shooterkS;
     outputVolts += ShooterConstants.shooterkP * (RPM - shooterMotor.getEncoder().getVelocity());
     shooterMotor.setVoltage(outputVolts);
+  }
+
+  public boolean safeToShoot(){
+    return withinShootingRPM;
   }
 
   public void setTurretMotor(double speed){
@@ -233,10 +248,12 @@ public class Shooter extends SubsystemBase {
     if (turretMotor.getForwardLimitSwitch().isPressed())
       setTurretEncoderPos(ShooterConstants.forwardLimit);
 
+    // System.out.println(getCurrentTurretAngle()+" "+turretMotor.getForwardLimitSwitch().isPressed());
+    // System.out.println(getCurrentTurretAngle()+" "+turretMotor.getReverseLimitSwitch().isPressed());
+
     SmartDashboard.putBoolean("Shooter Has Tag", shooterCamera.getLatestResult().hasTargets());
     SmartDashboard.putNumber("shooterPos",shooterMotor.getEncoder().getPosition());
     SmartDashboard.putNumber("shooterVel",shooterMotor.getEncoder().getVelocity());
-    SmartDashboard.putNumber("ShooterRad",getCurrentTurretAngle());
     SmartDashboard.putNumber("rawEncoder",turretMotor.getEncoder().getPosition());
     SmartDashboard.putNumber("turretPosRadians",getCurrentTurretAngle());
 

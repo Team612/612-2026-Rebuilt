@@ -61,7 +61,7 @@ public final class Constants {
 
     public static final double turretKp = 0.15;
     public static final double turretKi = 0.13;
-    public static final double turretKd = 0.013;
+    public static final double turretKd = 0.033;
 
     public static final double tiltKp = 3.975; 
     public static final double tiltKi = 3.01;
@@ -76,7 +76,6 @@ public final class Constants {
     public static final Transform2d robotToTurret2d = new Transform2d(new Translation2d(-0.21,0), new Rotation2d());
     public static final double radiusTurretToCamera = 0.15;
   }
-
   
   public static class DriveConstants {
     public static final int leftMotorID = 0;
@@ -95,7 +94,7 @@ public final class Constants {
     public static final double DEADBAND = 0.05;
 
     public static final double kWheelDiameterMeter = 0.192;
-    public static double encoderToMeters = 0.0758490426312;
+    public static double encoderToMeters = 0.0775889829704;
 
     public static final double trackWidth = 0.508;
     public static final DifferentialDriveKinematics driveKinematics = new DifferentialDriveKinematics(trackWidth);
@@ -113,7 +112,8 @@ public final class Constants {
     public static final int upperIntakeID = 9;
     public static final int lowerIntakeID = 10;
 
-    public static final double INTAKE_SPEED = 0.35;
+    public static final double upperIntakeSpeed = 0.35;
+    public static final double lowerIntakeSpeed = -0.05;
   }
 
   public static class TransferConstants{
@@ -121,9 +121,9 @@ public final class Constants {
     public static final int hopperBottomID = 2;
     public static final int feedID = 4;
 
-    public static double hopperTopSpeed = 0.5;
-    public static double hopperBottomSpeed = -0.5;
-    public static double feedSpeed = 0.5;
+    public static double hopperTopSpeed = 1;
+    public static double hopperBottomSpeed = -1;
+    public static double feedSpeed = 0.6;
 
     public static int rampUpTime = 100;
     public static int shootTime = 10;

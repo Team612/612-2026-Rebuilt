@@ -21,8 +21,8 @@ public class ArcadeDrive extends Command {
   @Override
   public void execute() {
     m_tankDrive.arcadeDrive(
-    -controller.getLeftY(),
-    -controller.getRightX()
+    -0.5*controller.getLeftY(),
+    -0.5*controller.getRightX()
     );
   }
 
