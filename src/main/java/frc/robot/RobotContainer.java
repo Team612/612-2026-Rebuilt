@@ -15,6 +15,7 @@ import frc.robot.commands.AutonomousRoutine;
 import frc.robot.commands.Feed;
 import frc.robot.commands.IntakeBall;
 import frc.robot.commands.ManualShooterControl;
+import frc.robot.commands.ReverseAllMotors;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ZeroTurret;
 import frc.robot.subsystems.Intake;
@@ -32,6 +33,7 @@ public class RobotContainer {
   private static JoystickButton intakeButton = new JoystickButton(m_buttonGunner, 2);
   private static JoystickButton resetButton = new JoystickButton(m_buttonGunner, 3);
   private static JoystickButton zeroCountButton = new JoystickButton(m_buttonGunner, 4);
+  private static JoystickButton reverseMotors = new JoystickButton(m_buttonGunner, 5);
 
   private final Vision m_vision = new Vision();
   private final Shooter m_shooter = new Shooter();
@@ -63,6 +65,7 @@ public class RobotContainer {
         m_shooter.setDefaultCommand(new AutoTurretAim(m_shooter, m_tankDrive));
     }));
 
+    reverseMotors.whileTrue(new ReverseAllMotors(m_transfer, m_shooter));
     machineGunButton.and(() -> !manualMode).whileTrue(new Shoot(m_shooter, m_tankDrive));
     machineGunButton.or(resetButton).whileTrue(new Feed(m_transfer, resetButton));
     intakeButton.whileTrue(new IntakeBall(m_intake));
