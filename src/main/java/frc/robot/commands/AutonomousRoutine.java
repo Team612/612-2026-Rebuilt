@@ -31,6 +31,6 @@ public class AutonomousRoutine extends Command {
 
   @Override
   public boolean isFinished() {
-    return (timer > 60);
+    return (timer > 50);
   }
 }

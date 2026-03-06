@@ -59,9 +59,9 @@ public final class Constants {
     public static final double shooterkP = 0.00037;
     public static final double shooterkS = 0.2;
 
-    public static final double turretKp = 0.15;
+    public static final double turretKp = 0.13;
     public static final double turretKi = 0.13;
-    public static final double turretKd = 0.033;
+    public static final double turretKd = 0.038;
 
     public static final double tiltKp = 3.975; 
     public static final double tiltKi = 3.01;
@@ -121,8 +121,8 @@ public final class Constants {
     public static final int hopperBottomID = 2;
     public static final int feedID = 4;
 
-    public static double hopperTopSpeed = 1;
-    public static double hopperBottomSpeed = -1;
+    public static double hopperTopSpeed = 0.8;
+    public static double hopperBottomSpeed = -0.8;
     public static double feedSpeed = 0.6;
 
     public static int rampUpTime = 100;

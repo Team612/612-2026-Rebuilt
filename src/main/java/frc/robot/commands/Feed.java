@@ -24,8 +24,8 @@ public class Feed extends Command {
 
   @Override
   public void initialize() {
-    m_transfer.setFeed(TransferConstants.feedSpeed);
-    // m_transfer.setFeedVoltage(6.6);
+    // m_transfer.setFeed(TransferConstants.feedSpeed);
+    m_transfer.setFeedVoltage(6.6);
   }
 
   @Override
@@ -44,8 +44,8 @@ public class Feed extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    m_transfer.setFeed(0);
-    // m_transfer.setFeedVoltage(0);
+    // m_transfer.setFeed(0);
+    m_transfer.setFeedVoltage(0);
     m_transfer.setHopperTop(0);
     m_transfer.setHopperBottom(0);
   }
