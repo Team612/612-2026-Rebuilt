@@ -2,14 +2,6 @@ package frc.robot.subsystems;
 
 import org.photonvision.targeting.PhotonPipelineResult;
 
-import edu.wpi.first.wpilibj.Timer;
-import java.util.List;
-import org.photonvision.targeting.PhotonTrackedTarget;
-import org.photonvision.targeting.TargetCorner;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -225,7 +217,7 @@ public class TankDrive extends SubsystemBase {
     }
     PhotonPipelineResult shooterResult = m_shooter.returnLatestCameraResult();
     if (shooterResult.hasTargets()) {
-      if (shooterResult.getBestTarget().getPoseAmbiguity() < 0.3){ // test if this is necessary
+      if (shooterResult.getBestTarget().getBestCameraToTarget().getX() < 4){
         var estimatedPoseOptional = m_shooter.returnPhotonPos(shooterResult);
         if (estimatedPoseOptional.isPresent()) {
           var estimatedPose = estimatedPoseOptional.get().estimatedPose;
@@ -233,6 +225,24 @@ public class TankDrive extends SubsystemBase {
         }
       }
     }
+
+    // PhotonPipelineResult shooterResult = m_shooter.returnLatestCameraResult();
+    // if (shooterResult.hasTargets()) {
+    //   boolean goodTarget = false;
+    //   for (var target : result.getTargets()) {
+    //       if (target.getPoseAmbiguity() >= 0 && target.getPoseAmbiguity() < 0.3) {
+    //           goodTarget = true;
+    //           break;
+    //       }
+    //   }
+    //   if (goodTarget) {
+    //     var estimatedPoseOptional = m_shooter.returnPhotonPos(shooterResult);
+    //     if (estimatedPoseOptional.isPresent()) {
+    //       var estimatedPose = estimatedPoseOptional.get().estimatedPose;
+    //       poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), shooterResult.getTimestampSeconds(),VecBuilder.fill(0.05, 0.05, 0.07));
+    //     }
+    //   }
+    // }
 
     field.setRobotPose(poseEstimator.getEstimatedPosition());
 

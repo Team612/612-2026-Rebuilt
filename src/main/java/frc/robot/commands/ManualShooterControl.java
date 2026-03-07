@@ -18,7 +18,7 @@ public class ManualShooterControl extends Command {
     this.variable = variable;
     this.machineGunButton = machineGunButton;
     addRequirements(m_shooter);
-    SmartDashboard.putNumber("Shooter RPM", 2800);
+    SmartDashboard.putNumber("Shooter RPM", 3000);
   }
 
   @Override
@@ -27,7 +27,7 @@ public class ManualShooterControl extends Command {
   @Override
   public void execute() {
     if (machineGunButton.getAsBoolean())
-      m_shooter.setShooterRPM(SmartDashboard.getNumber("Shooter RPM", 2800));
+      m_shooter.setShooterRPM(SmartDashboard.getNumber("Shooter RPM", 3000));
     else
       m_shooter.setShooterRPM(0);
 
