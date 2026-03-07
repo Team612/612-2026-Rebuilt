@@ -215,16 +215,16 @@ public class TankDrive extends SubsystemBase {
         }
       }
     }
-    // PhotonPipelineResult shooterResult = m_shooter.returnLatestCameraResult();
-    // if (shooterResult.hasTargets()) {
-    //   if (shooterResult.getBestTarget().getBestCameraToTarget().getX() < 4){
-    //     var estimatedPoseOptional = m_shooter.returnPhotonPos(shooterResult);
-    //     if (estimatedPoseOptional.isPresent()) {
-    //       var estimatedPose = estimatedPoseOptional.get().estimatedPose;
-    //       poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), shooterResult.getTimestampSeconds(),VecBuilder.fill(0.05, 0.05, 0.07));
-    //     }
-    //   }
-    // }
+    PhotonPipelineResult shooterResult = m_shooter.returnLatestCameraResult();
+    if (shooterResult.hasTargets()) {
+      if (shooterResult.getBestTarget().getBestCameraToTarget().getX() < 4){
+        var estimatedPoseOptional = m_shooter.returnPhotonPos(shooterResult);
+        if (estimatedPoseOptional.isPresent()) {
+          var estimatedPose = estimatedPoseOptional.get().estimatedPose;
+          poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), shooterResult.getTimestampSeconds(),VecBuilder.fill(0.05, 0.05, 0.07));
+        }
+      }
+    }
 
     // PhotonPipelineResult shooterResult = m_shooter.returnLatestCameraResult();
     // if (shooterResult.hasTargets()) {
