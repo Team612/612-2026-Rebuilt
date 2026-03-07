@@ -15,12 +15,12 @@ public class AutonomousRoutine extends Command {
 
   @Override
   public void initialize() {
-    m_tankDrive.manualSetKrakenMotors(0.3);
+    m_tankDrive.manualSetKrakenMotors(0.1);
   }
 
   @Override
   public void execute() {
-    m_tankDrive.manualSetKrakenMotors(0.3);
+    m_tankDrive.manualSetKrakenMotors(0.1);
     timer += 1;
   }
 
@@ -31,6 +31,6 @@ public class AutonomousRoutine extends Command {
 
   @Override
   public boolean isFinished() {
-    return (timer > 50);
+    return (timer > 180);
   }
 }

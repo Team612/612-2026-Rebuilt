@@ -17,6 +17,7 @@ import frc.robot.commands.IntakeBall;
 import frc.robot.commands.ManualShooterControl;
 import frc.robot.commands.ReverseAllMotors;
 import frc.robot.commands.Shoot;
+import frc.robot.commands.ShootAuto;
 import frc.robot.commands.ZeroTurret;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -37,7 +38,7 @@ public class RobotContainer {
 
   private final Vision m_vision = new Vision();
   private final Shooter m_shooter = new Shooter();
-  private final TankDrive m_tankDrive = new TankDrive(OperatorConstants.blueHub, m_vision, m_shooter);
+  private final TankDrive m_tankDrive = new TankDrive(OperatorConstants.redHub, m_vision, m_shooter);
   private final Transfer m_transfer = new Transfer();
   private final Intake m_intake = new Intake();
 
@@ -77,7 +78,7 @@ public class RobotContainer {
     return new SequentialCommandGroup(
       new ZeroTurret(m_shooter),
       new AutonomousRoutine(m_tankDrive),
-      new ParallelCommandGroup(new Shoot(m_shooter, m_tankDrive), new IntakeBall(m_intake), new Feed(m_transfer, intakeButton))
+      new ParallelCommandGroup(new ShootAuto(m_shooter, m_tankDrive), new IntakeBall(m_intake), new Feed(m_transfer, intakeButton))
     );
   }
 }
