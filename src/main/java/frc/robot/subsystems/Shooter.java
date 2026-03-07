@@ -81,6 +81,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setShooterRPM(double RPM){
+    SmartDashboard.putNumber("RPM", RPM);
     if (Math.abs(RPM - shooterMotor.getEncoder().getVelocity()) < SmartDashboard.getNumber("RPM window", 100))
       withinShootingRPM = true;
     else

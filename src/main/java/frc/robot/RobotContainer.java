@@ -75,7 +75,9 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
+    
     return new SequentialCommandGroup(
+      new AutoTurretAim(m_shooter, m_tankDrive),
       new ZeroTurret(m_shooter),
       new AutonomousRoutine(m_tankDrive),
       new ParallelCommandGroup(new ShootAuto(m_shooter, m_tankDrive), new IntakeBall(m_intake), new Feed(m_transfer, intakeButton))
