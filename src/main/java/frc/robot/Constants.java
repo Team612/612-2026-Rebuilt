@@ -59,9 +59,9 @@ public final class Constants {
     public static final double shooterkP = 0.00037;
     public static final double shooterkS = 0.2;
 
-    public static final double turretKp = 0.11;//0.13
+    public static final double turretKp = 0.1;//0.13
     public static final double turretKi = 0.13;//0.13
-    public static final double turretKd = 0.013;//0.038
+    public static final double turretKd = 0.012;//0.038
 
     public static final double tiltKp = 3.975; 
     public static final double tiltKi = 3.01;
