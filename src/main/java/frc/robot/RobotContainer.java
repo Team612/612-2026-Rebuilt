@@ -67,7 +67,7 @@ public class RobotContainer {
 
     reverseMotors.whileTrue(new ReverseAllMotors(m_transfer, m_shooter));
     machineGunButton.and(() -> !manualMode).whileTrue(new Shoot(m_shooter, m_tankDrive));
-    machineGunButton.or(resetButton).whileTrue(new Feed(m_transfer, resetButton));
+    machineGunButton.or(resetButton).whileTrue(new Feed(m_transfer, resetButton, m_shooter));
     intakeButton.whileTrue(new IntakeBall(m_intake));
 
     // m_driverController.leftBumper().or(m_driverController.rightBumper()).whileTrue(new Feed(m_transfer, () -> m_driverController.rightBumper().getAsBoolean()));
@@ -77,7 +77,7 @@ public class RobotContainer {
     return new SequentialCommandGroup(
       new ZeroTurret(m_shooter),
       new AutonomousRoutine(m_tankDrive),
-      new ParallelCommandGroup(new Shoot(m_shooter, m_tankDrive), new IntakeBall(m_intake), new Feed(m_transfer, intakeButton))
+      new ParallelCommandGroup(new Shoot(m_shooter, m_tankDrive), new IntakeBall(m_intake), new Feed(m_transfer, intakeButton, m_shooter))
     );
   }
 }
