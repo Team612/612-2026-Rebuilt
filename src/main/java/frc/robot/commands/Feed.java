@@ -36,7 +36,8 @@ public class Feed extends Command {
     timer++;
     // if ((timer > 50) && (((((timer - SmartDashboard.getNumber("rampUpTime", 50)) % (SmartDashboard.getNumber("shootTime", 5) + SmartDashboard.getNumber("recoveryTime", 22))) < SmartDashboard.getNumber("shootTime", 5)) ) || (noPulseButton.getAsBoolean()))){
     double shootTime = SmartDashboard.getNumber("shootTime", 5);
-    if (m_shooter.safeToShoot() && (((((timer - SmartDashboard.getNumber("rampUpTime", 50)) % (shootTime + SmartDashboard.getNumber("recoveryTime", 60))) < shootTime) ) || (noPulseButton.getAsBoolean()))){
+    // if (m_shooter.safeToShoot() && (((((timer - SmartDashboard.getNumber("rampUpTime", 50)) % (shootTime + SmartDashboard.getNumber("recoveryTime", 60))) < shootTime) ) || (noPulseButton.getAsBoolean()))){
+    if (m_shooter.safeToShoot() || noPulseButton.getAsBoolean()) {
       m_transfer.setHopperTop(TransferConstants.hopperTopSpeed);
       m_transfer.setHopperBottom(TransferConstants.hopperBottomSpeed);
     }
