@@ -75,6 +75,7 @@ public final class Constants {
     public static final Transform3d robotToTurret = new Transform3d(new Translation3d(-0.21, 0, 0.51), new Rotation3d());
     public static final Transform2d robotToTurret2d = new Transform2d(new Translation2d(-0.21,0), new Rotation2d());
     public static final double radiusTurretToCamera = 0.15;
+    public static final double shooterHeight = 0.15;
   }
   
   public static class DriveConstants {
