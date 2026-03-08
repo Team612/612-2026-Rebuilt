@@ -38,7 +38,7 @@ public class RobotContainer {
 
   private final Vision m_vision = new Vision();
   private final Shooter m_shooter = new Shooter();
-  private final TankDrive m_tankDrive = new TankDrive(OperatorConstants.redHub, m_vision, m_shooter);
+  private final TankDrive m_tankDrive = new TankDrive(OperatorConstants.blueHub, m_vision, m_shooter);
   private final Transfer m_transfer = new Transfer();
   private final Intake m_intake = new Intake();
 
@@ -77,10 +77,9 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     
     return new SequentialCommandGroup(
-      new AutoTurretAim(m_shooter, m_tankDrive),
       new ZeroTurret(m_shooter),
       new AutonomousRoutine(m_tankDrive),
-      new ParallelCommandGroup(new ShootAuto(m_shooter, m_tankDrive), new IntakeBall(m_intake), new Feed(m_transfer, intakeButton))
+      new ParallelCommandGroup(new AutoTurretAim(m_shooter, m_tankDrive),new ShootAuto(m_shooter, m_tankDrive), new IntakeBall(m_intake), new Feed(m_transfer, intakeButton))
     );
   }
 }

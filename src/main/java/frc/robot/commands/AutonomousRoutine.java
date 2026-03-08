@@ -20,6 +20,7 @@ public class AutonomousRoutine extends Command {
 
   @Override
   public void execute() {
+    System.out.println("Running");
     m_tankDrive.manualSetKrakenMotors(0.1);
     timer += 1;
   }

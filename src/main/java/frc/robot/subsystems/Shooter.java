@@ -128,7 +128,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setTiltPos(double pos){
-    tiltMotor.set(-tiltPID.calculate(tiltMotor.getEncoder().getPosition(), pos));
+    tiltMotor.set(tiltPID.calculate(tiltMotor.getEncoder().getPosition(), pos));
   }
   public void setEncoderTiltPos(double pos){
     tiltMotor.getEncoder().setPosition(pos);
