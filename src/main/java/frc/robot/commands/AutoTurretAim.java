@@ -51,10 +51,10 @@ public class AutoTurretAim extends Command {
       double ydiff = OperatorConstants.hubYPos - turretPose.getY();
       double dist = Math.sqrt(xdiff*xdiff+ydiff*ydiff);
       double angle = Math.IEEEremainder(m_shooter.getRegressionModelTilt(dist)*ShooterConstants.turretEncoderToRadians, 2*Math.PI);
-      long endTime = System.nanoTime();
       turretPose = m_tankDrive.getPose().plus(ShooterConstants.robotToTurret2d);
+      long endTime = System.nanoTime();
       cv = new Translation2d(xdiff-hubXpos+turretPose.getX(), ydiff-OperatorConstants.hubYPos+turretPose.getY());
-      cv.div((endTime-fTime)*1000000000);
+      cv.div((endTime-fTime)/1000000000);
       if (cv != Translation2d.kZero) {
         double cosAngle = Math.cos(angle);
         double nv = Math.sqrt(9.8*(xdiff*xdiff+ydiff*ydiff)/(2*cosAngle*cosAngle*(dist*Math.tan(angle)-OperatorConstants.hubYPos+ShooterConstants.shooterHeight)));
