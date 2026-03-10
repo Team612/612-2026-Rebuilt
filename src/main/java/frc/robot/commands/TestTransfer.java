@@ -20,6 +20,7 @@ public class TestTransfer extends Command {
   public void initialize() {
     m_transfer.setMotor2(0.5);
     m_transfer.setMotor3(0.5);
+    m_transfer.setAgitator(0.5);
   }
 
   @Override
@@ -34,6 +35,7 @@ public class TestTransfer extends Command {
     m_transfer.setMotor2(0);
     m_transfer.setMotor3(0);
     m_transfer.setMotor4(0);
+    m_transfer.setAgitator(0);
   }
 
   @Override

@@ -12,5 +12,6 @@ public final class Constants {
     public static final int motor2ID = 2; // this is a guess
     public static final int motor3ID = 3; // this is a guess
     public static final int motor4ID = 4; // this is a guess
+    public static final int agitatorID = 5; // this is a guess
   }
 }

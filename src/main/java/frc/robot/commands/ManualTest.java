@@ -34,6 +34,7 @@ public class ManualTest extends Command {
     boolean b = m_controller.getHID().getRawButton(XboxController.Button.kB.value);
     boolean x = m_controller.getHID().getRawButton(XboxController.Button.kX.value);
     boolean y = m_controller.getHID().getRawButton(XboxController.Button.kY.value);
+    boolean start = m_controller.getHID().getRawButton(XboxController.Button.kStart.value);
     boolean leftBumper = m_controller.getHID().getRawButton(XboxController.Button.kLeftBumper.value);
     boolean rightBumper = m_controller.getHID().getRawButton(XboxController.Button.kRightBumper.value);
 
@@ -42,16 +43,19 @@ public class ManualTest extends Command {
       m_transfer.setMotor2(SPEED);
       m_transfer.setMotor3(SPEED);
       m_transfer.setMotor4(SPEED);
+      m_transfer.setAgitator(SPEED);
     } else if (leftBumper) {
       m_transfer.setMotor1(-SPEED);
       m_transfer.setMotor2(-SPEED);
       m_transfer.setMotor3(-SPEED);
       m_transfer.setMotor4(-SPEED);
+      m_transfer.setAgitator(-SPEED);
     } else {
       m_transfer.setMotor1(y ? SPEED : 0.0);
       m_transfer.setMotor2(x ? SPEED : 0.0);
       m_transfer.setMotor3(b ? SPEED : 0.0);
       m_transfer.setMotor4(a ? SPEED : 0.0);
+      m_transfer.setAgitator(start ? SPEED : 0.0);
     }
   }
 
@@ -62,6 +66,7 @@ public class ManualTest extends Command {
     m_transfer.setMotor2(0.0);
     m_transfer.setMotor3(0.0);
     m_transfer.setMotor4(0.0);
+    m_transfer.setAgitator(0.0);
   }
   // Returns true when the command should end.
   @Override

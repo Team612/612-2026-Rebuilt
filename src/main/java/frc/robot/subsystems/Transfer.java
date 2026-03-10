@@ -13,6 +13,7 @@ public class Transfer extends SubsystemBase{
     private final SparkFlex motor2 = new SparkFlex(TransferConstants.motor2ID, MotorType.kBrushless);
     private final SparkFlex motor3 = new SparkFlex(TransferConstants.motor3ID, MotorType.kBrushless);
     private final SparkFlex motor4 = new SparkFlex(TransferConstants.motor4ID, MotorType.kBrushless);
+    private final SparkMax agitator = new SparkMax(TransferConstants.agitatorID, MotorType.kBrushless);
 
     public Transfer() {}
 
@@ -30,6 +31,10 @@ public class Transfer extends SubsystemBase{
     
     public void setMotor4(double speed){
         motor4.set(speed);
+    }
+
+    public void setAgitator(double speed) {
+        agitator.set(speed);
     }
 
     @Override
