@@ -1,22 +1,23 @@
 package frc.robot.commands;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.subsystems.Transfer;
 import frc.robot.Constants.TransferConstants;
+import frc.robot.subsystems.Transfer;
 
 public class Feed extends Command {
 
   private Transfer m_transfer;
   private int timer;
-  private JoystickButton noPulseButton;
+  private BooleanSupplier noPulseSupplier;
 
   // private int totalTime = TransferConstants.shootTime + TransferConstants.recoveryTime;
 
-  public Feed(Transfer m_transfer, JoystickButton noPulseButton) {
+  public Feed(Transfer m_transfer, BooleanSupplier noPulseSupplier) {
     this.m_transfer = m_transfer;
-    this.noPulseButton = noPulseButton;
+    this.noPulseSupplier = noPulseSupplier;
     addRequirements(m_transfer);
     SmartDashboard.putNumber("shootTime", 5);
     SmartDashboard.putNumber("recoveryTime", 22);
@@ -31,7 +32,7 @@ public class Feed extends Command {
   @Override
   public void execute() {
     timer++;
-    if ((timer > 50) && (((((timer - SmartDashboard.getNumber("rampUpTime", 50)) % (SmartDashboard.getNumber("shootTime", 5) + SmartDashboard.getNumber("recoveryTime", 22))) < SmartDashboard.getNumber("shootTime", 5)) ) || (noPulseButton.getAsBoolean()))){
+    if ((timer > 50) && (((((timer - SmartDashboard.getNumber("rampUpTime", 50)) % (SmartDashboard.getNumber("shootTime", 5) + SmartDashboard.getNumber("recoveryTime", 22))) < SmartDashboard.getNumber("shootTime", 5)) ) || (noPulseSupplier.getAsBoolean()))){
     // if (m_shooter.safeToShoot() && (((((timer - SmartDashboard.getNumber("rampUpTime", 50)) % (SmartDashboard.getNumber("shootTime", 10) + SmartDashboard.getNumber("recoveryTime", 60))) < SmartDashboard.getNumber("shootTime", 10)) ) || (noPulseButton.getAsBoolean()))){
       m_transfer.setHopperTop(TransferConstants.hopperTopSpeed);
       m_transfer.setHopperBottom(TransferConstants.hopperBottomSpeed);

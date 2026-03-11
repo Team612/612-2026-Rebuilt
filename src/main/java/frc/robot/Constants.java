@@ -18,6 +18,12 @@ public final class Constants {
     public static final int kGunnerPortButtons = 1;
     public static final int kGunnerPortVariable = 2;
 
+    public static final int machineGunButtonID = 1;
+    public static final int intakeButtonID = 2;
+    public static final int resetButtonID = 3;
+    public static final int zeroCountButtonID = 4;
+    public static final int dumpButtonID = 5;
+
     // in meters
     public static final double blueHubXPos = 4.625594;
     public static final double hubYPos = 4.034536;
