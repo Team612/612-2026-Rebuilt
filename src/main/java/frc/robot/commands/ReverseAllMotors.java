@@ -31,7 +31,7 @@ public class ReverseAllMotors extends Command {
     m_transfer.setHopperTop(-TransferConstants.hopperTopSpeed);
     m_transfer.setHopperBottom(-TransferConstants.hopperBottomSpeed);
     m_transfer.setFeed(-TransferConstants.feedSpeed);
-    m_shooter.setShooterRPM(-0.6);
+    // m_shooter.setShooterRPM(-2000);
   }
 
   @Override
