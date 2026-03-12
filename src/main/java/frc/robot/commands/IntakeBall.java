@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.Intake;
@@ -11,6 +12,8 @@ public class IntakeBall extends Command {
   public IntakeBall(Intake m_intake) {
     this.m_intake = m_intake;
     addRequirements(m_intake);
+    SmartDashboard.putNumber("Intake Ball 1", 0.35);
+    SmartDashboard.putNumber("Intake Ball 2", -0.05);
   }
 
   @Override
@@ -18,8 +21,8 @@ public class IntakeBall extends Command {
 
   @Override
   public void execute() {
-    m_intake.setUpperIntakeSpeed(IntakeConstants.upperIntakeSpeed);
-    m_intake.setLowerIntakeSpeed(IntakeConstants.lowerIntakeSpeed);
+    m_intake.setUpperIntakeSpeed(SmartDashboard.getNumber("Intake Ball 1", 0.35));
+    m_intake.setLowerIntakeSpeed(SmartDashboard.getNumber("Intake Ball 2", -0.05));
   }
 
   @Override

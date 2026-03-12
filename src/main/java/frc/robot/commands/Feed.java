@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.TransferConstants;
 import frc.robot.subsystems.Transfer;
@@ -12,20 +13,23 @@ public class Feed extends Command {
   public Feed(Transfer m_transfer) {
     this.m_transfer = m_transfer;
     addRequirements(m_transfer);
+    SmartDashboard.putNumber("Hopper 1",  0.5);
+    SmartDashboard.putNumber("Hopper 2", -0.5);
+    SmartDashboard.putNumber("Feed", 6.6);
   }
 
   @Override
   public void initialize() {
     timer = 0;
-    m_transfer.setFeedVoltage(TransferConstants.feedVolts);
+    m_transfer.setFeedVoltage(SmartDashboard.getNumber("Feed", 6.6));
   }
 
   @Override
   public void execute() {
     timer++;
     if (timer > TransferConstants.rampUpTime){
-      m_transfer.setHopperTop(TransferConstants.hopperTopSpeed);
-      m_transfer.setHopperBottom(TransferConstants.hopperBottomSpeed);
+      m_transfer.setHopperTop(SmartDashboard.getNumber("Hopper 1",  0.5));
+      m_transfer.setHopperBottom(SmartDashboard.getNumber("Hopper 2",  -0.5));
     }
   }
 
