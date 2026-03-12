@@ -207,7 +207,7 @@ public class TankDrive extends SubsystemBase {
 
     PhotonPipelineResult result = m_vision.returnLatestCameraResult();
     if (result.hasTargets()) {
-      if (result.getBestTarget().getPoseAmbiguity() < 0.3){ // test if this is necessary
+      if (result.getBestTarget().getPoseAmbiguity() < 0.3) {
         var estimatedPoseOptional = m_vision.returnPhotonPos(result);
         if (estimatedPoseOptional.isPresent()) {
           var estimatedPose = estimatedPoseOptional.get().estimatedPose;
