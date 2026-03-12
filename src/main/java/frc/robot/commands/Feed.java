@@ -1,8 +1,5 @@
 package frc.robot.commands;
 
-import java.util.function.BooleanSupplier;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.TransferConstants;
 import frc.robot.subsystems.Transfer;
@@ -11,9 +8,6 @@ public class Feed extends Command {
 
   private Transfer m_transfer;
   private int timer;
-  private BooleanSupplier noPulseSupplier;
-
-  // private int totalTime = TransferConstants.shootTime + TransferConstants.recoveryTime;
 
   public Feed(Transfer m_transfer) {
     this.m_transfer = m_transfer;
@@ -22,6 +16,7 @@ public class Feed extends Command {
 
   @Override
   public void initialize() {
+    timer = 0;
     m_transfer.setFeedVoltage(TransferConstants.feedVolts);
   }
 

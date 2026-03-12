@@ -6,7 +6,7 @@ import frc.robot.subsystems.TankDrive;
 public class AutonomousRoutine extends Command {
 
   private final TankDrive m_tankDrive;
-  private int timer = 0;
+  private int timer;
 
   public AutonomousRoutine(TankDrive m_tankDrive) {
     this.m_tankDrive = m_tankDrive;
@@ -16,6 +16,7 @@ public class AutonomousRoutine extends Command {
   @Override
   public void initialize() {
     m_tankDrive.manualSetKrakenMotors(0.1);
+    timer = 0;
   }
 
   @Override
