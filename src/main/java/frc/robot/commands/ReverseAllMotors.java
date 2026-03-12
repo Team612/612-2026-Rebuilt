@@ -1,30 +1,20 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Transfer;
 import frc.robot.Constants.TransferConstants;
 
 public class ReverseAllMotors extends Command {
 
   private Transfer m_transfer;
-  private Shooter m_shooter;
 
-  // private int totalTime = TransferConstants.shootTime + TransferConstants.recoveryTime;
-
-  public ReverseAllMotors(Transfer m_transfer, Shooter m_shooter) {
+  public ReverseAllMotors(Transfer m_transfer) {
     this.m_transfer = m_transfer;
-    this.m_shooter = m_shooter;
-    addRequirements(m_transfer, m_shooter);
+    addRequirements(m_transfer);
   }
 
   @Override
-  public void initialize() {
-    
-    // m_transfer.setFeedVoltage(6.6);
-  }
+  public void initialize() {}
 
   @Override
   public void execute() {
