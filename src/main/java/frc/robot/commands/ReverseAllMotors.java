@@ -30,14 +30,12 @@ public class ReverseAllMotors extends Command {
   public void execute() {
     m_transfer.setHopperTop(-TransferConstants.hopperTopSpeed);
     m_transfer.setHopperBottom(-TransferConstants.hopperBottomSpeed);
-    m_transfer.setFeed(-TransferConstants.feedSpeed);
-    m_shooter.setShooterRPM(-0.6);
+    m_transfer.setFeedVoltage(-TransferConstants.feedVolts);
   }
 
   @Override
   public void end(boolean interrupted) {
-    m_transfer.setFeed(0);
-    // m_transfer.setFeedVoltage(0);
+    m_transfer.setFeedVoltage(0);
     m_transfer.setHopperTop(0);
     m_transfer.setHopperBottom(0);
   }

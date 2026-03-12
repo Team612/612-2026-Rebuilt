@@ -49,9 +49,10 @@ public final class Constants {
     public static final Pose2d rightRedTrench = new Pose2d(16.5410515-3.56,7.35,new Rotation2d());
   }
     public static class ShooterConstants{
-    public static final int shooterMotorID = 6;
     public static final int turretMotorID = 7;
     public static final int tiltMotorID = 5;
+    public static final int rightShooterMotorID = 9;
+    public static final int leftShootermotorID = 10;
     
     public static final String shooterCameraName = "PC_Camera";
 
@@ -61,9 +62,9 @@ public final class Constants {
 
     public static final double defaultShootRPM = 2781;
 
-    public static final double shooterkV = 0.002085;
-    public static final double shooterkP = 0.00037;
-    public static final double shooterkS = 0.2;
+    public static final double shooterkV = 0.0019695;
+    public static final double shooterkP = 0.0007;
+    public static final double shooterkS = 0.152449;
 
     public static final double turretKp = 0.1;//0.13
     public static final double turretKi = 0.13;//0.13
@@ -127,13 +128,11 @@ public final class Constants {
     public static final int hopperBottomID = 2;
     public static final int feedID = 4;
 
-    public static double hopperTopSpeed = 0.8;
-    public static double hopperBottomSpeed = -0.8;
-    public static double feedSpeed = 0.6;
+    public static double hopperTopSpeed = 0.5;
+    public static double hopperBottomSpeed = -0.5;
+    public static double feedVolts = 6.6;
 
-    public static int rampUpTime = 100;
-    public static int shootTime = 10;
-    public static int recoveryTime = 60;
+    public static int rampUpTime = 23;
   }
 
   public static class ClimbConstants {

@@ -215,27 +215,9 @@ public class TankDrive extends SubsystemBase {
         }
       }
     }
-    PhotonPipelineResult shooterResult = m_shooter.returnLatestCameraResult();
-    if (shooterResult.hasTargets()) {
-      if (shooterResult.getBestTarget().getBestCameraToTarget().getX() < 4){
-        var estimatedPoseOptional = m_shooter.returnPhotonPos(shooterResult);
-        if (estimatedPoseOptional.isPresent()) {
-          var estimatedPose = estimatedPoseOptional.get().estimatedPose;
-          poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), shooterResult.getTimestampSeconds(),VecBuilder.fill(0.05, 0.05, 0.07));
-        }
-      }
-    }
-
     // PhotonPipelineResult shooterResult = m_shooter.returnLatestCameraResult();
     // if (shooterResult.hasTargets()) {
-    //   boolean goodTarget = false;
-    //   for (var target : result.getTargets()) {
-    //       if (target.getPoseAmbiguity() >= 0 && target.getPoseAmbiguity() < 0.3) {
-    //           goodTarget = true;
-    //           break;
-    //       }
-    //   }
-    //   if (goodTarget) {
+    //   if (shooterResult.getBestTarget().getBestCameraToTarget().getX() < 4){
     //     var estimatedPoseOptional = m_shooter.returnPhotonPos(shooterResult);
     //     if (estimatedPoseOptional.isPresent()) {
     //       var estimatedPose = estimatedPoseOptional.get().estimatedPose;
@@ -243,6 +225,24 @@ public class TankDrive extends SubsystemBase {
     //     }
     //   }
     // }
+
+    PhotonPipelineResult shooterResult = m_shooter.returnLatestCameraResult();
+    if (shooterResult.hasTargets()) {
+      boolean goodTarget = false;
+      for (var target : result.getTargets()) {
+          if (target.getPoseAmbiguity() >= 0 && target.getPoseAmbiguity() < 0.3) {
+              goodTarget = true;
+              break;
+          }
+      }
+      if (goodTarget) {
+        var estimatedPoseOptional = m_shooter.returnPhotonPos(shooterResult);
+        if (estimatedPoseOptional.isPresent()) {
+          var estimatedPose = estimatedPoseOptional.get().estimatedPose;
+          poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), shooterResult.getTimestampSeconds(),VecBuilder.fill(0.05, 0.05, 0.07));
+        }
+      }
+    }
 
     // PhotonPipelineResult shooterResult = m_shooter.returnLatestCameraResult();
     // if (shooterResult.hasTargets()) {

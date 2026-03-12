@@ -45,7 +45,7 @@ public class RobotContainer {
   private final Transfer m_transfer = new Transfer();
   private final Intake m_intake = new Intake();
 
-  private static boolean manualMode = false;
+  private static boolean manualMode = true;
 
   public RobotContainer() {
     configureBindings();
@@ -71,7 +71,7 @@ public class RobotContainer {
     }));
     m_gunnerController.y().whileTrue(new ReverseAllMotors(m_transfer, m_shooter));
     m_gunnerController.b().and(() -> !manualMode).whileTrue(new Shoot(m_shooter, m_tankDrive));
-    m_gunnerController.b().or(m_gunnerController.x()).whileTrue(new Feed(m_transfer, () -> m_gunnerController.getHID().getXButton()));
+    m_gunnerController.b().or(m_gunnerController.x()).whileTrue(new Feed(m_transfer));
     m_gunnerController.a().whileTrue(new IntakeBall(m_intake));
     // if (manualMode)
     //   m_shooter.setDefaultCommand(new ManualShooterControl(m_shooter, () -> -m_variableGunner.getRawAxis(0), () -> m_variableGunner.getRawAxis(1), () -> machineGunButton.getAsBoolean()));
@@ -97,7 +97,7 @@ public class RobotContainer {
     return new SequentialCommandGroup(
       new ZeroTurret(m_shooter),
       new AutonomousRoutine(m_tankDrive),
-      new ParallelCommandGroup(new AutoTurretAim(m_shooter, m_tankDrive), new ShootAuto(m_shooter, m_tankDrive), new IntakeBall(m_intake), new Feed(m_transfer, () -> false))
+      new ParallelCommandGroup(new AutoTurretAim(m_shooter, m_tankDrive), new ShootAuto(m_shooter, m_tankDrive), new IntakeBall(m_intake), new Feed(m_transfer))
     );
   }
 }

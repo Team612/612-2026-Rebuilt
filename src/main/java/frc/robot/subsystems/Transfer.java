@@ -39,9 +39,6 @@ public class Transfer extends SubsystemBase{
     hopperBottom.set(speed);
   }
   
-  public void setFeed(double speed){
-    feed.set(speed);
-  }
   public void setFeedVoltage(double volts){
     feed.setVoltage(volts);
   }
