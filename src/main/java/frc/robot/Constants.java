@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public final class Constants {
 
@@ -102,7 +101,7 @@ public final class Constants {
     public static final double DEADBAND = 0.05;
 
     public static final double kWheelDiameterMeter = 0.192;
-    public static double encoderToMeters = 0.0775889829704;
+    public static final double encoderToMeters = 0.0775889829704;
 
     public static final double trackWidth = 0.508;
     public static final DifferentialDriveKinematics driveKinematics = new DifferentialDriveKinematics(trackWidth);
@@ -132,14 +131,14 @@ public final class Constants {
     public static final int hopperBottomID = 2;
     public static final int feedID = 4;
 
-    public static double hopperTopSpeed = 0.2;
-    public static double hopperBottomSpeed = -0.3;
-    public static double feedVolts = 6.6;
+    public static final double hopperTopSpeed = 0.2;
+    public static final double hopperBottomSpeed = -0.3;
+    public static final double feedVolts = 6.6;
 
-    public static int rampUpTime = 23;
+    public static final int rampUpTime = 23;
 
-    public static int dumpHopperTime = 2;
-    public static int dumpFeedTime = 4;
+    public static final int dumpHopperTime = 2;
+    public static final int dumpFeedTime = 4;
   }
 
   public static class ClimbConstants {
