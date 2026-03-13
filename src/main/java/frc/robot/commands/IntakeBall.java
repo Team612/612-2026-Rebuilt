@@ -14,18 +14,20 @@ public class IntakeBall extends Command {
   }
 
   @Override
-  public void initialize() {}
-
-  @Override
-  public void execute() {
+  public void initialize() {
     m_intake.setUpperIntakeSpeed(IntakeConstants.upperIntakeSpeed);
     m_intake.setLowerIntakeSpeed(IntakeConstants.lowerIntakeSpeed);
+    m_intake.setJammerSpeed(IntakeConstants.jammerIntakeSpeed);
   }
+
+  @Override
+  public void execute() {}
 
   @Override
   public void end(boolean interrupted) {
     m_intake.setUpperIntakeSpeed(0);
     m_intake.setLowerIntakeSpeed(0);
+    m_intake.setJammerSpeed(0);
   }
 
   @Override

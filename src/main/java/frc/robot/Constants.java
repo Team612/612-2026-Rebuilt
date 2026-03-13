@@ -119,9 +119,12 @@ public final class Constants {
   public static class IntakeConstants{
     public static final int upperIntakeID = 9;
     public static final int lowerIntakeID = 10;
+    public static final int jammerID = 11;
 
     public static final double upperIntakeSpeed = 0.35;
     public static final double lowerIntakeSpeed = -0.05;
+    public static final double jammerFeedSpeed = 0.2;
+    public static final double jammerIntakeSpeed = -0.2;
   }
 
   public static class TransferConstants{
@@ -129,11 +132,14 @@ public final class Constants {
     public static final int hopperBottomID = 2;
     public static final int feedID = 4;
 
-    public static double hopperTopSpeed = 0.5;
-    public static double hopperBottomSpeed = -0.5;
+    public static double hopperTopSpeed = 0.2;
+    public static double hopperBottomSpeed = -0.3;
     public static double feedVolts = 6.6;
 
     public static int rampUpTime = 23;
+
+    public static int dumpHopperTime = 2;
+    public static int dumpFeedTime = 4;
   }
 
   public static class ClimbConstants {

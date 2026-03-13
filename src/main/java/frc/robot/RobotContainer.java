@@ -34,14 +34,14 @@ public class RobotContainer {
   private Pose2d m_lastSelectedPose = null;
 
   // FLIP WITH CONTROLLERS
-  private final CommandXboxController m_gunnerController = new CommandXboxController(OperatorConstants.kGunnerControllerPort);
-  // private static Joystick m_buttonGunner = new Joystick(OperatorConstants.kGunnerPortButtons);
-  // private static Joystick m_variableGunner = new Joystick(OperatorConstants.kGunnerPortVariable);
-  // private static JoystickButton machineGunButton = new JoystickButton(m_buttonGunner, OperatorConstants.machineGunButtonID);
-  // private static JoystickButton intakeButton = new JoystickButton(m_buttonGunner, OperatorConstants.intakeButtonID);
-  // private static JoystickButton resetButton = new JoystickButton(m_buttonGunner, OperatorConstants.resetButtonID);
-  // private static JoystickButton zeroCountButton = new JoystickButton(m_buttonGunner, OperatorConstants.zeroCountButtonID);
-  // private static JoystickButton dumpButton = new JoystickButton(m_buttonGunner, OperatorConstants.dumpButtonID);
+  // private final CommandXboxController m_gunnerController = new CommandXboxController(OperatorConstants.kGunnerControllerPort);
+  private static Joystick m_buttonGunner = new Joystick(OperatorConstants.kGunnerPortButtons);
+  private static Joystick m_variableGunner = new Joystick(OperatorConstants.kGunnerPortVariable);
+  private static JoystickButton machineGunButton = new JoystickButton(m_buttonGunner, OperatorConstants.machineGunButtonID);
+  private static JoystickButton intakeButton = new JoystickButton(m_buttonGunner, OperatorConstants.intakeButtonID);
+  private static JoystickButton resetButton = new JoystickButton(m_buttonGunner, OperatorConstants.resetButtonID);
+  private static JoystickButton zeroCountButton = new JoystickButton(m_buttonGunner, OperatorConstants.zeroCountButtonID);
+  private static JoystickButton dumpButton = new JoystickButton(m_buttonGunner, OperatorConstants.dumpButtonID);
 
 
   private final Vision m_vision = new Vision();
@@ -93,49 +93,49 @@ public class RobotContainer {
     m_tankDrive.setDefaultCommand(new ArcadeDrive(m_tankDrive, m_driverController));
 
     // FLIP WITH CONTROLLERS
-    if (manualMode)
-      m_shooter.setDefaultCommand(new ManualShooterControl(m_shooter, () -> -m_gunnerController.getLeftX(), () -> m_gunnerController.getRightY(), () -> m_gunnerController.getHID().getBButton()));
-    else
-      m_shooter.setDefaultCommand(new AutoTurretAim(m_shooter, m_tankDrive));
-
-    m_gunnerController.leftBumper().onTrue(new InstantCommand(() -> {
-      manualMode = !manualMode;
-      m_shooter.getCurrentCommand().cancel();
-
-      if (manualMode)
-        m_shooter.setDefaultCommand(new ManualShooterControl(m_shooter, () -> -m_gunnerController.getLeftX(), () -> m_gunnerController.getRightY(), () -> m_gunnerController.getHID().getBButton()));
-      else
-        m_shooter.setDefaultCommand(new AutoTurretAim(m_shooter, m_tankDrive));
-    }));
-    m_gunnerController.y().whileTrue(new ReverseAllMotors(m_transfer));
-    m_gunnerController.b().and(() -> !manualMode).whileTrue(new Shoot(m_shooter, m_tankDrive));
-    m_gunnerController.b().or(m_gunnerController.x()).whileTrue(new Feed(m_transfer));
-    m_gunnerController.a().whileTrue(new IntakeBall(m_intake));
     // if (manualMode)
-    //   m_shooter.setDefaultCommand(new ManualShooterControl(m_shooter, () -> -m_variableGunner.getRawAxis(0), () -> m_variableGunner.getRawAxis(1), () -> machineGunButton.getAsBoolean()));
+    //   m_shooter.setDefaultCommand(new ManualShooterControl(m_shooter, () -> -m_gunnerController.getLeftX(), () -> m_gunnerController.getRightY(), () -> m_gunnerController.getHID().getBButton()));
     // else
     //   m_shooter.setDefaultCommand(new AutoTurretAim(m_shooter, m_tankDrive));
 
-    // zeroCountButton.onTrue(new InstantCommand(() -> {
+    // m_gunnerController.leftBumper().onTrue(new InstantCommand(() -> {
     //   manualMode = !manualMode;
     //   m_shooter.getCurrentCommand().cancel();
 
     //   if (manualMode)
-    //     m_shooter.setDefaultCommand(new ManualShooterControl(m_shooter, () -> -m_variableGunner.getRawAxis(0), () -> m_variableGunner.getRawAxis(1), () -> machineGunButton.getAsBoolean()));
+    //     m_shooter.setDefaultCommand(new ManualShooterControl(m_shooter, () -> -m_gunnerController.getLeftX(), () -> m_gunnerController.getRightY(), () -> m_gunnerController.getHID().getBButton()));
     //   else
     //     m_shooter.setDefaultCommand(new AutoTurretAim(m_shooter, m_tankDrive));
     // }));
-    // dumpButton.whileTrue(new ReverseAllMotors(m_transfer));
-    // machineGunButton.and(() -> !manualMode).whileTrue(new Shoot(m_shooter, m_tankDrive));
-    // machineGunButton.or(resetButton).whileTrue(new Feed(m_transfer));
-    // intakeButton.whileTrue(new IntakeBall(m_intake));
+    // m_gunnerController.y().whileTrue(new ReverseAllMotors(m_transfer, m_intake));
+    // m_gunnerController.b().and(() -> !manualMode).whileTrue(new Shoot(m_shooter, m_tankDrive));
+    // m_gunnerController.b().whileTrue(new Feed(m_transfer, m_intake));
+    // m_gunnerController.a().whileTrue(new IntakeBall(m_intake));
+    if (manualMode)
+      m_shooter.setDefaultCommand(new ManualShooterControl(m_shooter, () -> -m_variableGunner.getRawAxis(0), () -> m_variableGunner.getRawAxis(1), () -> machineGunButton.getAsBoolean()));
+    else
+      m_shooter.setDefaultCommand(new AutoTurretAim(m_shooter, m_tankDrive));
+
+    zeroCountButton.onTrue(new InstantCommand(() -> {
+      manualMode = !manualMode;
+      m_shooter.getCurrentCommand().cancel();
+
+      if (manualMode)
+        m_shooter.setDefaultCommand(new ManualShooterControl(m_shooter, () -> -m_variableGunner.getRawAxis(0), () -> m_variableGunner.getRawAxis(1), () -> machineGunButton.getAsBoolean()));
+      else
+        m_shooter.setDefaultCommand(new AutoTurretAim(m_shooter, m_tankDrive));
+    }));
+    dumpButton.whileTrue(new ReverseAllMotors(m_transfer, m_intake));
+    machineGunButton.and(() -> !manualMode).whileTrue(new Shoot(m_shooter, m_tankDrive));
+    machineGunButton.whileTrue(new Feed(m_transfer, m_intake));
+    intakeButton.whileTrue(new IntakeBall(m_intake));
   }
 
   public Command getAutonomousCommand() {
     return new SequentialCommandGroup(
       new ZeroTurret(m_shooter),
       new AutonomousRoutine(m_tankDrive),
-      new ParallelCommandGroup(new AutoTurretAim(m_shooter, m_tankDrive), new Shoot(m_shooter, m_tankDrive), new IntakeBall(m_intake), new Feed(m_transfer))
+      new ParallelCommandGroup(new AutoTurretAim(m_shooter, m_tankDrive), new Shoot(m_shooter, m_tankDrive), new IntakeBall(m_intake), new Feed(m_transfer, m_intake))
     );
   }
 }
