@@ -136,6 +136,7 @@ public final class Constants {
     public static final double feedVolts = 6.6;
 
     public static final int rampUpTime = 23;
+    public static final int agitateTime = 50;
 
     public static final int dumpHopperTime = 2;
     public static final int dumpFeedTime = 4;
