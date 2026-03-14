@@ -28,6 +28,7 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.TankDrive;
 import frc.robot.subsystems.Transfer;
 import frc.robot.subsystems.Vision;
+import frc.robot.util.DashboardTuning;
 
 public class RobotContainer {
   private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
@@ -86,6 +87,8 @@ public class RobotContainer {
 
     m_lastSelectedPose = m_startingPoseChooser.getSelected();
     m_tankDrive = new TankDrive(m_lastSelectedPose, m_vision, m_shooter);
+
+    DashboardTuning.init();
 
     // 3. Configure bindings
     configureBindings();
