@@ -31,6 +31,7 @@ import frc.robot.subsystems.Vision;
 import frc.robot.util.DashboardTuning;
 
 public class RobotContainer {
+  private boolean manualMode = false;
   private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   private final SendableChooser<Pose2d> m_startingPoseChooser = new SendableChooser<>();
@@ -51,8 +52,6 @@ public class RobotContainer {
   private final TankDrive m_tankDrive;
   private final Transfer m_transfer = new Transfer();
   private final Intake m_intake = new Intake();
-
-  private static boolean manualMode = true;
 
 
   public void updateStartingPose() {
@@ -81,6 +80,7 @@ public class RobotContainer {
     m_startingPoseChooser.addOption("Right Red Bump", OperatorConstants.rightRedBump);
     m_startingPoseChooser.addOption("Right Red Bump Point Away", OperatorConstants.rightRedBumpPointAway);
     m_startingPoseChooser.addOption("Right Red Trench", OperatorConstants.rightRedTrench);
+    
 
     SmartDashboard.putData("Starting Position", m_startingPoseChooser);
 
@@ -102,6 +102,9 @@ public class RobotContainer {
     else
       m_shooter.setDefaultCommand(new AutoTurretAim(m_shooter, m_tankDrive));
 
+    m_gunnerController.leftBumper().onTrue(new InstantCommand(() -> {
+      manualMode = !manualMode;
+      m_shooter.getCurrentCommand().cancel();
     m_gunnerController.leftBumper().onTrue(new InstantCommand(() -> {
       manualMode = !manualMode;
       m_shooter.getCurrentCommand().cancel();
