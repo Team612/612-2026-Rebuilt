@@ -54,6 +54,7 @@ public class Shooter extends SubsystemBase {
   private PIDController tiltPID = new PIDController(ShooterConstants.tiltKp,ShooterConstants.tiltKi,ShooterConstants.tiltKd);
 
   private boolean withinShootingRPM = false;
+  private boolean tiltZeroed = false;
 
   public Shooter() {
     SparkBaseConfig turretConfig = new SparkMaxConfig();
@@ -80,7 +81,7 @@ public class Shooter extends SubsystemBase {
     rightShooterMotor.getConfigurator().apply(rightShooterConfig);
     leftShooterMotor.getConfigurator().apply(leftShooterConfig);
 
-    SmartDashboard.putNumber("RPM window", 100);
+    SmartDashboard.setDefaultNumber("RPM window", 100);
   }
 
   public boolean GetForwardTurretLimit() {
@@ -114,6 +115,16 @@ public class Shooter extends SubsystemBase {
   }
   public void setTiltMotor(double speed){
     tiltMotor.set(speed);
+  }
+
+  private void tryZeroTiltFromLimitSwitch() {
+    if (tiltZeroed) {
+      return;
+    }
+    if (tiltMotor.getReverseLimitSwitch().isPressed()) {
+      setEncoderTiltPos(0);
+      tiltZeroed = true;
+    }
   }
   
   public void setTurretPos(double desiredPos){
@@ -246,6 +257,7 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
+    tryZeroTiltFromLimitSwitch();
     // System.out.println(getCurrentTurretAngle()+" "+turretMotor.getForwardLimitSwitch().isPressed());
     // System.out.println(getCurrentTurretAngle()+" "+turretMotor.getReverseLimitSwitch().isPressed());
 
@@ -259,5 +271,8 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("turretGet",turretMotor.get());
     SmartDashboard.putNumber("tiltGet",tiltMotor.get());
     SmartDashboard.putNumber("tiltPos",tiltMotor.getEncoder().getPosition());
+
+    SmartDashboard.putBoolean("Tilt/ReverseLimit", tiltMotor.getReverseLimitSwitch().isPressed());
+    SmartDashboard.putBoolean("Tilt/Zeroed", tiltZeroed);
   }
 }
