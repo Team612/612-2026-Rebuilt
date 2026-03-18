@@ -66,9 +66,9 @@ public final class Constants {
     public static final double shooterkP = 0.0007;
     public static final double shooterkS = 0.152449;
 
-    public static final double turretKp = 0.1;//0.13
-    public static final double turretKi = 0.13;//0.13
-    public static final double turretKd = 0.012;//0.038
+    public static final double turretKp = 0.21;//0.13
+    public static final double turretKi = 0;//0.13
+    public static final double turretKd = 0;//0.038
 
     public static final double tiltKp = 3.975; 
     public static final double tiltKi = 3.01;
@@ -151,13 +151,13 @@ public final class Constants {
   }
 
   public static class VisionConstants{
-    public static final String frontCameraName = "FrontCamera";
-    public static final String shooterCamera = "PC_Camera";
+    public static final String frontCameraName = "Drivetrain_Camera";
+
     public static final Transform3d shooterToCamera = new Transform3d(new Translation3d(0.15, 0.0, -0.2), new Rotation3d());
 
     public static final Transform3d frontCameraTransform = 
     new Transform3d(
-      new edu.wpi.first.math.geometry.Translation3d(0,0,0), // this is a guess
+      new edu.wpi.first.math.geometry.Translation3d(0.3675,0.235,0.475), // this is a guess
       new edu.wpi.first.math.geometry.Rotation3d(0,0,0) // this is a guess
     );
   }

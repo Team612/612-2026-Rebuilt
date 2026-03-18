@@ -20,22 +20,22 @@ public class ArcadeDrive extends Command {
 
   @Override
   public void execute() {
-    double speed = controller.getLeftY();
-    double turn = controller.getRightX();
+    double speed = controller.getLeftY() * 0.6;
+    double turn = controller.getRightX() * 0.6;
 
-    if (Math.abs(speed) <= 0.5)
-      speed = speed*0.6;
-    else if (speed > 0.5)
-      speed = 1.6 * speed * speed - speed + 0.4;
-    else
-      speed = -1.6 * speed * speed - speed - 0.4;
+    // if (Math.abs(speed) <= 0.5)
+    //   speed = speed*0.6;
+    // else if (speed > 0.5)
+    //   speed = 1.6 * speed * speed - speed + 0.4;
+    // else
+    //   speed = -1.6 * speed * speed - speed - 0.4;
 
-    if (Math.abs(turn) <= 0.5)
-      turn = turn*0.6;
-    else if (turn > 0.5)
-      turn = 1.6 * turn * turn - turn + 0.4;
-    else
-      turn = -1.6 * turn * turn - turn - 0.4;
+    // if (Math.abs(turn) <= 0.5)
+    //   turn = turn*0.6;
+    // else if (turn > 0.5)
+    //   turn = 1.6 * turn * turn - turn + 0.4;
+    // else
+    //   turn = -1.6 * turn * turn - turn - 0.4;
 
     m_tankDrive.arcadeDrive(
     -speed,

@@ -92,7 +92,7 @@ public class TankDrive extends SubsystemBase {
       getRightDistanceMeters(),
       initialPos,
       // Odometry Standard Deviations, x y & z
-      VecBuilder.fill(0.008, 0.008, 0.003),
+      VecBuilder.fill(0.05, 0.05, 0.01),//0.008, 0.008, 0.003
       // Vision measurement std deviations
       VecBuilder.fill(999, 999, 999) // doesn't matter because it gets overwritten
     );
@@ -207,60 +207,25 @@ public class TankDrive extends SubsystemBase {
 
     PhotonPipelineResult result = m_vision.returnLatestCameraResult();
     if (result.hasTargets()) {
-      if (result.getBestTarget().getPoseAmbiguity() < 0.3) {
+      if (result.getBestTarget().getPoseAmbiguity() < 0.03) {
         var estimatedPoseOptional = m_vision.returnPhotonPos(result);
         if (estimatedPoseOptional.isPresent()) {
           var estimatedPose = estimatedPoseOptional.get().estimatedPose;
-          poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), result.getTimestampSeconds(), VecBuilder.fill(0.025, 0.025, 0.035));
+          poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), result.getTimestampSeconds(), VecBuilder.fill(0.02*Math.pow(result.getBestTarget().bestCameraToTarget.getTranslation().getNorm(),2.0), 0.02*Math.pow(result.getBestTarget().bestCameraToTarget.getTranslation().getNorm(),2.0), 9999));//0,025,0.025,0.035
         }
       }
     }
-    // PhotonPipelineResult shooterResult = m_shooter.returnLatestCameraResult();
-    // if (shooterResult.hasTargets()) {
-    //   if (shooterResult.getBestTarget().getBestCameraToTarget().getX() < 4){
-    //     var estimatedPoseOptional = m_shooter.returnPhotonPos(shooterResult);
-    //     if (estimatedPoseOptional.isPresent()) {
-    //       var estimatedPose = estimatedPoseOptional.get().estimatedPose;
-    //       poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), shooterResult.getTimestampSeconds(),VecBuilder.fill(0.05, 0.05, 0.07));
-    //     }
-    //   }
-    // }
 
     PhotonPipelineResult shooterResult = m_shooter.returnLatestCameraResult();
     if (shooterResult.hasTargets()) {
-      boolean goodTarget = false;
-      for (var target : result.getTargets()) {
-          if (target.getPoseAmbiguity() >= 0 && target.getPoseAmbiguity() < 0.3) {
-              goodTarget = true;
-              break;
-          }
-      }
-      if (goodTarget) {
+      if (shooterResult.getBestTarget().getPoseAmbiguity() < 0.01) {
         var estimatedPoseOptional = m_shooter.returnPhotonPos(shooterResult);
         if (estimatedPoseOptional.isPresent()) {
           var estimatedPose = estimatedPoseOptional.get().estimatedPose;
-          poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), shooterResult.getTimestampSeconds(),VecBuilder.fill(0.05, 0.05, 0.07));
+          poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), shooterResult.getTimestampSeconds(), VecBuilder.fill(0.05*Math.pow(shooterResult.getBestTarget().bestCameraToTarget.getTranslation().getNorm(),2.0), 0.05*Math.pow(shooterResult.getBestTarget().bestCameraToTarget.getTranslation().getNorm(),2.0), 9999));//0,05,0.05,0.07
         }
       }
     }
-
-    // PhotonPipelineResult shooterResult = m_shooter.returnLatestCameraResult();
-    // if (shooterResult.hasTargets()) {
-    //   boolean allTagsClose = true;
-    //   for (var target : shooterResult.getTargets()) {
-    //     if (target.getBestCameraToTarget().getTranslation().getX() > 4.0) {
-    //       allTagsClose = false;
-    //       break;
-    //     }
-    //   }
-    //   if (allTagsClose) {
-    //     var estimatedPoseOptional = m_shooter.returnPhotonPos(shooterResult);
-    //     if (estimatedPoseOptional.isPresent()) {
-    //       var estimatedPose = estimatedPoseOptional.get().estimatedPose;
-    //       poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), shooterResult.getTimestampSeconds(),VecBuilder.fill(0.05, 0.05, 0.07));
-    //     }
-    //   }
-    // }
 
     field.setRobotPose(poseEstimator.getEstimatedPosition());
 

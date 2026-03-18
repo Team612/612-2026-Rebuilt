@@ -17,6 +17,7 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.LimitSwitchConfig.Behavior;
 import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -59,7 +60,7 @@ public class Shooter extends SubsystemBase {
     SparkBaseConfig turretConfig = new SparkMaxConfig();
     SparkBaseConfig tiltConfig = new SparkMaxConfig();
 
-    turretConfig.idleMode(IdleMode.kBrake).inverted(true).limitSwitch.forwardLimitSwitchType(Type.kNormallyClosed).reverseLimitSwitchType(Type.kNormallyOpen);
+    turretConfig.idleMode(IdleMode.kBrake).inverted(true).limitSwitch.forwardLimitSwitchType(Type.kNormallyOpen).forwardLimitSwitchTriggerBehavior(Behavior.kKeepMovingMotor).reverseLimitSwitchType(Type.kNormallyOpen).reverseLimitSwitchTriggerBehavior(Behavior.kKeepMovingMotor);
     tiltConfig.idleMode(IdleMode.kBrake).inverted(false).limitSwitch.forwardLimitSwitchType(Type.kNormallyClosed).reverseLimitSwitchType(Type.kNormallyOpen);
 
     turretMotor.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -79,8 +80,6 @@ public class Shooter extends SubsystemBase {
 
     rightShooterMotor.getConfigurator().apply(rightShooterConfig);
     leftShooterMotor.getConfigurator().apply(leftShooterConfig);
-
-    SmartDashboard.putNumber("RPM window", 100);
   }
 
   public boolean GetForwardTurretLimit() {
@@ -92,8 +91,6 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setShooterRPM(double RPM){
-    SmartDashboard.putNumber("RPM", RPM);
-
     if (RPM == 0){
       leftShooterMotor.setVoltage(0);
       rightShooterMotor.setVoltage(0);
@@ -117,6 +114,8 @@ public class Shooter extends SubsystemBase {
   }
   
   public void setTurretPos(double desiredPos){
+    SmartDashboard.putNumber("TurretError", desiredPos-getCurrentTurretAngle());
+
     if (desiredPos < 0)
       desiredPos += Math.PI;
     else
@@ -133,7 +132,12 @@ public class Shooter extends SubsystemBase {
     else
       currPos -= Math.PI;
 
-    turretMotor.set(turretPID.calculate(currPos, desiredPos));
+    double motorValue = turretPID.calculate(currPos, desiredPos);
+    if (motorValue > ShooterConstants.maxTurretSpeed)
+      motorValue = ShooterConstants.maxTurretSpeed;
+    if (motorValue < -ShooterConstants.maxTurretSpeed)
+      motorValue = -ShooterConstants.maxTurretSpeed;
+    turretMotor.set(motorValue);
   }
 
   public void setTiltPos(double pos){
@@ -248,6 +252,8 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     // System.out.println(getCurrentTurretAngle()+" "+turretMotor.getForwardLimitSwitch().isPressed());
     // System.out.println(getCurrentTurretAngle()+" "+turretMotor.getReverseLimitSwitch().isPressed());
+    if (tiltMotor.getForwardLimitSwitch().isPressed())
+      tiltMotor.getEncoder().setPosition(0);
 
     SmartDashboard.putBoolean("Shooter Has Tag", shooterCamera.getLatestResult().hasTargets());
     SmartDashboard.putNumber("shooterPos",rightShooterMotor.getPosition().getValueAsDouble());

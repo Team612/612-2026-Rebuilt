@@ -36,6 +36,11 @@ public class ManualShooterControl extends Command {
 
     m_shooter.setTurretMotor(turretSupplier.getAsDouble() * ShooterConstants.maxTurretSpeed);
     m_shooter.setTiltMotor(tiltSupplier.getAsDouble());
+
+    // if (shootSupplier.getAsBoolean())
+    //   m_shooter.setTurretPos(Math.PI/2);
+    // else
+    //   m_shooter.setTurretPos(-Math.PI/2);
   }
 
   @Override

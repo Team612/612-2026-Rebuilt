@@ -20,7 +20,7 @@ public class IntakeBall extends Command {
   @Override
   public void initialize() {
     m_intake.setUpperIntakeSpeed(SmartDashboard.getNumber("Intake Ball 1",0.35));
-    m_intake.setLowerIntakeSpeed(SmartDashboard.getNumber("Intake Ball 1",-0.05));
+    m_intake.setLowerIntakeSpeed(SmartDashboard.getNumber("Intake Ball 2",-0.05));
     m_intake.setJammerSpeed(SmartDashboard.getNumber("AgitatorIntake", -0.2));
   }
 
