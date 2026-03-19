@@ -31,6 +31,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.VisionConstants;
 
@@ -162,7 +163,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public double getRegressionModelRPM(double distance){
-    return 14.87523*distance*distance*distance - 130.69468*distance*distance + 679.01647*distance + 1694.0011;
+    return (14.87523*distance*distance*distance - 130.69468*distance*distance + 679.01647*distance + 1694.0011) + 143.01428 * (Math.abs(getCurrentTurretAngle())/Constants.ShooterConstants.forwardLimit);
     // return -3.40339*distance*distance+318.66126*distance+2219.32905;
   }
 
