@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Transfer;
-import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.TransferConstants;
 
 public class ReverseAllMotors extends Command {

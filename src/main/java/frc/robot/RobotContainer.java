@@ -8,18 +8,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.Constants.TransferConstants;
-import frc.robot.commands.Agitate;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.AutoTurretAim;
 import frc.robot.commands.AutonomousRoutine;
 import frc.robot.commands.Feed;
 import frc.robot.commands.IntakeBall;
 import frc.robot.commands.ManualShooterControl;
+import frc.robot.commands.Outtake;
 import frc.robot.commands.ReverseAllMotors;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ZeroTurret;
@@ -113,7 +113,7 @@ public class RobotContainer {
     // m_gunnerController.b().and(() -> !manualMode).whileTrue(new Shoot(m_shooter, m_tankDrive));
     // m_gunnerController.b().whileTrue(new Feed(m_transfer, m_intake));
     // m_gunnerController.a().whileTrue(new IntakeBall(m_intake));
-    // m_gunnerController.x().whileTrue(new Agitate(m_transfer, m_intake));
+    // m_gunnerController.x().whileTrue(new Outtake(m_transfer, m_intake));
     if (manualMode)
       m_shooter.setDefaultCommand(new ManualShooterControl(m_shooter, () -> -m_variableGunner.getRawAxis(0), () -> m_variableGunner.getRawAxis(1), () -> machineGunButton.getAsBoolean()));
     else
@@ -132,14 +132,28 @@ public class RobotContainer {
     machineGunButton.and(() -> !manualMode).whileTrue(new Shoot(m_shooter, m_tankDrive));
     machineGunButton.whileTrue(new Feed(m_transfer, m_intake));
     intakeButton.whileTrue(new IntakeBall(m_intake));
-    resetButton.whileTrue(new Agitate(m_transfer, m_intake));
+    resetButton.whileTrue(new Outtake(m_transfer, m_intake));
   }
 
   public Command getAutonomousCommand() {
     return new SequentialCommandGroup(
       new ZeroTurret(m_shooter),
       new AutonomousRoutine(m_tankDrive),
-      new ParallelCommandGroup(new AutoTurretAim(m_shooter, m_tankDrive), new Shoot(m_shooter, m_tankDrive), new IntakeBall(m_intake), new Feed(m_transfer, m_intake))
+      new RepeatCommand(
+        new SequentialCommandGroup(
+          new ParallelCommandGroup(
+            new AutoTurretAim(m_shooter, m_tankDrive),
+            new Shoot(m_shooter, m_tankDrive),
+            new IntakeBall(m_intake),
+            new Feed(m_transfer, m_intake)
+          ).withTimeout(3.0),
+          new ParallelCommandGroup(
+            new AutoTurretAim(m_shooter, m_tankDrive),
+            new Shoot(m_shooter, m_tankDrive),
+            new ReverseAllMotors(m_transfer, m_intake)
+          ).withTimeout(1.0)
+        )
+      )
     );
   }
 }
