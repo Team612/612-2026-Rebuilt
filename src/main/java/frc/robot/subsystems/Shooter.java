@@ -162,7 +162,8 @@ public class Shooter extends SubsystemBase {
   }
 
   public double getRegressionModelRPM(double distance){
-    return -3.40339*distance*distance+318.66126*distance+2219.32905;
+    return 14.87523*distance*distance*distance - 130.69468*distance*distance + 679.01647*distance + 1694.0011;
+    // return -3.40339*distance*distance+318.66126*distance+2219.32905;
   }
 
   public boolean hasTag(){

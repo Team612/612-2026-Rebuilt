@@ -76,8 +76,8 @@ public final class Constants {
 
     public static final double turretEncoderToRadians = 0.628152;
 
-    public static final double forwardLimit = -0.633974140633; // This is a guess it is mirrored from the reverse limit which was measured
-    public static final double reverseLimit = 0.633974140633; 
+    public static final double forwardLimit = -1.780586240; // in radians
+    public static final double reverseLimit = 1.7506874427; 
 
     public static final Transform3d robotToTurret = new Transform3d(new Translation3d(-0.21, 0, 0.51), new Rotation3d());
     public static final Transform2d robotToTurret2d = new Transform2d(new Translation2d(-0.21,0), new Rotation2d());
