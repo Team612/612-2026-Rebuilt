@@ -16,6 +16,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.AutoTurretAim;
 import frc.robot.commands.AutonomousRoutine;
+import frc.robot.commands.AutonomousRoutineBump;
 import frc.robot.commands.Feed;
 import frc.robot.commands.IntakeBall;
 import frc.robot.commands.ManualShooterControl;
@@ -52,7 +53,7 @@ public class RobotContainer {
   private final Transfer m_transfer = new Transfer();
   private final Intake m_intake = new Intake();
 
-  private static boolean manualMode = true;
+  private static boolean manualMode = false;
 
 
   public void updateStartingPose() {
@@ -155,5 +156,28 @@ public class RobotContainer {
         )
       )
     );
+
+
+    // return new SequentialCommandGroup(
+    //   new ZeroTurret(m_shooter),
+    //   new AutonomousRoutine(m_tankDrive),
+    //   new RepeatCommand(
+    //     new SequentialCommandGroup(
+    //       new ParallelCommandGroup(
+    //         new AutoTurretAim(m_shooter, m_tankDrive),
+    //         new Shoot(m_shooter, m_tankDrive),
+    //         new IntakeBall(m_intake),
+    //         new Feed(m_transfer, m_intake)
+    //       ).withTimeout(3.0),
+    //       new ParallelCommandGroup(
+    //         new AutoTurretAim(m_shooter, m_tankDrive),
+    //         new Shoot(m_shooter, m_tankDrive),
+    //         new ReverseAllMotors(m_transfer, m_intake)
+    //       ).withTimeout(1.0)
+    //     )
+    //   ).withTimeout(8.0),
+    //   new AutonomousRoutineBump(m_tankDrive)
+    // );
+    
   }
 }
