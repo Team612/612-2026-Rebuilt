@@ -11,7 +11,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.AutoTurretAim;
 
-import frc.robot.commands.AutonomousRoutine;
+//import frc.robot.commands.AutonomousRoutine;
 import frc.robot.commands.Feed;
 import frc.robot.commands.IntakeBall;
 import frc.robot.commands.ManualShooterControl;
@@ -73,11 +73,11 @@ public class RobotContainer {
     // m_driverController.leftBumper().or(m_driverController.rightBumper()).whileTrue(new Feed(m_transfer, () -> m_driverController.rightBumper().getAsBoolean()));
   }
 
-  public Command getAutonomousCommand() {
-    return new SequentialCommandGroup(
-      new ZeroTurret(m_shooter),
-      new AutonomousRoutine(m_tankDrive),
-      new ParallelCommandGroup(new Shoot(m_shooter, m_tankDrive), new IntakeBall(m_intake), new Feed(m_transfer, intakeButton))
-    );
-  }
+  // public Command getAutonomousCommand() {
+  //   return new SequentialCommandGroup(
+  //     new ZeroTurret(m_shooter),
+  //     new AutonomousRoutine(m_tankDrive),
+  //     new ParallelCommandGroup(new Shoot(m_shooter, m_tankDrive), new IntakeBall(m_intake), new Feed(m_transfer, intakeButton))
+  //   );
+  // }
 }
