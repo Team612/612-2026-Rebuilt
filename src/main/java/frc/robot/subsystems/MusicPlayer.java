@@ -1,8 +1,10 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.Orchestra;
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class MusicPlayer extends SubsystemBase {
@@ -20,8 +22,11 @@ public class MusicPlayer extends SubsystemBase {
         // Step 3: add instruments
         orch.addInstrument(driveMotor);
 
-        // Step 4: load the music file
-        orch.loadMusic("output.chrp"); // must be in deploy folder
+        // Step 4: load the music file and check status
+        StatusCode status = orch.loadMusic("output.chrp"); // must be in deploy folder
+        if (!status.isOK()) {
+            System.err.println("[MusicPlayer] Failed to load music file: " + status.toString());
+        }
     }
 
     public void playMusic() {
@@ -30,8 +35,18 @@ public class MusicPlayer extends SubsystemBase {
         }
     }
 
+    public void stopMusic() {
+        if (orch != null) {
+            orch.stop();
+        }
+    }
+
+    public boolean isPlaying() {
+        return orch != null && orch.isPlaying();
+    }
+
     @Override
     public void periodic() {
-        // Called once per scheduler run
+        SmartDashboard.putBoolean("Music Playing", isPlaying());
     }
 }

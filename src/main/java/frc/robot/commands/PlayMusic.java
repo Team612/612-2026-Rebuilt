@@ -1,40 +1,36 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands;
 
 import frc.robot.subsystems.MusicPlayer;
-
 import edu.wpi.first.wpilibj2.command.Command;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class PlayMusic extends Command {
-  /** Creates a new PlayMusci. */
-  private MusicPlayer m;
-  public PlayMusic(MusicPlayer m_m) {
-    m = m_m;
-    addRequirements(m);
-    // Use addRequirements() here to declare subsystem dependencies.
-  }
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {}
+    private final MusicPlayer m;
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    m.playMusic();
-  }
+    public PlayMusic(MusicPlayer m_m) {
+        m = m_m;
+        addRequirements(m);
+    }
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {}
+    // Called once when the command is first scheduled — start playback here
+    @Override
+    public void initialize() {
+        m.playMusic();
+    }
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+    // execute() intentionally left empty — Orchestra handles playback internally
+    @Override
+    public void execute() {}
+
+    // Stop music when command ends or is interrupted
+    @Override
+    public void end(boolean interrupted) {
+        m.stopMusic();
+    }
+
+    // Command runs until interrupted (e.g. button released)
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
 }

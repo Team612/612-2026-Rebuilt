@@ -1,53 +1,36 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.PlayMusic;
 import frc.robot.subsystems.MusicPlayer;
 
-/**
- * This class is where the bulk of the robot should be declared. Since Command-based is used,
- * subsystems, commands, and button mappings are defined here.
- */
 public class RobotContainer {
 
     // Subsystems
     private final MusicPlayer musicPlayer;
 
-    // Example controller (optional, for triggering music play)
+    // Controller
     private final CommandXboxController driverController = new CommandXboxController(0);
 
-    /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-
-        // Initialize subsystems
-        musicPlayer = new MusicPlayer(1); // ID 1 for your TalonFX
-
-        // Configure the trigger bindings
+        musicPlayer = new MusicPlayer(1);
         configureBindings();
     }
 
-    /**
-     * Use this method to define your button->command mappings.  
-     * Currently, example: press A to play music.
-     */
     private void configureBindings() {
-        // Press 'A' button to play music
-        driverController.a().whileTrue(
-            new edu.wpi.first.wpilibj2.command.InstantCommand(() -> musicPlayer.playMusic())
-        );
+        // Hold A to play music, releases stop it
+        driverController.a().whileTrue(new PlayMusic(musicPlayer));
+
+        // Press B to manually stop music
+        driverController.b().onTrue(new InstantCommand(musicPlayer::stopMusic, musicPlayer));
     }
 
-    /**
-     * Use this to pass the autonomous command to the main Robot class.
-     *
-     * @return the command to run in autonomous
-     */
     public Command getAutonomousCommand() {
-        // Currently no autonomous command; return null or your autonomous command here
         return null;
     }
 
-    /** Getter for MusicPlayer subsystem */
     public MusicPlayer getMusicPlayer() {
         return musicPlayer;
     }
