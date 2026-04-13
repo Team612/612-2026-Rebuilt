@@ -15,13 +15,13 @@ public class RobotContainer {
     private final CommandXboxController driverController = new CommandXboxController(0);
 
     public RobotContainer() {
-        musicPlayer = new MusicPlayer(1);
+        musicPlayer = new MusicPlayer(8);
         configureBindings();
     }
 
     private void configureBindings() {
         // Hold A to play music, releases stop it
-        driverController.a().whileTrue(new PlayMusic(musicPlayer));
+        driverController.a().onTrue(new PlayMusic(musicPlayer));
 
         // Press B to manually stop music
         driverController.b().onTrue(new InstantCommand(musicPlayer::stopMusic, musicPlayer));

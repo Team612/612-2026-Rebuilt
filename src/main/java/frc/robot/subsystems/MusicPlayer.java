@@ -23,7 +23,7 @@ public class MusicPlayer extends SubsystemBase {
         orch.addInstrument(driveMotor);
 
         // Step 4: load the music file and check status
-        StatusCode status = orch.loadMusic("output.chrp"); // must be in deploy folder
+        StatusCode status = orch.loadMusic("musiclab.chrp"); // must be in deploy folder
         if (!status.isOK()) {
             System.err.println("[MusicPlayer] Failed to load music file: " + status.toString());
         }

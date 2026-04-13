@@ -7,10 +7,10 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
-  private final Robot m_robotContainer;
+  private final RobotContainer m_robotContainer;
 
   public Robot() {
-    m_robotContainer = new Robot();
+    m_robotContainer = new RobotContainer();
   }
 
   @Override
